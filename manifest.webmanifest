@@ -1,0 +1,16 @@
+{
+  "name": "Taller de Bordado",
+  "short_name": "Bordados",
+  "description": "Plantillas PDF a tamaño real para proyectos de bordado",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#faf6f0",
+  "theme_color": "#c96f6f",
+  "icons": [
+    { "src": "icono-bordados-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icono-bordados-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
