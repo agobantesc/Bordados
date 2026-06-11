@@ -110,6 +110,14 @@
   .boton-pdf:disabled { opacity: 0.45; cursor: default; }
   .boton-pdf:not(:disabled):active { opacity: 0.85; }
 
+  .boton-sec {
+    margin-top: 10px; padding: 10px 18px; font-size: 0.95rem; font-family: inherit;
+    color: var(--rosa-oscuro); background: #fdf3f3; border: 2px solid var(--rosa);
+    border-radius: 10px; cursor: pointer;
+  }
+  .boton-sec:active { opacity: 0.8; }
+  #previaCirc { touch-action: none; }
+
   footer { text-align: center; margin-top: 24px; color: #b3a691; font-size: 0.85rem; font-style: italic; }
 </style>
 </head>
@@ -252,6 +260,8 @@
     <h2>4 · Vista previa de la hoja</h2>
     <canvas id="previaCirc" width="300" height="420"></canvas>
     <div class="pie" id="pieCirc"></div>
+    <p class="pie" id="ayudaArrastre" style="display:none">👆 Arrastra la foto sobre la vista previa para acomodarla dentro del círculo</p>
+    <button class="boton-sec" id="btnCentrarCirc" style="display:none">🎯 Volver a centrar la foto</button>
   </div>
 
   <button class="boton-pdf" id="pdfCirc" disabled>📄 Generar PDF para imprimir</button>
@@ -281,6 +291,7 @@
   // ---------- Estado ----------
   var imgRect = null;   // Image del modo rectangular
   var imgCirc = null;   // Image del modo circular
+  var desplCirc = { x: 0, y: 0 };   // corrimiento de la foto dentro del círculo, en cm
 
   // ---------- Utilidades ----------
   function $(id) { return document.getElementById(id); }
@@ -434,6 +445,35 @@
     return c;
   }
 
+  // Tamaño de la imagen dentro del círculo, en cm, según el modo
+  function tamanoImagenCirc(img, radioCm, modo, anchoCentroCm) {
+    var prop = img.naturalWidth / img.naturalHeight;
+    var D = radioCm * 2;
+    if (modo === 'lleno') {
+      // Cubrir el círculo completo: escalar hasta tapar el diámetro en ambos sentidos
+      if (prop >= 1) return { w: D * prop, h: D };
+      return { w: D, h: D / prop };
+    }
+    return { w: anchoCentroCm, h: anchoCentroCm / prop };
+  }
+
+  // Mantiene el corrimiento dentro de límites razonables:
+  // en modo lleno la imagen nunca debe dejar huecos en el círculo;
+  // en modo centro, el centro de la foto no puede salirse del bastidor
+  function acotarDesplCirc(radioCm, modo, anchoCentroCm) {
+    if (!imgCirc) return;
+    var maxX, maxY;
+    if (modo === 'lleno') {
+      var t = tamanoImagenCirc(imgCirc, radioCm, 'lleno', 0);
+      maxX = Math.max(0, t.w / 2 - radioCm);
+      maxY = Math.max(0, t.h / 2 - radioCm);
+    } else {
+      maxX = maxY = radioCm;
+    }
+    desplCirc.x = Math.min(maxX, Math.max(-maxX, desplCirc.x));
+    desplCirc.y = Math.min(maxY, Math.max(-maxY, desplCirc.y));
+  }
+
   // Modo circular: círculo del bastidor con la imagen dentro
   function dibujarCirculo(img, radioCm, modo, anchoCentroCm, conGuia, dpi) {
     var bordeCm = 0.3;                       // aire alrededor de la línea de guía
@@ -456,18 +496,12 @@
     ctx.arc(centro, centro, R, 0, Math.PI * 2);
     ctx.clip();
 
-    var prop = img.naturalWidth / img.naturalHeight;
-    var iw, ih;
-    if (modo === 'lleno') {
-      // Cubrir el círculo completo: escalar hasta tapar el diámetro en ambos sentidos
-      var D = R * 2;
-      if (prop >= 1) { ih = D; iw = D * prop; }
-      else { iw = D; ih = D / prop; }
-    } else {
-      iw = px(anchoCentroCm);
-      ih = iw / prop;
-    }
-    ctx.drawImage(img, centro - iw / 2, centro - ih / 2, iw, ih);
+    var t = tamanoImagenCirc(img, radioCm, modo, anchoCentroCm);
+    var iw = px(t.w), ih = px(t.h);
+    ctx.drawImage(img,
+      centro - iw / 2 + px(desplCirc.x),
+      centro - ih / 2 + px(desplCirc.y),
+      iw, ih);
     ctx.restore();
 
     if (conGuia) {
@@ -588,9 +622,13 @@
     var listo = imgCirc && diametroCm > 0 && (modo === 'lleno' || anchoCentroCm > 0);
     $('pdfCirc').disabled = !listo;
 
+    $('ayudaArrastre').style.display = listo ? 'block' : 'none';
+    $('btnCentrarCirc').style.display = listo && (desplCirc.x !== 0 || desplCirc.y !== 0) ? 'inline-block' : 'none';
+
     var pagina = elegirPagina($('hojaCirc').value, 1, 1); // el círculo siempre va en vertical
     var contenido = null, ladoCm = radioCm * 2 + 0.6;
     if (listo) {
+      acotarDesplCirc(radioCm, modo, anchoCentroCm);
       var res = dibujarCirculo(imgCirc, radioCm, modo, anchoCentroCm, $('guiaCirc').checked, 30);
       contenido = res.canvas;
       ladoCm = res.ladoCm;
@@ -620,6 +658,38 @@
 
   conectarSubida('zonaCirc', 'archivoCirc', 'infoCirc', function (img) {
     imgCirc = img;
+    desplCirc.x = 0; desplCirc.y = 0;
+    refrescarCirc();
+  });
+
+  // Arrastrar la foto dentro del círculo, con dedo o mouse, sobre la vista previa
+  (function () {
+    var canvas = $('previaCirc');
+    var arrastrando = false, ultX = 0, ultY = 0;
+    canvas.addEventListener('pointerdown', function (e) {
+      if (!imgCirc) return;
+      arrastrando = true;
+      ultX = e.clientX; ultY = e.clientY;
+      canvas.setPointerCapture(e.pointerId);
+      e.preventDefault();
+    });
+    canvas.addEventListener('pointermove', function (e) {
+      if (!arrastrando) return;
+      var pagina = elegirPagina($('hojaCirc').value, 1, 1);
+      var escala = Math.min(360 / pagina.w, 480 / pagina.h);   // px de canvas por cm (igual que la vista previa)
+      var cssAcanvas = canvas.width / canvas.getBoundingClientRect().width;
+      desplCirc.x += (e.clientX - ultX) * cssAcanvas / escala;
+      desplCirc.y += (e.clientY - ultY) * cssAcanvas / escala;
+      ultX = e.clientX; ultY = e.clientY;
+      refrescarCirc();
+    });
+    ['pointerup', 'pointercancel'].forEach(function (ev) {
+      canvas.addEventListener(ev, function () { arrastrando = false; });
+    });
+  })();
+
+  $('btnCentrarCirc').addEventListener('click', function () {
+    desplCirc.x = 0; desplCirc.y = 0;
     refrescarCirc();
   });
 
@@ -630,7 +700,11 @@
     $(id).addEventListener('change', refrescarCirc);
   });
   document.querySelectorAll('input[name="modoCirc"]').forEach(function (r) {
-    r.addEventListener('change', refrescarCirc);
+    r.addEventListener('change', function () {
+      // Al cambiar de modo la escala de la foto es otra: partir centrada de nuevo
+      desplCirc.x = 0; desplCirc.y = 0;
+      refrescarCirc();
+    });
   });
 
   $('pdfCirc').addEventListener('click', function () {
