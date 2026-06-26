@@ -2,193 +2,320 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Taller de Bordado — Plantillas PDF</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Taller de Bordado — Plantillas PDF a tamaño real</title>
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#c96f6f">
-<link rel="icon" type="image/png" href="icono-bordados-192.png">
+<meta name="theme-color" content="#bb6448">
+<link rel="icon" type="image/png" href="iconobordados192.png">
 <!-- Para "Añadir a pantalla de inicio" en iPad/Safari -->
-<link rel="apple-touch-icon" href="icono-bordados-180.png">
+<link rel="apple-touch-icon" href="iconobordados180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Bordados">
-<!-- Tipografías decorativas para el generador de letras (necesita internet la
-     primera vez; si no hay conexión se usa una letra cursiva del sistema) -->
+<!-- Tipografías: Playfair para títulos (marca) y decorativas para el generador de
+     letras. Necesitan internet la primera vez; si no hay, se usan letras del sistema. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Allura&family=Caveat:wght@600&family=Cinzel:wght@600&family=Dancing+Script:wght@600&family=Great+Vibes&family=Lobster&family=Pacifico&family=Parisienne&family=Playfair+Display:wght@600&family=Sacramento&family=Satisfy&family=Tangerine:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Allura&family=Caveat:wght@600&family=Cinzel:wght@600&family=Cormorant+Garamond:wght@600&family=Dancing+Script:wght@600&family=Great+Vibes&family=Lobster&family=Pacifico&family=Parisienne&family=Playfair+Display:wght@500;700&family=Sacramento&family=Satisfy&family=Tangerine:wght@700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --crema: #faf6f0;
-    --rosa: #c96f6f;
-    --rosa-oscuro: #a85454;
-    --verde: #7a8b6f;
-    --tinta: #4a3f35;
-    --borde: #e3d9cc;
-    --blanco: #ffffff;
+    --papel: #f6f1ea;
+    --papel-2: #fbf8f3;
+    --superficie: #ffffff;
+    --tinta: #3c332a;
+    --tinta-suave: #8a7c6c;
+    --terracota: #bb6448;
+    --terracota-osc: #9c4f37;
+    --salvia: #7e8c6a;
+    --salvia-osc: #647154;
+    --oro: #c79a3f;
+    --borde: #e7ddce;
+    --borde-fuerte: #d8cab3;
+    --sombra: 0 8px 24px rgba(74, 59, 42, 0.08);
+    --sombra-sutil: 0 2px 8px rgba(74, 59, 42, 0.06);
+    --radio: 18px;
+    --radio-sm: 12px;
+    --ok: #4f7a52;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { -webkit-text-size-adjust: 100%; }
   body {
-    font-family: Georgia, 'Times New Roman', serif;
-    background: var(--crema);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--papel);
+    background-image:
+      radial-gradient(1200px 600px at 100% -10%, rgba(187,100,72,0.06), transparent 60%),
+      radial-gradient(1000px 500px at -10% 110%, rgba(126,140,106,0.07), transparent 60%);
     color: var(--tinta);
     min-height: 100vh;
-    padding: 16px;
+    padding: 0 16px calc(40px + env(safe-area-inset-bottom));
+    line-height: 1.45;
   }
-  header { text-align: center; margin-bottom: 18px; }
-  header h1 { font-size: 1.7rem; color: var(--rosa-oscuro); letter-spacing: 0.5px; }
-  header p { font-size: 0.95rem; color: #8a7b6c; margin-top: 4px; font-style: italic; }
+  .contenido { max-width: 920px; margin: 0 auto; }
 
-  .tabs { display: flex; flex-wrap: wrap; gap: 8px; max-width: 900px; margin: 0 auto 16px; }
+  /* ---------- Barra superior ---------- */
+  .appbar {
+    position: sticky; top: 0; z-index: 30;
+    display: flex; align-items: center; gap: 12px;
+    max-width: 920px; margin: 0 auto;
+    padding: 14px 4px 12px;
+    background: linear-gradient(var(--papel) 78%, rgba(246,241,234,0));
+    backdrop-filter: saturate(1.1) blur(2px);
+  }
+  .marca { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+  .logo {
+    width: 46px; height: 46px; flex-shrink: 0;
+    display: grid; place-items: center; font-size: 1.5rem;
+    background: linear-gradient(135deg, var(--terracota), var(--terracota-osc));
+    color: #fff; border-radius: 14px; box-shadow: var(--sombra-sutil);
+  }
+  .marca h1 {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 1.5rem; font-weight: 700; color: var(--terracota-osc);
+    line-height: 1.1; letter-spacing: .2px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .marca .lema { font-size: .82rem; color: var(--tinta-suave); margin-top: 1px; }
+  .icono-btn {
+    flex-shrink: 0; width: 46px; height: 46px; border-radius: 14px;
+    border: 1px solid var(--borde); background: var(--superficie);
+    font-size: 1.3rem; cursor: pointer; color: var(--tinta);
+    box-shadow: var(--sombra-sutil); transition: transform .12s, background .12s;
+  }
+  .icono-btn:active { transform: scale(.94); background: var(--papel-2); }
+
+  /* ---------- Navegación por pestañas ---------- */
+  .tabs {
+    display: flex; gap: 8px; position: sticky; top: 72px; z-index: 20;
+    max-width: 920px; margin: 0 auto 18px; padding: 6px;
+    background: var(--superficie); border: 1px solid var(--borde);
+    border-radius: 16px; box-shadow: var(--sombra-sutil);
+    overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
   .tab-btn {
-    flex: 1 1 calc(50% - 4px); min-width: 130px; padding: 14px 8px; font-size: 0.98rem; font-family: inherit;
-    border: 2px solid var(--borde); border-radius: 14px; background: var(--blanco);
-    color: var(--tinta); cursor: pointer; transition: all .15s;
+    flex: 1 0 auto; white-space: nowrap; padding: 11px 14px; font-size: .95rem;
+    font-family: inherit; font-weight: 600; border: none; border-radius: 11px;
+    background: transparent; color: var(--tinta-suave); cursor: pointer;
+    transition: all .15s; display: flex; align-items: center; gap: 7px; justify-content: center;
   }
-  .tab-btn.activa { background: var(--rosa); border-color: var(--rosa); color: #fff; font-weight: bold; }
+  .tab-btn .ti { font-size: 1.05rem; }
+  .tab-btn:active { background: var(--papel-2); }
+  .tab-btn.activa {
+    background: linear-gradient(135deg, var(--terracota), var(--terracota-osc));
+    color: #fff; box-shadow: 0 4px 12px rgba(187,100,72,0.28);
+  }
 
-  .panel { display: none; max-width: 900px; margin: 0 auto; }
+  .panel { display: none; max-width: 920px; margin: 0 auto; animation: aparecer .25s ease; }
   .panel.activa { display: block; }
+  @keyframes aparecer { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
+  .intro { color: var(--tinta-suave); font-size: .95rem; margin: 0 4px 14px; }
+
+  /* ---------- Tarjetas ---------- */
   .tarjeta {
-    background: var(--blanco); border: 2px solid var(--borde); border-radius: 16px;
-    padding: 18px; margin-bottom: 14px;
+    background: var(--superficie); border: 1px solid var(--borde);
+    border-radius: var(--radio); padding: 20px; margin-bottom: 14px;
+    box-shadow: var(--sombra);
   }
-  .tarjeta h2 { font-size: 1.1rem; color: var(--rosa-oscuro); margin-bottom: 12px; }
+  .tarjeta h2 {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 1.12rem; font-weight: 700; color: var(--tinta);
+    margin-bottom: 14px; display: flex; align-items: center; gap: 10px;
+  }
+  .tarjeta h2 .paso {
+    flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%;
+    display: grid; place-items: center; font-size: .85rem; font-weight: 700;
+    background: var(--salvia); color: #fff; font-family: inherit;
+  }
 
+  /* ---------- Zona de subida ---------- */
   .zona-subida {
-    display: block;
-    border: 3px dashed var(--borde); border-radius: 14px; padding: 26px 14px;
-    text-align: center; cursor: pointer; transition: border-color .15s; background: #fdfbf8;
+    display: block; border: 2px dashed var(--borde-fuerte); border-radius: var(--radio-sm);
+    padding: 28px 14px; text-align: center; cursor: pointer; background: var(--papel-2);
+    transition: border-color .15s, background .15s;
   }
-  .zona-subida:active, .zona-subida.arrastrando { border-color: var(--rosa); }
-  .zona-subida .icono { font-size: 2.2rem; }
-  .zona-subida p { margin-top: 8px; color: #8a7b6c; }
-  .zona-subida img { max-width: 100%; max-height: 220px; border-radius: 8px; margin-bottom: 8px; }
-  /* Oculto visualmente pero presente: en Safari/iPad un input con display:none
-     puede no abrir el selector de fotos */
+  .zona-subida:active, .zona-subida.arrastrando { border-color: var(--terracota); background: #fbf2ee; }
+  .zona-subida .icono { font-size: 2.1rem; display: block; }
+  .zona-subida p { margin-top: 8px; color: var(--tinta-suave); font-size: .95rem; }
+  .zona-subida img { max-width: 100%; max-height: 220px; border-radius: 10px; margin-bottom: 8px; box-shadow: var(--sombra-sutil); }
   input[type="file"] {
     position: absolute; width: 1px; height: 1px; opacity: 0;
     overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%);
   }
+  .info-img { font-size: .88rem; color: var(--tinta-suave); margin-top: 10px; text-align: center; }
 
-  .info-img { font-size: 0.9rem; color: #8a7b6c; margin-top: 8px; text-align: center; }
-
+  /* ---------- Campos ---------- */
   .fila { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end; }
   .campo { flex: 1; min-width: 130px; }
-  .campo label { display: block; font-size: 0.95rem; margin-bottom: 6px; }
-  .campo input[type="number"], .campo select {
-    width: 100%; padding: 14px 12px; font-size: 1.15rem; font-family: inherit;
-    border: 2px solid var(--borde); border-radius: 10px; background: #fdfbf8; color: var(--tinta);
+  .campo label { display: block; font-size: .9rem; font-weight: 600; margin-bottom: 6px; color: var(--tinta); }
+  .campo input[type="number"], .campo input[type="text"], .campo select, .campo textarea {
+    width: 100%; padding: 13px 12px; font-size: 1.1rem; font-family: inherit;
+    border: 1px solid var(--borde-fuerte); border-radius: 11px; background: var(--papel-2);
+    color: var(--tinta); transition: border-color .12s, box-shadow .12s; -webkit-appearance: none;
   }
-  .campo input:focus, .campo select:focus { outline: none; border-color: var(--rosa); }
+  .campo textarea { resize: vertical; min-height: 92px; line-height: 1.4; }
+  .campo input:focus, .campo select:focus, .campo textarea:focus {
+    outline: none; border-color: var(--terracota); background: #fff;
+    box-shadow: 0 0 0 3px rgba(187,100,72,0.14);
+  }
+  .campo .ayuda { font-size: .8rem; color: var(--tinta-suave); margin-top: 6px; }
+  .campo-color { flex: 0 0 auto; min-width: 92px; }
+  .campo-color input[type="color"] {
+    width: 100%; height: 48px; padding: 4px; border: 1px solid var(--borde-fuerte);
+    border-radius: 11px; background: var(--papel-2); cursor: pointer;
+  }
 
-  .check-fila { display: flex; align-items: center; gap: 10px; margin-top: 12px; font-size: 1rem; }
-  .check-fila input[type="checkbox"] { width: 24px; height: 24px; accent-color: var(--rosa); }
+  .check-fila { display: flex; align-items: center; gap: 11px; margin-top: 14px; font-size: .98rem; cursor: pointer; }
+  .check-fila input[type="checkbox"] { width: 24px; height: 24px; accent-color: var(--terracota); flex-shrink: 0; }
 
   .radios { display: flex; flex-direction: column; gap: 10px; }
   .radio-opcion {
     display: flex; align-items: flex-start; gap: 12px; padding: 14px;
-    border: 2px solid var(--borde); border-radius: 12px; cursor: pointer; transition: all .15s;
+    border: 1px solid var(--borde-fuerte); border-radius: var(--radio-sm);
+    cursor: pointer; transition: all .15s; background: var(--papel-2);
   }
-  .radio-opcion.elegida { border-color: var(--rosa); background: #fdf3f3; }
-  .radio-opcion input[type="radio"] { width: 24px; height: 24px; accent-color: var(--rosa); flex-shrink: 0; margin-top: 2px; }
-  .radio-opcion strong { display: block; margin-bottom: 2px; }
-  .radio-opcion small { color: #8a7b6c; }
+  .radio-opcion.elegida { border-color: var(--terracota); background: #fbf2ee; box-shadow: 0 0 0 2px rgba(187,100,72,0.12); }
+  .radio-opcion input[type="radio"] { width: 22px; height: 22px; accent-color: var(--terracota); flex-shrink: 0; margin-top: 2px; }
+  .radio-opcion strong { display: block; margin-bottom: 2px; font-size: .98rem; }
+  .radio-opcion small { color: var(--tinta-suave); font-size: .85rem; }
 
-  .aviso { padding: 12px 14px; border-radius: 10px; font-size: 0.95rem; margin-top: 12px; display: none; }
+  .aviso { padding: 12px 14px; border-radius: var(--radio-sm); font-size: .92rem; margin-top: 14px; display: none; }
   .aviso.visible { display: block; }
-  .aviso.alerta { background: #fdf0e6; border: 1px solid #e8c9a8; color: #9a6b2f; }
+  .aviso.alerta { background: #fdf2e6; border: 1px solid #ecc89c; color: #97601f; }
 
+  /* ---------- Vista previa ---------- */
   .vista-previa { text-align: center; }
+  .lienzo-wrap {
+    display: inline-block; padding: 14px; border-radius: var(--radio-sm);
+    background:
+      linear-gradient(45deg, #eee7db 25%, transparent 25%, transparent 75%, #eee7db 75%) 0 0 / 18px 18px,
+      linear-gradient(45deg, #eee7db 25%, #f3ede2 25%, #f3ede2 75%, #eee7db 75%) 9px 9px / 18px 18px;
+  }
   .vista-previa canvas {
-    max-width: 100%; border: 1px solid var(--borde); border-radius: 8px;
-    background: #efe9e0; box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    max-width: 100%; border-radius: 6px; background: #fff;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12); vertical-align: middle;
   }
-  .vista-previa .pie { font-size: 0.85rem; color: #8a7b6c; margin-top: 6px; }
+  .vista-previa .pie { font-size: .85rem; color: var(--tinta-suave); margin-top: 10px; }
 
-  .boton-pdf {
-    display: block; width: 100%; padding: 18px; font-size: 1.25rem; font-family: inherit;
-    font-weight: bold; color: #fff; background: var(--verde); border: none; border-radius: 14px;
-    cursor: pointer; transition: opacity .15s;
+  /* ---------- Botones ---------- */
+  .boton-primario, .boton-pdf {
+    display: block; width: 100%; padding: 17px; font-size: 1.15rem; font-family: inherit;
+    font-weight: 700; color: #fff; border: none; border-radius: 14px; cursor: pointer;
+    background: linear-gradient(135deg, var(--salvia), var(--salvia-osc));
+    box-shadow: 0 6px 16px rgba(100,113,84,0.28); transition: transform .12s, opacity .12s, box-shadow .12s;
   }
-  .boton-pdf:disabled { opacity: 0.45; cursor: default; }
-  .boton-pdf:not(:disabled):active { opacity: 0.85; }
+  .boton-pdf:disabled { opacity: .45; cursor: default; box-shadow: none; }
+  .boton-pdf:not(:disabled):active, .boton-primario:active { transform: translateY(1px); opacity: .92; }
 
   .boton-sec {
-    margin-top: 10px; padding: 10px 18px; font-size: 0.95rem; font-family: inherit;
-    color: var(--rosa-oscuro); background: #fdf3f3; border: 2px solid var(--rosa);
-    border-radius: 10px; cursor: pointer;
+    margin-top: 12px; padding: 11px 18px; font-size: .95rem; font-family: inherit; font-weight: 600;
+    color: var(--terracota-osc); background: #fbf2ee; border: 1px solid var(--terracota);
+    border-radius: 11px; cursor: pointer;
   }
-  .boton-sec:active { opacity: 0.8; }
-  #previaCirc { touch-action: none; }
+  .boton-sec:active { opacity: .82; }
 
-  /* Control deslizante (zoom de la foto en el bastidor) */
-  input[type="range"] {
-    width: 100%; accent-color: var(--rosa); height: 30px;
-  }
+  input[type="range"] { width: 100%; accent-color: var(--terracota); height: 34px; }
+  #previaCirc { touch-action: none; cursor: grab; }
+  #previaCirc:active { cursor: grabbing; }
 
-  /* Vista previa de la tipografía elegida en el generador de letras */
+  /* ---------- Generador de letras ---------- */
   .previa-fuente {
-    border: 2px solid var(--borde); border-radius: 12px; background: #fdfbf8;
-    padding: 22px 14px; text-align: center; font-size: 2.6rem; line-height: 1.25;
-    color: var(--tinta); word-break: break-word; min-height: 90px;
+    border: 1px solid var(--borde); border-radius: var(--radio-sm); background: var(--papel-2);
+    padding: 26px 16px; text-align: center; font-size: 2.7rem; line-height: 1.25;
+    color: var(--tinta); word-break: break-word; min-height: 96px; white-space: pre-wrap;
   }
+  .solo-relleno, .solo-contorno { display: none; }
+  .modo-relleno .solo-relleno { display: block; }
+  .modo-contorno .solo-contorno { display: block; }
+  .modo-ambos .solo-relleno, .modo-ambos .solo-contorno { display: block; }
 
-  /* Tarjetas de cada diseño en "Varios en una hoja" */
+  /* ---------- Tarjetas de "varios en una hoja" ---------- */
   .item-comp {
-    border: 2px solid var(--borde); border-radius: 14px; padding: 14px;
-    margin-bottom: 12px; background: #fdfbf8;
+    border: 1px solid var(--borde-fuerte); border-radius: var(--radio-sm); padding: 16px;
+    margin-bottom: 12px; background: var(--papel-2);
   }
-  .item-cab { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-  .item-cab strong { color: var(--rosa-oscuro); }
+  .item-cab { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .item-cab strong { color: var(--terracota-osc); font-size: 1rem; }
   .item-comp .quitar {
-    padding: 6px 12px; font-family: inherit; font-size: 0.85rem; color: var(--rosa-oscuro);
-    background: #fdf3f3; border: 2px solid var(--rosa); border-radius: 9px; cursor: pointer;
+    padding: 7px 12px; font-family: inherit; font-size: .85rem; font-weight: 600; color: var(--terracota-osc);
+    background: #fbf2ee; border: 1px solid var(--terracota); border-radius: 9px; cursor: pointer;
   }
   .item-comp .zona-subida { padding: 16px 10px; }
   .item-comp .zona-subida img { max-height: 120px; }
-  .item-comp .fila { margin-top: 10px; }
+  .item-comp .fila { margin-top: 12px; }
   .boton-anadir {
-    display: block; width: 100%; padding: 14px; font-size: 1.05rem; font-family: inherit;
-    color: var(--rosa-oscuro); background: #fdf3f3; border: 2px dashed var(--rosa);
-    border-radius: 12px; cursor: pointer; margin-top: 4px;
+    display: block; width: 100%; padding: 15px; font-size: 1.02rem; font-family: inherit; font-weight: 600;
+    color: var(--terracota-osc); background: #fbf2ee; border: 1.5px dashed var(--terracota);
+    border-radius: var(--radio-sm); cursor: pointer; margin-top: 2px;
   }
-  .boton-anadir:active { opacity: 0.85; }
+  .boton-anadir:active { opacity: .85; }
 
-  footer { text-align: center; margin-top: 24px; color: #b3a691; font-size: 0.85rem; font-style: italic; }
+  /* ---------- Modal de ajustes ---------- */
+  .modal {
+    position: fixed; inset: 0; z-index: 50; display: grid; place-items: center;
+    background: rgba(60,51,42,0.45); padding: 18px; animation: aparecer .2s ease;
+  }
+  .modal[hidden] { display: none; }
+  .modal-caja {
+    background: var(--superficie); border-radius: var(--radio); padding: 22px;
+    width: 100%; max-width: 440px; box-shadow: 0 18px 50px rgba(0,0,0,0.3);
+  }
+  .modal-caja h2 { font-family: "Playfair Display", serif; color: var(--terracota-osc); margin-bottom: 6px; font-size: 1.3rem; }
+  .modal-caja .sub { color: var(--tinta-suave); font-size: .9rem; margin-bottom: 16px; }
+  .modal-caja .nota { font-size: .82rem; color: var(--tinta-suave); margin-top: 10px; }
+  .modal-acciones { display: flex; gap: 10px; margin-top: 20px; }
+  .modal-acciones .boton-sec { flex: 1; margin: 0; text-align: center; }
+  .modal-acciones .boton-primario { flex: 1; padding: 13px; font-size: 1rem; }
+
+  /* ---------- Toast ---------- */
+  .toast {
+    position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom));
+    transform: translateX(-50%) translateY(12px); z-index: 60;
+    background: var(--tinta); color: #fff; padding: 13px 20px; border-radius: 12px;
+    font-size: .95rem; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    opacity: 0; transition: opacity .25s, transform .25s; pointer-events: none; max-width: 90vw; text-align: center;
+  }
+  .toast.ver { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  footer { text-align: center; margin-top: 26px; color: #b3a691; font-size: .85rem; }
+  footer .corazon { color: var(--terracota); }
 </style>
 </head>
 <body>
 
 <!-- Este aviso lo borra el JavaScript al arrancar. Si se ve, es porque la app
      se abrió en un visor sin JavaScript (vista previa de Archivos/Mail en iPad) -->
-<div id="avisoSinJs" style="background:#b3402f; color:#fff; padding:16px; border-radius:12px;
-     margin-bottom:16px; font-size:1.05rem; line-height:1.5; max-width:900px; margin-left:auto; margin-right:auto;">
+<div id="avisoSinJs" style="background:#9c4f37; color:#fff; padding:16px; border-radius:12px;
+     margin:16px auto; font-size:1.05rem; line-height:1.5; max-width:900px;">
   ⚠️ <strong>La app no puede funcionar en este visor.</strong><br>
   Estás viendo el archivo en la vista previa del iPad, que no ejecuta aplicaciones.
-  Para usarla: instala la app gratuita <strong>Documents (Readdle)</strong>, guarda este
-  archivo ahí y ábrelo desde esa app. O pídele al creador la versión publicada en internet
-  para abrirla en Safari.
+  Para usarla, ábrela en <strong>Safari</strong> con el enlace publicado en internet.
 </div>
 
-<header>
-  <h1>🪡 Taller de Bordado</h1>
-  <p>Plantillas en PDF a tamaño real, listas para imprimir</p>
+<header class="appbar">
+  <div class="marca">
+    <span class="logo">🪡</span>
+    <div style="min-width:0;">
+      <h1 id="tituloMarca">Taller de Bordado</h1>
+      <p class="lema">Plantillas a tamaño real, listas para bordar</p>
+    </div>
+  </div>
+  <button class="icono-btn" id="btnAjustes" aria-label="Ajustes" title="Ajustes">⚙️</button>
 </header>
 
-<div class="tabs">
-  <button class="tab-btn activa" data-panel="panel-rect">📐 Imagen a medida</button>
-  <button class="tab-btn" data-panel="panel-circulo">⭕ Bastidor circular</button>
-  <button class="tab-btn" data-panel="panel-letras">✍️ Letras y palabras</button>
-  <button class="tab-btn" data-panel="panel-varios">🧩 Varios en una hoja</button>
-</div>
+<nav class="tabs" id="tabs">
+  <button class="tab-btn activa" data-panel="panel-rect"><span class="ti">📐</span>Imagen a medida</button>
+  <button class="tab-btn" data-panel="panel-circulo"><span class="ti">⭕</span>Bastidor circular</button>
+  <button class="tab-btn" data-panel="panel-letras"><span class="ti">✍️</span>Letras y palabras</button>
+  <button class="tab-btn" data-panel="panel-varios"><span class="ti">🧩</span>Varios en una hoja</button>
+</nav>
 
 <!-- ============ MODO 1: IMAGEN A MEDIDA ============ -->
 <section id="panel-rect" class="panel activa">
+  <p class="intro">Imprime cualquier imagen al tamaño exacto que quieras para calcarla o pasarla a tu tela.</p>
 
   <div class="tarjeta">
-    <h2>1 · Sube tu imagen</h2>
+    <h2><span class="paso">1</span> Sube tu imagen</h2>
     <label class="zona-subida" id="zonaRect" for="archivoRect">
       <span class="icono">🖼️</span>
       <p>Toca aquí para elegir una imagen</p>
@@ -198,7 +325,7 @@
   </div>
 
   <div class="tarjeta">
-    <h2>2 · Tamaño de impresión (en centímetros)</h2>
+    <h2><span class="paso">2</span> Tamaño de impresión</h2>
     <div class="fila">
       <div class="campo">
         <label for="anchoRect">Ancho (cm)</label>
@@ -217,16 +344,16 @@
         </select>
       </div>
     </div>
-    <div class="check-fila">
+    <label class="check-fila">
       <input type="checkbox" id="proporcionRect" checked>
-      <label for="proporcionRect">Mantener la proporción de la imagen</label>
-    </div>
+      <span>Mantener la proporción de la imagen</span>
+    </label>
     <div class="aviso alerta" id="avisoRect"></div>
   </div>
 
   <div class="tarjeta vista-previa">
-    <h2>3 · Vista previa de la hoja</h2>
-    <canvas id="previaRect" width="300" height="420"></canvas>
+    <h2><span class="paso">3</span> Vista previa</h2>
+    <div class="lienzo-wrap"><canvas id="previaRect" width="300" height="420"></canvas></div>
     <div class="pie" id="pieRect"></div>
   </div>
 
@@ -235,9 +362,10 @@
 
 <!-- ============ MODO 2: BASTIDOR CIRCULAR ============ -->
 <section id="panel-circulo" class="panel">
+  <p class="intro">Acomoda tu foto dentro del bastidor: arrástrala, acércala y centra el detalle que más te gusta.</p>
 
   <div class="tarjeta">
-    <h2>1 · Sube tu imagen</h2>
+    <h2><span class="paso">1</span> Sube tu imagen</h2>
     <label class="zona-subida" id="zonaCirc" for="archivoCirc">
       <span class="icono">🖼️</span>
       <p>Toca aquí para elegir una imagen</p>
@@ -247,7 +375,7 @@
   </div>
 
   <div class="tarjeta">
-    <h2>2 · Medidas del bastidor</h2>
+    <h2><span class="paso">2</span> Medidas del bastidor</h2>
     <div class="fila">
       <div class="campo">
         <label for="diametroCirc">Diámetro del bastidor (cm)</label>
@@ -262,17 +390,17 @@
         </select>
       </div>
     </div>
-    <p class="info-img" id="diamCirc" style="text-align:left; margin-top:8px;"></p>
+    <p class="info-img" id="diamCirc" style="text-align:left; margin-top:10px;"></p>
   </div>
 
   <div class="tarjeta">
-    <h2>3 · ¿Cómo va la imagen en el bastidor?</h2>
+    <h2><span class="paso">3</span> ¿Cómo va la imagen en el bastidor?</h2>
     <div class="radios">
       <label class="radio-opcion elegida" id="opLleno">
         <input type="radio" name="modoCirc" value="lleno" checked>
         <span>
           <strong>Llenar todo el círculo</strong>
-          <small>La imagen se ajusta para cubrir el bastidor completo (se recorta lo que sobra del borde).</small>
+          <small>La imagen cubre el bastidor completo (se recorta lo que sobra del borde).</small>
         </span>
       </label>
       <label class="radio-opcion" id="opCentro">
@@ -289,20 +417,20 @@
         <input type="number" id="anchoCentro" min="0.5" max="60" step="0.1" value="7" inputmode="decimal">
       </div>
     </div>
-    <div class="check-fila">
+    <label class="check-fila">
       <input type="checkbox" id="guiaCirc" checked>
-      <label for="guiaCirc">Imprimir línea de guía del bastidor y marcas de centrado</label>
-    </div>
+      <span>Imprimir línea de guía del bastidor y marcas de centrado</span>
+    </label>
     <div class="aviso alerta" id="avisoCirc"></div>
   </div>
 
   <div class="tarjeta vista-previa">
-    <h2>4 · Vista previa de la hoja</h2>
-    <canvas id="previaCirc" width="300" height="420"></canvas>
+    <h2><span class="paso">4</span> Vista previa</h2>
+    <div class="lienzo-wrap"><canvas id="previaCirc" width="300" height="420"></canvas></div>
     <div class="pie" id="pieCirc"></div>
     <p class="pie" id="ayudaArrastre" style="display:none">👆 Arrastra la foto sobre la vista previa para acomodarla (arriba, abajo y a los lados)</p>
-    <div id="filaZoomCirc" style="display:none; margin-top:12px; text-align:left;">
-      <label for="zoomCirc" style="display:block; font-size:0.95rem; margin-bottom:4px;">🔍 Acercar la foto: <span id="zoomCircVal">100%</span></label>
+    <div id="filaZoomCirc" style="display:none; margin-top:14px; text-align:left;">
+      <label for="zoomCirc" style="display:block; font-size:.9rem; font-weight:600; margin-bottom:4px;">🔍 Acercar la foto: <span id="zoomCircVal">100%</span></label>
       <input type="range" id="zoomCirc" min="100" max="300" value="100" step="1">
       <p class="pie" style="text-align:left; margin-top:2px;">Acerca la foto para poder moverla libremente hacia los lados y hacia arriba o abajo.</p>
     </div>
@@ -314,43 +442,69 @@
 
 <!-- ============ MODO 3: LETRAS Y PALABRAS ============ -->
 <section id="panel-letras" class="panel">
+  <p class="intro">Crea nombres, iniciales, fechas o frases con tipografías decorativas y colores para complementar tus bordados.</p>
 
   <div class="tarjeta">
-    <h2>1 · Escribe el texto</h2>
+    <h2><span class="paso">1</span> Escribe el texto</h2>
     <div class="campo">
       <label for="textoLetras">Letras, números o palabras</label>
-      <input type="text" id="textoLetras" placeholder="Ej: Familia, Ana, 2026…" value="Bordados" inputmode="text">
+      <textarea id="textoLetras" placeholder="Ej: Familia&#10;Ana &amp; Luis&#10;2026" inputmode="text">Bordados</textarea>
+      <p class="ayuda">Puedes escribir varias líneas: cada salto de línea es un renglón nuevo.</p>
     </div>
-    <p class="info-img" style="text-align:left; margin-top:8px;">Puedes escribir nombres, iniciales, fechas o frases cortas.</p>
   </div>
 
   <div class="tarjeta">
-    <h2>2 · Estilo de letra</h2>
+    <h2><span class="paso">2</span> Tipografía y estilo</h2>
     <div class="campo">
       <label for="fuenteLetras">Tipografía / diseño</label>
       <select id="fuenteLetras"></select>
     </div>
     <div class="previa-fuente" id="previaFuente">Bordados</div>
-    <div class="radios" style="margin-top:14px;">
-      <label class="radio-opcion elegida" id="opContorno">
-        <input type="radio" name="estiloLetras" value="contorno" checked>
-        <span>
-          <strong>Solo contorno</strong>
-          <small>Dibuja el borde de las letras. Ideal para calcar y bordar siguiendo la línea.</small>
-        </span>
-      </label>
-      <label class="radio-opcion" id="opRelleno">
-        <input type="radio" name="estiloLetras" value="relleno">
-        <span>
-          <strong>Relleno</strong>
-          <small>Letras macizas en negro. Útil para rellenar o como referencia de tamaño.</small>
-        </span>
-      </label>
+
+    <div class="fila" style="margin-top:14px;">
+      <div class="campo">
+        <label for="estiloLetras">Estilo de trazo</label>
+        <select id="estiloLetras">
+          <option value="contorno" selected>Solo contorno — para calcar y bordar</option>
+          <option value="relleno">Relleno — letras macizas</option>
+          <option value="ambos">Relleno + contorno — dos colores</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label for="alinearLetras">Alineación</label>
+        <select id="alinearLetras">
+          <option value="centro" selected>Centrado</option>
+          <option value="izquierda">Izquierda</option>
+          <option value="derecha">Derecha</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="fila" style="margin-top:14px;">
+      <div class="campo campo-color solo-relleno">
+        <label for="colorRelleno">Color del relleno</label>
+        <input type="color" id="colorRelleno" value="#bb6448">
+      </div>
+      <div class="campo campo-color solo-contorno">
+        <label for="colorContorno">Color del contorno</label>
+        <input type="color" id="colorContorno" value="#3c332a">
+      </div>
+      <div class="campo solo-contorno">
+        <label for="grosorLetras">Grosor del contorno: <span id="grosorVal">media</span></label>
+        <input type="range" id="grosorLetras" min="5" max="100" value="35" step="1">
+      </div>
+    </div>
+
+    <div class="fila" style="margin-top:6px;">
+      <div class="campo">
+        <label for="espaciadoLetras">Espacio entre letras: <span id="espaciadoVal">0%</span></label>
+        <input type="range" id="espaciadoLetras" min="0" max="60" value="0" step="1">
+      </div>
     </div>
   </div>
 
   <div class="tarjeta">
-    <h2>3 · Tamaño y hoja</h2>
+    <h2><span class="paso">3</span> Tamaño y hoja</h2>
     <div class="fila">
       <div class="campo">
         <label for="altoLetras">Alto de las letras (cm)</label>
@@ -369,8 +523,8 @@
   </div>
 
   <div class="tarjeta vista-previa">
-    <h2>4 · Vista previa de la hoja</h2>
-    <canvas id="previaLetras" width="300" height="420"></canvas>
+    <h2><span class="paso">4</span> Vista previa</h2>
+    <div class="lienzo-wrap"><canvas id="previaLetras" width="300" height="420"></canvas></div>
     <div class="pie" id="pieLetras"></div>
   </div>
 
@@ -379,9 +533,10 @@
 
 <!-- ============ MODO 4: VARIOS EN UNA HOJA ============ -->
 <section id="panel-varios" class="panel">
+  <p class="intro">Aprovecha el papel: coloca varios diseños pequeños (bastidores, rectángulos o letras) en la misma hoja.</p>
 
   <div class="tarjeta">
-    <h2>1 · Hoja</h2>
+    <h2><span class="paso">1</span> Hoja</h2>
     <div class="fila">
       <div class="campo">
         <label for="hojaComp">Tamaño de hoja</label>
@@ -399,25 +554,49 @@
         </select>
       </div>
     </div>
-    <p class="info-img" style="text-align:left; margin-top:8px;">Coloca varios diseños pequeños (bastidores, rectángulos o letras) en la misma hoja para aprovechar el papel. Si no caben todos, se reparten en varias hojas automáticamente.</p>
+    <p class="info-img" style="text-align:left; margin-top:10px;">Si no caben todos, se reparten en varias hojas automáticamente.</p>
   </div>
 
   <div class="tarjeta">
-    <h2>2 · Diseños</h2>
+    <h2><span class="paso">2</span> Diseños</h2>
     <div id="listaComp"></div>
     <button class="boton-anadir" id="btnAnadirComp" type="button">➕ Añadir diseño</button>
   </div>
 
   <div class="tarjeta vista-previa">
-    <h2>3 · Vista previa de la hoja</h2>
-    <canvas id="previaComp" width="300" height="420"></canvas>
+    <h2><span class="paso">3</span> Vista previa</h2>
+    <div class="lienzo-wrap"><canvas id="previaComp" width="300" height="420"></canvas></div>
     <div class="pie" id="pieComp"></div>
   </div>
 
   <button class="boton-pdf" id="pdfComp" disabled>📄 Generar PDF para imprimir</button>
 </section>
 
-<footer>Hecho con cariño para tus bordados 🌸</footer>
+<footer>Hecho con <span class="corazon">♥</span> para tus bordados</footer>
+
+<!-- Modal de ajustes del negocio -->
+<div class="modal" id="modalAjustes" hidden>
+  <div class="modal-caja">
+    <h2>Ajustes del negocio</h2>
+    <p class="sub">Personaliza la app y tus plantillas.</p>
+    <div class="campo">
+      <label for="nombreNegocio">Nombre del negocio</label>
+      <input type="text" id="nombreNegocio" placeholder="Ej: Bordados Camila" inputmode="text">
+      <p class="ayuda">Aparece arriba en la app.</p>
+    </div>
+    <label class="check-fila">
+      <input type="checkbox" id="marcaEnPdf">
+      <span>Incluir el nombre como pie en los PDF impresos</span>
+    </label>
+    <p class="nota">🔒 Se guarda solo en este dispositivo, no se envía a ningún lado.</p>
+    <div class="modal-acciones">
+      <button class="boton-sec" id="cerrarAjustes" type="button">Cancelar</button>
+      <button class="boton-primario" id="guardarAjustes" type="button">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
 
 <script>
 (function () {
@@ -439,17 +618,36 @@
   };
 
   // ---------- Estado ----------
-  var imgRect = null;   // Image del modo rectangular
-  var imgCirc = null;   // Image del modo circular
-  var desplCirc = { x: 0, y: 0 };   // corrimiento de la foto dentro del círculo, en cm
-  var zoomCirc = 1;                 // factor de acercamiento de la foto en el bastidor
+  var imgRect = null;
+  var imgCirc = null;
+  var desplCirc = { x: 0, y: 0 };
+  var zoomCirc = 1;
 
   // ---------- Utilidades ----------
   function $(id) { return document.getElementById(id); }
+  function num(id) { var v = parseFloat($(id).value); return isFinite(v) && v > 0 ? v : 0; }
 
-  function num(id) {
-    var v = parseFloat($(id).value);
-    return isFinite(v) && v > 0 ? v : 0;
+  // Programador de renders: agrupa actualizaciones rápidas (tecleo, arrastre) en
+  // un solo repintado por frame. Clave para que el iPad no se sienta "pegado".
+  var pendientes = {};
+  function programar(clave, fn) {
+    if (pendientes[clave]) return;
+    pendientes[clave] = requestAnimationFrame(function () {
+      pendientes[clave] = 0; fn();
+    });
+  }
+
+  // Toast (aviso breve)
+  var toastT = null;
+  function toast(msg) {
+    var t = $('toast');
+    t.textContent = msg; t.hidden = false;
+    requestAnimationFrame(function () { t.classList.add('ver'); });
+    clearTimeout(toastT);
+    toastT = setTimeout(function () {
+      t.classList.remove('ver');
+      setTimeout(function () { t.hidden = true; }, 280);
+    }, 2200);
   }
 
   function cargarImagen(archivo, cb, cbError) {
@@ -469,42 +667,29 @@
   }
 
   function conectarSubida(zonaId, inputId, infoId, alCargar) {
-    // La zona es un <label for=...>: el navegador abre el selector solo,
-    // sin JavaScript (clave para que funcione en Safari/iPad)
     var zona = $(zonaId), input = $(inputId);
     zona.addEventListener('dragover', function (e) { e.preventDefault(); zona.classList.add('arrastrando'); });
     zona.addEventListener('dragleave', function () { zona.classList.remove('arrastrando'); });
     zona.addEventListener('drop', function (e) {
-      e.preventDefault();
-      zona.classList.remove('arrastrando');
+      e.preventDefault(); zona.classList.remove('arrastrando');
       if (e.dataTransfer.files[0]) procesar(e.dataTransfer.files[0]);
     });
-    input.addEventListener('change', function () {
-      if (input.files[0]) procesar(input.files[0]);
-    });
+    input.addEventListener('change', function () { if (input.files[0]) procesar(input.files[0]); });
     function procesar(archivo) {
       $(infoId).textContent = 'Cargando imagen…';
       cargarImagen(archivo, function (img) {
         zona.innerHTML = '';
-        var mini = document.createElement('img');
-        mini.src = img.src;
-        zona.appendChild(mini);
-        var p = document.createElement('p');
-        p.textContent = 'Toca para cambiar la imagen';
-        zona.appendChild(p);
+        var mini = document.createElement('img'); mini.src = img.src; zona.appendChild(mini);
+        var p = document.createElement('p'); p.textContent = 'Toca para cambiar la imagen'; zona.appendChild(p);
         $(infoId).textContent = 'Imagen de ' + img.naturalWidth + ' × ' + img.naturalHeight + ' píxeles';
         alCargar(img);
-      }, function (mensaje) {
-        $(infoId).textContent = '⚠️ ' + mensaje;
-      });
-      // Permite volver a elegir el mismo archivo y que el evento change se dispare igual
+      }, function (mensaje) { $(infoId).textContent = '⚠️ ' + mensaje; });
       input.value = '';
     }
   }
 
   function elegirPagina(nombreHoja, contW, contH) {
     var h = HOJAS[nombreHoja];
-    // Orientación automática: apaisada si el contenido es más ancho que alto
     if (contW > contH) return { w: h.h, h: h.w };
     return { w: h.w, h: h.h };
   }
@@ -516,105 +701,160 @@
     return dpi;
   }
 
+  // ---------- Configuración del negocio (marca) ----------
+  var NEGOCIO = { nombre: '', enPdf: false };
+  function cargarNegocio() {
+    try {
+      var s = JSON.parse(localStorage.getItem('bordados_negocio') || '{}');
+      NEGOCIO.nombre = (s.nombre || '').toString();
+      NEGOCIO.enPdf = !!s.enPdf;
+    } catch (e) {}
+  }
+  function guardarNegocio() {
+    try { localStorage.setItem('bordados_negocio', JSON.stringify(NEGOCIO)); } catch (e) {}
+  }
+  function aplicarMarca() {
+    $('tituloMarca').textContent = NEGOCIO.nombre.trim() || 'Taller de Bordado';
+  }
+  function pieParaPdf() {
+    return (NEGOCIO.enPdf && NEGOCIO.nombre.trim()) ? NEGOCIO.nombre.trim() : null;
+  }
+
   // ---------- Generador de PDF (sin librerías) ----------
   function bytesLatin1(s) {
     var b = new Uint8Array(s.length);
     for (var i = 0; i < s.length; i++) b[i] = s.charCodeAt(i) & 0xff;
     return b;
   }
+  function jpegDeCanvas(canvas) {
+    var b64 = canvas.toDataURL('image/jpeg', 0.92).split(',')[1];
+    var bin = atob(b64);
+    var u = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+    return u;
+  }
+  function escaparPdf(s) {
+    return String(s).replace(/[^\x00-\xFF]/g, '')      // solo Latin-1 (WinAnsi)
+                    .replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+  }
 
-  function crearPdf(canvas, anchoCm, altoCm, paginaCm) {
-    var jpegB64 = canvas.toDataURL('image/jpeg', 0.92).split(',')[1];
-    var bin = atob(jpegB64);
-    var jpeg = new Uint8Array(bin.length);
-    for (var i = 0; i < bin.length; i++) jpeg[i] = bin.charCodeAt(i);
+  // paginas: [{ wCm, hCm, pie?, imagenes: [{ jpeg, wpx, hpx, xCm, yCm, wCm, hCm }] }]
+  // xCm/yCm = esquina superior izquierda de la imagen (desde arriba-izquierda de la hoja).
+  function construirPdf(paginas) {
+    var objetos = {};
+    var maxNum = 3;                  // 1 catálogo, 2 pages, 3 fuente Helvetica
+    function asignar() { return ++maxNum; }
 
-    var pw = paginaCm.w * PT_POR_CM, ph = paginaCm.h * PT_POR_CM;
-    var iw = anchoCm * PT_POR_CM, ih = altoCm * PT_POR_CM;
-    var x = (pw - iw) / 2, y = (ph - ih) / 2;
+    var info = paginas.map(function (pg) {
+      var imgs = pg.imagenes.map(function (im) { return { num: asignar(), data: im }; });
+      return { pg: pg, imgs: imgs, contentNum: asignar(), pageNum: asignar() };
+    });
 
-    var contenido = 'q\n' + iw.toFixed(2) + ' 0 0 ' + ih.toFixed(2) + ' ' +
-                    x.toFixed(2) + ' ' + y.toFixed(2) + ' cm\n/Im1 Do\nQ\n';
+    objetos[1] = bytesLatin1('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
+    var kids = info.map(function (pi) { return pi.pageNum + ' 0 R'; }).join(' ');
+    objetos[2] = bytesLatin1('2 0 obj\n<< /Type /Pages /Kids [' + kids + '] /Count ' + info.length + ' >>\nendobj\n');
+    objetos[3] = bytesLatin1('3 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>\nendobj\n');
 
-    var trozos = [], off = 0, offs = [0, 0, 0, 0, 0, 0];
-    function poner(d) {
-      var b = (d instanceof Uint8Array) ? d : bytesLatin1(d);
-      trozos.push(b);
-      off += b.length;
-    }
+    info.forEach(function (pi) {
+      var phPt = pi.pg.hCm * PT_POR_CM, pwPt = pi.pg.wCm * PT_POR_CM;
+      var contenido = '';
+      pi.imgs.forEach(function (io) {
+        var im = io.data;
+        var iw = im.wCm * PT_POR_CM, ih = im.hCm * PT_POR_CM;
+        var xPt = im.xCm * PT_POR_CM;
+        var yPt = phPt - (im.yCm + im.hCm) * PT_POR_CM;
+        contenido += 'q\n' + iw.toFixed(2) + ' 0 0 ' + ih.toFixed(2) + ' ' +
+                     xPt.toFixed(2) + ' ' + yPt.toFixed(2) + ' cm\n/Im' + io.num + ' Do\nQ\n';
+      });
+      if (pi.pg.pie) {
+        var txt = escaparPdf(pi.pg.pie), s = 8.5;
+        var anchoEst = pi.pg.pie.length * s * 0.5;
+        var xp = Math.max(10, (pwPt - anchoEst) / 2);
+        contenido += 'BT\n/F1 ' + s + ' Tf\n0.42 0.36 0.30 rg\n' + xp.toFixed(2) + ' 16 Td\n(' + txt + ') Tj\nET\n';
+      }
+      objetos[pi.contentNum] = bytesLatin1(pi.contentNum + ' 0 obj\n<< /Length ' +
+        contenido.length + ' >>\nstream\n' + contenido + 'endstream\nendobj\n');
 
-    poner('%PDF-1.4\n');
-    offs[1] = off;
-    poner('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
-    offs[2] = off;
-    poner('2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n');
-    offs[3] = off;
-    poner('3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' +
-          pw.toFixed(2) + ' ' + ph.toFixed(2) +
-          '] /Resources << /XObject << /Im1 5 0 R >> >> /Contents 4 0 R >>\nendobj\n');
-    offs[4] = off;
-    poner('4 0 obj\n<< /Length ' + contenido.length + ' >>\nstream\n' + contenido + 'endstream\nendobj\n');
-    offs[5] = off;
-    poner('5 0 obj\n<< /Type /XObject /Subtype /Image /Width ' + canvas.width +
-          ' /Height ' + canvas.height +
-          ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' +
-          jpeg.length + ' >>\nstream\n');
-    poner(jpeg);
-    poner('\nendstream\nendobj\n');
+      var xobj = pi.imgs.map(function (io) { return '/Im' + io.num + ' ' + io.num + ' 0 R'; }).join(' ');
+      objetos[pi.pageNum] = bytesLatin1(pi.pageNum + ' 0 obj\n<< /Type /Page /Parent 2 0 R ' +
+        '/MediaBox [0 0 ' + pwPt.toFixed(2) + ' ' + phPt.toFixed(2) + '] ' +
+        '/Resources << /Font << /F1 3 0 R >> /XObject << ' + xobj + ' >> >> /Contents ' + pi.contentNum + ' 0 R >>\nendobj\n');
 
+      pi.imgs.forEach(function (io) {
+        var im = io.data;
+        var head = bytesLatin1(io.num + ' 0 obj\n<< /Type /XObject /Subtype /Image /Width ' +
+          im.wpx + ' /Height ' + im.hpx + ' /ColorSpace /DeviceRGB /BitsPerComponent 8 ' +
+          '/Filter /DCTDecode /Length ' + im.jpeg.length + ' >>\nstream\n');
+        var tail = bytesLatin1('\nendstream\nendobj\n');
+        var full = new Uint8Array(head.length + im.jpeg.length + tail.length);
+        full.set(head, 0); full.set(im.jpeg, head.length); full.set(tail, head.length + im.jpeg.length);
+        objetos[io.num] = full;
+      });
+    });
+
+    var trozos = [], off = 0, offsets = [];
+    function poner(b) { trozos.push(b); off += b.length; }
+    poner(bytesLatin1('%PDF-1.4\n'));
+    for (var n = 1; n <= maxNum; n++) { offsets[n] = off; poner(objetos[n]); }
     var inicioXref = off;
-    var xref = 'xref\n0 6\n0000000000 65535 f \n';
-    for (var n = 1; n <= 5; n++) {
-      xref += ('0000000000' + offs[n]).slice(-10) + ' 00000 n \n';
-    }
-    poner(xref + 'trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n' + inicioXref + '\n%%EOF');
-
+    var xref = 'xref\n0 ' + (maxNum + 1) + '\n0000000000 65535 f \n';
+    for (var m = 1; m <= maxNum; m++) { xref += ('0000000000' + offsets[m]).slice(-10) + ' 00000 n \n'; }
+    poner(bytesLatin1(xref + 'trailer\n<< /Size ' + (maxNum + 1) + ' /Root 1 0 R >>\nstartxref\n' + inicioXref + '\n%%EOF'));
     return new Blob(trozos, { type: 'application/pdf' });
+  }
+
+  // PDF de una sola imagen centrada en la hoja (con pie de marca opcional)
+  function pdfImagenCentrada(canvas, wCm, hCm, pagina) {
+    return construirPdf([{
+      wCm: pagina.w, hCm: pagina.h, pie: pieParaPdf(),
+      imagenes: [{
+        jpeg: jpegDeCanvas(canvas), wpx: canvas.width, hpx: canvas.height,
+        xCm: (pagina.w - wCm) / 2, yCm: (pagina.h - hCm) / 2, wCm: wCm, hCm: hCm
+      }]
+    }]);
   }
 
   function descargar(blob, nombre) {
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a');
-    a.href = url;
-    a.download = nombre;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    a.href = url; a.download = nombre;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
     setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
   }
 
+  // Genera mostrando un aviso; el setTimeout deja pintar el toast antes del
+  // trabajo pesado y síncrono (importante en iPad).
+  function generarPdf(fn, nombre) {
+    toast('Generando PDF…');
+    setTimeout(function () {
+      try { fn(); toast('PDF listo  ✓'); }
+      catch (e) { toast('Hubo un problema al generar el PDF'); }
+    }, 50);
+  }
+
   // ---------- Dibujo del contenido ----------
-  // Modo rectangular: la imagen estirada al tamaño pedido
   function dibujarRect(img, anchoCm, altoCm, dpi) {
     var c = document.createElement('canvas');
     c.width = Math.max(1, Math.round(anchoCm / 2.54 * dpi));
     c.height = Math.max(1, Math.round(altoCm / 2.54 * dpi));
     var ctx = c.getContext('2d');
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, c.width, c.height);
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, c.width, c.height);
     ctx.drawImage(img, 0, 0, c.width, c.height);
     return c;
   }
 
-  // Tamaño de la imagen dentro del círculo, en cm, según el modo.
-  // En modo "lleno" se aplica además el factor de acercamiento (zoom).
   function tamanoImagenCirc(img, radioCm, modo, anchoCentroCm, zoom) {
     zoom = zoom || 1;
     var prop = img.naturalWidth / img.naturalHeight;
     var D = radioCm * 2;
     if (modo === 'lleno') {
-      // Cubrir el círculo completo: escalar hasta tapar el diámetro en ambos sentidos
       var w, h;
-      if (prop >= 1) { w = D * prop; h = D; }
-      else { w = D; h = D / prop; }
+      if (prop >= 1) { w = D * prop; h = D; } else { w = D; h = D / prop; }
       return { w: w * zoom, h: h * zoom };
     }
     return { w: anchoCentroCm, h: anchoCentroCm / prop };
   }
 
-  // Mantiene el corrimiento dentro de límites razonables:
-  // en modo lleno la imagen nunca debe dejar huecos en el círculo;
-  // en modo centro, el centro de la foto no puede salirse del bastidor
   function acotarDesplCirc(radioCm, modo, anchoCentroCm) {
     if (!imgCirc) return;
     var maxX, maxY;
@@ -622,82 +862,131 @@
       var t = tamanoImagenCirc(imgCirc, radioCm, 'lleno', 0, zoomCirc);
       maxX = Math.max(0, t.w / 2 - radioCm);
       maxY = Math.max(0, t.h / 2 - radioCm);
-    } else {
-      maxX = maxY = radioCm;
-    }
+    } else { maxX = maxY = radioCm; }
     desplCirc.x = Math.min(maxX, Math.max(-maxX, desplCirc.x));
     desplCirc.y = Math.min(maxY, Math.max(-maxY, desplCirc.y));
   }
 
-  // Modo circular: círculo del bastidor con la imagen dentro.
-  // opts = { dx, dy, zoom } permite reutilizar el dibujo sin depender del estado
-  // del panel (por ejemplo en "Varios en una hoja", siempre centrado).
   function dibujarCirculo(img, radioCm, modo, anchoCentroCm, conGuia, dpi, opts) {
     opts = opts || {};
     var dx = opts.dx || 0, dy = opts.dy || 0, zoom = opts.zoom || 1;
-    var bordeCm = 0.3;                       // aire alrededor de la línea de guía
+    var bordeCm = 0.3;
     var ladoCm = radioCm * 2 + bordeCm * 2;
     var px = function (cm) { return cm / 2.54 * dpi; };
     var lado = Math.max(1, Math.round(px(ladoCm)));
     var c = document.createElement('canvas');
-    c.width = lado;
-    c.height = lado;
+    c.width = lado; c.height = lado;
     var ctx = c.getContext('2d');
     var centro = lado / 2;
     var R = px(radioCm);
 
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, lado, lado);
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, lado, lado);
 
-    // Imagen recortada al círculo del bastidor
     ctx.save();
     ctx.beginPath();
     ctx.arc(centro, centro, R, 0, Math.PI * 2);
     ctx.clip();
-
     var t = tamanoImagenCirc(img, radioCm, modo, anchoCentroCm, zoom);
     var iw = px(t.w), ih = px(t.h);
-    ctx.drawImage(img,
-      centro - iw / 2 + px(dx),
-      centro - ih / 2 + px(dy),
-      iw, ih);
+    ctx.drawImage(img, centro - iw / 2 + px(dx), centro - ih / 2 + px(dy), iw, ih);
     ctx.restore();
 
     if (conGuia) {
-      // Línea del bastidor, punteada y gris para que no compita con el diseño
       ctx.strokeStyle = '#999999';
       ctx.lineWidth = Math.max(1, px(0.03));
       ctx.setLineDash([px(0.3), px(0.2)]);
-      ctx.beginPath();
-      ctx.arc(centro, centro, R, 0, Math.PI * 2);
-      ctx.stroke();
+      ctx.beginPath(); ctx.arc(centro, centro, R, 0, Math.PI * 2); ctx.stroke();
       ctx.setLineDash([]);
-
-      // Marcas de centrado en los 4 puntos cardinales
-      var t = px(0.35);
+      var tk = px(0.35);
       ctx.lineWidth = Math.max(1, px(0.02));
       ctx.beginPath();
-      ctx.moveTo(centro, centro - R - t / 2); ctx.lineTo(centro, centro - R + t / 2);
-      ctx.moveTo(centro, centro + R - t / 2); ctx.lineTo(centro, centro + R + t / 2);
-      ctx.moveTo(centro - R - t / 2, centro); ctx.lineTo(centro - R + t / 2, centro);
-      ctx.moveTo(centro + R - t / 2, centro); ctx.lineTo(centro + R + t / 2, centro);
+      ctx.moveTo(centro, centro - R - tk / 2); ctx.lineTo(centro, centro - R + tk / 2);
+      ctx.moveTo(centro, centro + R - tk / 2); ctx.lineTo(centro, centro + R + tk / 2);
+      ctx.moveTo(centro - R - tk / 2, centro); ctx.lineTo(centro - R + tk / 2, centro);
+      ctx.moveTo(centro + R - tk / 2, centro); ctx.lineTo(centro + R + tk / 2, centro);
       ctx.stroke();
     }
-
     return { canvas: c, ladoCm: ladoCm };
+  }
+
+  // Texto en un canvas. opts: { fontCss, altoLineaCm, estilo, colorRelleno,
+  // colorContorno, grosor (0..1), espaciado (em), align }
+  function dibujarTexto(texto, opts, dpi) {
+    opts = opts || {};
+    var fontCss = opts.fontCss || 'Georgia, serif';
+    var altoLineaCm = opts.altoLineaCm || 3;
+    var estilo = opts.estilo || 'contorno';
+    var colorRelleno = opts.colorRelleno || '#000000';
+    var colorContorno = opts.colorContorno || '#000000';
+    var grosor = (opts.grosor == null) ? 0.35 : opts.grosor;
+    var espaciadoEm = opts.espaciado || 0;
+    var align = opts.align || 'centro';
+
+    var lineas = String(texto).split('\n');
+    if (!lineas.length) lineas = [''];
+    var ref = 400;
+    var med = document.createElement('canvas').getContext('2d');
+    med.font = ref + 'px ' + fontCss;
+    var soporta = ('letterSpacing' in med);
+    var um = med.measureText('Hg');
+    var unidad = (um.actualBoundingBoxAscent || um.fontBoundingBoxAscent || ref * 0.72) +
+                 (um.actualBoundingBoxDescent || um.fontBoundingBoxDescent || ref * 0.21);
+    var objetivoPx = altoLineaCm / 2.54 * dpi;
+    var escala = objetivoPx / unidad;
+    var fontPx = ref * escala;
+    var espPx = espaciadoEm * fontPx;
+
+    med.font = fontPx + 'px ' + fontCss;
+    if (soporta) med.letterSpacing = espPx + 'px';
+    var anchoMax = 1;
+    lineas.forEach(function (l) {
+      var s = l || ' ';
+      var m = med.measureText(s);
+      var w = (m.actualBoundingBoxLeft || 0) + (m.actualBoundingBoxRight || m.width);
+      if (!isFinite(w) || w <= 0) w = m.width;
+      if (!soporta && espPx) w += espPx * Math.max(0, s.length - 1);
+      anchoMax = Math.max(anchoMax, w);
+    });
+
+    var grosorPx = fontPx * (0.012 + grosor * 0.07);
+    var pad = objetivoPx * 0.2 + (estilo !== 'relleno' ? grosorPx : 0);
+    var slot = objetivoPx * 1.42;
+    var c = document.createElement('canvas');
+    c.width = Math.max(1, Math.ceil(anchoMax + pad * 2));
+    c.height = Math.max(1, Math.ceil(slot * lineas.length + pad * 2));
+    var ctx = c.getContext('2d');
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, c.width, c.height);
+    ctx.font = fontPx + 'px ' + fontCss;
+    if (soporta) ctx.letterSpacing = espPx + 'px';
+    ctx.textBaseline = 'middle';
+    ctx.lineJoin = 'round';
+    ctx.lineWidth = Math.max(1, grosorPx);
+    ctx.fillStyle = colorRelleno; ctx.strokeStyle = colorContorno;
+    var x, ta;
+    if (align === 'izquierda') { ta = 'left'; x = pad; }
+    else if (align === 'derecha') { ta = 'right'; x = c.width - pad; }
+    else { ta = 'center'; x = c.width / 2; }
+    ctx.textAlign = ta;
+    lineas.forEach(function (l, i) {
+      var y = pad + slot * (i + 0.5);
+      if (estilo === 'relleno') ctx.fillText(l, x, y);
+      else if (estilo === 'contorno') ctx.strokeText(l, x, y);
+      else { ctx.fillText(l, x, y); ctx.strokeText(l, x, y); }
+    });
+    return { canvas: c, wCm: c.width / dpi * 2.54, hCm: c.height / dpi * 2.54 };
   }
 
   // ---------- Vista previa ----------
   function dibujarPrevia(canvasPrevia, contenido, contWcm, contHcm, paginaCm) {
     var escala = Math.min(360 / paginaCm.w, 480 / paginaCm.h);
-    canvasPrevia.width = Math.round(paginaCm.w * escala);
-    canvasPrevia.height = Math.round(paginaCm.h * escala);
+    var w = Math.round(paginaCm.w * escala), h = Math.round(paginaCm.h * escala);
+    if (canvasPrevia.width !== w) canvasPrevia.width = w;
+    if (canvasPrevia.height !== h) canvasPrevia.height = h;
     var ctx = canvasPrevia.getContext('2d');
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, canvasPrevia.width, canvasPrevia.height);
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, w, h);
     if (contenido) {
-      var w = contWcm * escala, h = contHcm * escala;
-      ctx.drawImage(contenido, (canvasPrevia.width - w) / 2, (canvasPrevia.height - h) / 2, w, h);
+      var cw = contWcm * escala, ch = contHcm * escala;
+      ctx.drawImage(contenido, (w - cw) / 2, (h - ch) / 2, cw, ch);
     }
   }
 
@@ -705,65 +994,55 @@
     var aviso = $(avisoId);
     var cabe = contWcm <= paginaCm.w - MARGEN_CM * 2 && contHcm <= paginaCm.h - MARGEN_CM * 2;
     if (!cabe) {
-      aviso.textContent = '⚠️ Ojo: el diseño (' + contWcm.toFixed(1) + ' × ' + contHcm.toFixed(1) +
-        ' cm) queda muy justo o no cabe en la hoja con margen de impresión de ' + MARGEN_CM +
+      aviso.textContent = '⚠️ El diseño (' + contWcm.toFixed(1) + ' × ' + contHcm.toFixed(1) +
+        ' cm) queda muy justo o no cabe en la hoja con margen de ' + MARGEN_CM +
         ' cm. Revisa las medidas o usa una hoja más grande.';
       aviso.classList.add('visible');
-    } else {
-      aviso.classList.remove('visible');
-    }
+    } else { aviso.classList.remove('visible'); }
   }
 
-  // ---------- Modo rectangular: lógica ----------
+  // ====================================================================
+  //  MODO 1 · Imagen a medida
+  // ====================================================================
   function refrescarRect() {
     var anchoCm = num('anchoRect'), altoCm = num('altoRect');
     var listo = imgRect && anchoCm > 0 && altoCm > 0;
     $('pdfRect').disabled = !listo;
     var pagina = elegirPagina($('hojaRect').value, anchoCm, altoCm);
-
-    var contenido = null;
-    if (listo) contenido = dibujarRect(imgRect, anchoCm, altoCm, 30); // baja resolución para la vista previa
+    var contenido = listo ? dibujarRect(imgRect, anchoCm, altoCm, 30) : null;
     dibujarPrevia($('previaRect'), contenido, anchoCm, altoCm, pagina);
     $('pieRect').textContent = listo
-      ? 'Imagen de ' + anchoCm.toFixed(1) + ' × ' + altoCm.toFixed(1) + ' cm centrada en hoja ' + $('hojaRect').value
+      ? 'Imagen de ' + anchoCm.toFixed(1) + ' × ' + altoCm.toFixed(1) + ' cm en hoja ' + $('hojaRect').value
       : 'Sube una imagen y define sus medidas';
     if (listo) avisarSiNoCabe('avisoRect', anchoCm, altoCm, pagina);
   }
-
   function ajustarProporcion(origen) {
     if (!$('proporcionRect').checked || !imgRect) return;
     var prop = imgRect.naturalWidth / imgRect.naturalHeight;
-    if (origen === 'ancho' && num('anchoRect') > 0) {
-      $('altoRect').value = (num('anchoRect') / prop).toFixed(1);
-    } else if (origen === 'alto' && num('altoRect') > 0) {
-      $('anchoRect').value = (num('altoRect') * prop).toFixed(1);
-    }
+    if (origen === 'ancho' && num('anchoRect') > 0) $('altoRect').value = (num('anchoRect') / prop).toFixed(1);
+    else if (origen === 'alto' && num('altoRect') > 0) $('anchoRect').value = (num('altoRect') * prop).toFixed(1);
   }
-
   conectarSubida('zonaRect', 'archivoRect', 'infoRect', function (img) {
-    imgRect = img;
-    ajustarProporcion('ancho');
-    refrescarRect();
+    imgRect = img; ajustarProporcion('ancho'); refrescarRect();
   });
-
-  $('anchoRect').addEventListener('input', function () { ajustarProporcion('ancho'); refrescarRect(); });
-  $('altoRect').addEventListener('input', function () { ajustarProporcion('alto'); refrescarRect(); });
+  $('anchoRect').addEventListener('input', function () { ajustarProporcion('ancho'); programar('rect', refrescarRect); });
+  $('altoRect').addEventListener('input', function () { ajustarProporcion('alto'); programar('rect', refrescarRect); });
   $('proporcionRect').addEventListener('change', function () { ajustarProporcion('ancho'); refrescarRect(); });
   $('hojaRect').addEventListener('change', refrescarRect);
-
   $('pdfRect').addEventListener('click', function () {
     var anchoCm = num('anchoRect'), altoCm = num('altoRect');
     var pagina = elegirPagina($('hojaRect').value, anchoCm, altoCm);
-    var dpi = dpiSeguro(Math.max(anchoCm, altoCm));
-    var canvas = dibujarRect(imgRect, anchoCm, altoCm, dpi);
-    var pdf = crearPdf(canvas, anchoCm, altoCm, pagina);
-    descargar(pdf, 'bordado_' + anchoCm.toFixed(1) + 'x' + altoCm.toFixed(1) + 'cm.pdf');
+    generarPdf(function () {
+      var canvas = dibujarRect(imgRect, anchoCm, altoCm, dpiSeguro(Math.max(anchoCm, altoCm)));
+      descargar(pdfImagenCentrada(canvas, anchoCm, altoCm, pagina),
+                'bordado_' + anchoCm.toFixed(1) + 'x' + altoCm.toFixed(1) + 'cm.pdf');
+    });
   });
 
-  // ---------- Modo circular: lógica ----------
-  function modoCirculo() {
-    return document.querySelector('input[name="modoCirc"]:checked').value;
-  }
+  // ====================================================================
+  //  MODO 2 · Bastidor circular
+  // ====================================================================
+  function modoCirculo() { return document.querySelector('input[name="modoCirc"]:checked').value; }
 
   function refrescarCirc() {
     var diametroCm = num('diametroCirc');
@@ -773,39 +1052,33 @@
     $('diamCirc').textContent = diametroCm > 0
       ? 'Radio del bastidor: ' + radioCm.toFixed(2).replace(/\.?0+$/, '') + ' cm'
       : '';
-
     $('filaCentro').style.display = (modo === 'centro') ? 'flex' : 'none';
     $('opLleno').classList.toggle('elegida', modo === 'lleno');
     $('opCentro').classList.toggle('elegida', modo === 'centro');
 
     var listo = imgCirc && diametroCm > 0 && (modo === 'lleno' || anchoCentroCm > 0);
     $('pdfCirc').disabled = !listo;
-
     $('ayudaArrastre').style.display = listo ? 'block' : 'none';
-    // El zoom solo tiene sentido en modo "llenar": da margen para mover la foto
-    // hacia los lados y arriba/abajo. En modo "centro" la foto ya se mueve libre.
     $('filaZoomCirc').style.display = (listo && modo === 'lleno') ? 'block' : 'none';
     $('zoomCircVal').textContent = Math.round(zoomCirc * 100) + '%';
     $('btnCentrarCirc').style.display =
       listo && (desplCirc.x !== 0 || desplCirc.y !== 0 || zoomCirc !== 1) ? 'inline-block' : 'none';
 
-    var pagina = elegirPagina($('hojaCirc').value, 1, 1); // el círculo siempre va en vertical
+    var pagina = elegirPagina($('hojaCirc').value, 1, 1);
     var contenido = null, ladoCm = radioCm * 2 + 0.6;
     if (listo) {
       acotarDesplCirc(radioCm, modo, anchoCentroCm);
       var res = dibujarCirculo(imgCirc, radioCm, modo, anchoCentroCm, $('guiaCirc').checked, 30,
                                { dx: desplCirc.x, dy: desplCirc.y, zoom: zoomCirc });
-      contenido = res.canvas;
-      ladoCm = res.ladoCm;
+      contenido = res.canvas; ladoCm = res.ladoCm;
     }
     dibujarPrevia($('previaCirc'), contenido, ladoCm, ladoCm, pagina);
     $('pieCirc').textContent = listo
-      ? 'Bastidor de ' + diametroCm.toFixed(1) + ' cm de diámetro centrado en hoja ' + $('hojaCirc').value
+      ? 'Bastidor de ' + diametroCm.toFixed(1) + ' cm de diámetro en hoja ' + $('hojaCirc').value
       : 'Sube una imagen e indica el diámetro del bastidor';
 
     if (listo) {
       avisarSiNoCabe('avisoCirc', ladoCm, ladoCm, pagina);
-      // Si la imagen central sobresale del círculo, avisar (igual se recorta al círculo)
       if (modo === 'centro') {
         var altoCentroCm = anchoCentroCm / (imgCirc.naturalWidth / imgCirc.naturalHeight);
         var mediaDiag = Math.sqrt(anchoCentroCm * anchoCentroCm + altoCentroCm * altoCentroCm) / 2;
@@ -820,34 +1093,30 @@
       }
     }
   }
-
   conectarSubida('zonaCirc', 'archivoCirc', 'infoCirc', function (img) {
-    imgCirc = img;
-    desplCirc.x = 0; desplCirc.y = 0; zoomCirc = 1;
-    $('zoomCirc').value = 100;
+    imgCirc = img; desplCirc.x = 0; desplCirc.y = 0; zoomCirc = 1; $('zoomCirc').value = 100;
     refrescarCirc();
   });
 
-  // Arrastrar la foto dentro del círculo, con dedo o mouse, sobre la vista previa
+  // Arrastrar la foto dentro del círculo (coalescido por frame)
   (function () {
     var canvas = $('previaCirc');
     var arrastrando = false, ultX = 0, ultY = 0;
     canvas.addEventListener('pointerdown', function (e) {
       if (!imgCirc) return;
-      arrastrando = true;
-      ultX = e.clientX; ultY = e.clientY;
-      canvas.setPointerCapture(e.pointerId);
+      arrastrando = true; ultX = e.clientX; ultY = e.clientY;
+      try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
       e.preventDefault();
     });
     canvas.addEventListener('pointermove', function (e) {
       if (!arrastrando) return;
       var pagina = elegirPagina($('hojaCirc').value, 1, 1);
-      var escala = Math.min(360 / pagina.w, 480 / pagina.h);   // px de canvas por cm (igual que la vista previa)
+      var escala = Math.min(360 / pagina.w, 480 / pagina.h);
       var cssAcanvas = canvas.width / canvas.getBoundingClientRect().width;
       desplCirc.x += (e.clientX - ultX) * cssAcanvas / escala;
       desplCirc.y += (e.clientY - ultY) * cssAcanvas / escala;
       ultX = e.clientX; ultY = e.clientY;
-      refrescarCirc();
+      programar('circ', refrescarCirc);
     });
     ['pointerup', 'pointercancel'].forEach(function (ev) {
       canvas.addEventListener(ev, function () { arrastrando = false; });
@@ -855,249 +1124,128 @@
   })();
 
   $('btnCentrarCirc').addEventListener('click', function () {
-    desplCirc.x = 0; desplCirc.y = 0; zoomCirc = 1;
-    $('zoomCirc').value = 100;
-    refrescarCirc();
+    desplCirc.x = 0; desplCirc.y = 0; zoomCirc = 1; $('zoomCirc').value = 100; refrescarCirc();
   });
-
   $('zoomCirc').addEventListener('input', function () {
     zoomCirc = parseInt($('zoomCirc').value, 10) / 100;
     if (!isFinite(zoomCirc) || zoomCirc < 1) zoomCirc = 1;
-    refrescarCirc();
+    programar('circ', refrescarCirc);
   });
-
   ['diametroCirc', 'anchoCentro'].forEach(function (id) {
-    $(id).addEventListener('input', refrescarCirc);
+    $(id).addEventListener('input', function () { programar('circ', refrescarCirc); });
   });
-  ['hojaCirc', 'guiaCirc'].forEach(function (id) {
-    $(id).addEventListener('change', refrescarCirc);
-  });
+  ['hojaCirc', 'guiaCirc'].forEach(function (id) { $(id).addEventListener('change', refrescarCirc); });
   document.querySelectorAll('input[name="modoCirc"]').forEach(function (r) {
     r.addEventListener('change', function () {
-      // Al cambiar de modo la escala de la foto es otra: partir centrada de nuevo
-      desplCirc.x = 0; desplCirc.y = 0; zoomCirc = 1;
-      $('zoomCirc').value = 100;
-      refrescarCirc();
+      desplCirc.x = 0; desplCirc.y = 0; zoomCirc = 1; $('zoomCirc').value = 100; refrescarCirc();
     });
   });
-
   $('pdfCirc').addEventListener('click', function () {
     var diametroCm = num('diametroCirc');
-    var res = dibujarCirculo(imgCirc, diametroCm / 2, modoCirculo(), num('anchoCentro'),
-                             $('guiaCirc').checked, dpiSeguro(diametroCm + 0.6),
-                             { dx: desplCirc.x, dy: desplCirc.y, zoom: zoomCirc });
     var pagina = elegirPagina($('hojaCirc').value, 1, 1);
-    var pdf = crearPdf(res.canvas, res.ladoCm, res.ladoCm, pagina);
-    descargar(pdf, 'bastidor_' + diametroCm.toFixed(1) + 'cm.pdf');
+    generarPdf(function () {
+      var res = dibujarCirculo(imgCirc, diametroCm / 2, modoCirculo(), num('anchoCentro'),
+                               $('guiaCirc').checked, dpiSeguro(diametroCm + 0.6),
+                               { dx: desplCirc.x, dy: desplCirc.y, zoom: zoomCirc });
+      descargar(pdfImagenCentrada(res.canvas, res.ladoCm, res.ladoCm, pagina),
+                'bastidor_' + diametroCm.toFixed(1) + 'cm.pdf');
+    });
   });
 
   // ====================================================================
-  //  Generador de PDF general: varias imágenes y/o varias páginas
-  // ====================================================================
-  function jpegDeCanvas(canvas) {
-    var b64 = canvas.toDataURL('image/jpeg', 0.92).split(',')[1];
-    var bin = atob(b64);
-    var u = new Uint8Array(bin.length);
-    for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
-    return u;
-  }
-
-  // paginas: [{ wCm, hCm, imagenes: [{ jpeg, wpx, hpx, xCm, yCm, wCm, hCm }] }]
-  // xCm/yCm son la esquina superior izquierda de la imagen, medidos desde
-  // arriba a la izquierda de la hoja (más intuitivo para la maquetación).
-  function construirPdf(paginas) {
-    var objetos = {};
-    var maxNum = 2;                      // 1 = Catálogo, 2 = Pages
-    function asignar() { return ++maxNum; }
-
-    var info = paginas.map(function (pg) {
-      var imgs = pg.imagenes.map(function (im) { return { num: asignar(), data: im }; });
-      return { pg: pg, imgs: imgs, contentNum: asignar(), pageNum: asignar() };
-    });
-
-    objetos[1] = bytesLatin1('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
-    var kids = info.map(function (pi) { return pi.pageNum + ' 0 R'; }).join(' ');
-    objetos[2] = bytesLatin1('2 0 obj\n<< /Type /Pages /Kids [' + kids +
-                             '] /Count ' + info.length + ' >>\nendobj\n');
-
-    info.forEach(function (pi) {
-      var phPt = pi.pg.hCm * PT_POR_CM, pwPt = pi.pg.wCm * PT_POR_CM;
-      var contenido = '';
-      pi.imgs.forEach(function (io) {
-        var im = io.data;
-        var iw = im.wCm * PT_POR_CM, ih = im.hCm * PT_POR_CM;
-        var xPt = im.xCm * PT_POR_CM;
-        var yPt = phPt - (im.yCm + im.hCm) * PT_POR_CM;   // a coordenadas PDF (origen abajo)
-        contenido += 'q\n' + iw.toFixed(2) + ' 0 0 ' + ih.toFixed(2) + ' ' +
-                     xPt.toFixed(2) + ' ' + yPt.toFixed(2) + ' cm\n/Im' + io.num + ' Do\nQ\n';
-      });
-      objetos[pi.contentNum] = bytesLatin1(pi.contentNum + ' 0 obj\n<< /Length ' +
-        contenido.length + ' >>\nstream\n' + contenido + 'endstream\nendobj\n');
-
-      var xobj = pi.imgs.map(function (io) { return '/Im' + io.num + ' ' + io.num + ' 0 R'; }).join(' ');
-      objetos[pi.pageNum] = bytesLatin1(pi.pageNum + ' 0 obj\n<< /Type /Page /Parent 2 0 R ' +
-        '/MediaBox [0 0 ' + pwPt.toFixed(2) + ' ' + phPt.toFixed(2) + '] ' +
-        '/Resources << /XObject << ' + xobj + ' >> >> /Contents ' + pi.contentNum + ' 0 R >>\nendobj\n');
-
-      pi.imgs.forEach(function (io) {
-        var im = io.data;
-        var head = bytesLatin1(io.num + ' 0 obj\n<< /Type /XObject /Subtype /Image /Width ' +
-          im.wpx + ' /Height ' + im.hpx + ' /ColorSpace /DeviceRGB /BitsPerComponent 8 ' +
-          '/Filter /DCTDecode /Length ' + im.jpeg.length + ' >>\nstream\n');
-        var tail = bytesLatin1('\nendstream\nendobj\n');
-        var full = new Uint8Array(head.length + im.jpeg.length + tail.length);
-        full.set(head, 0);
-        full.set(im.jpeg, head.length);
-        full.set(tail, head.length + im.jpeg.length);
-        objetos[io.num] = full;
-      });
-    });
-
-    var trozos = [], off = 0, offsets = [];
-    function poner(b) { trozos.push(b); off += b.length; }
-    poner(bytesLatin1('%PDF-1.4\n'));
-    for (var n = 1; n <= maxNum; n++) { offsets[n] = off; poner(objetos[n]); }
-    var inicioXref = off;
-    var xref = 'xref\n0 ' + (maxNum + 1) + '\n0000000000 65535 f \n';
-    for (var m = 1; m <= maxNum; m++) {
-      xref += ('0000000000' + offsets[m]).slice(-10) + ' 00000 n \n';
-    }
-    poner(bytesLatin1(xref + 'trailer\n<< /Size ' + (maxNum + 1) +
-      ' /Root 1 0 R >>\nstartxref\n' + inicioXref + '\n%%EOF'));
-    return new Blob(trozos, { type: 'application/pdf' });
-  }
-
-  // ====================================================================
-  //  Tipografías para el generador de letras
+  //  Tipografías
   // ====================================================================
   var FUENTES = [
-    { css: "'Great Vibes', cursive",      etiqueta: 'Great Vibes — elegante floreada' },
-    { css: "'Allura', cursive",           etiqueta: 'Allura — caligrafía fina' },
-    { css: "'Tangerine', cursive",        etiqueta: 'Tangerine — floreada clásica' },
-    { css: "'Parisienne', cursive",       etiqueta: 'Parisienne — romántica' },
-    { css: "'Dancing Script', cursive",   etiqueta: 'Dancing Script — script suave' },
-    { css: "'Sacramento', cursive",       etiqueta: 'Sacramento — fina y alargada' },
-    { css: "'Satisfy', cursive",          etiqueta: 'Satisfy — informal' },
-    { css: "'Pacifico', cursive",         etiqueta: 'Pacifico — divertida' },
-    { css: "'Lobster', cursive",          etiqueta: 'Lobster — gruesa redondeada' },
-    { css: "'Caveat', cursive",           etiqueta: 'Caveat — manuscrita' },
-    { css: "'Playfair Display', serif",   etiqueta: 'Playfair — serif elegante' },
-    { css: "'Cinzel', serif",             etiqueta: 'Cinzel — mayúsculas romanas' },
-    { css: "Georgia, serif",              etiqueta: 'Georgia — serif sencilla' },
-    { css: "Arial, Helvetica, sans-serif", etiqueta: 'Arial — palo seco' }
+    { css: "'Great Vibes', cursive",        etiqueta: 'Great Vibes — elegante floreada' },
+    { css: "'Allura', cursive",             etiqueta: 'Allura — caligrafía fina' },
+    { css: "'Tangerine', cursive",          etiqueta: 'Tangerine — floreada clásica' },
+    { css: "'Parisienne', cursive",         etiqueta: 'Parisienne — romántica' },
+    { css: "'Dancing Script', cursive",     etiqueta: 'Dancing Script — script suave' },
+    { css: "'Sacramento', cursive",         etiqueta: 'Sacramento — fina y alargada' },
+    { css: "'Satisfy', cursive",            etiqueta: 'Satisfy — informal' },
+    { css: "'Pacifico', cursive",           etiqueta: 'Pacifico — divertida' },
+    { css: "'Lobster', cursive",            etiqueta: 'Lobster — gruesa redondeada' },
+    { css: "'Caveat', cursive",             etiqueta: 'Caveat — manuscrita' },
+    { css: "'Playfair Display', serif",     etiqueta: 'Playfair — serif elegante' },
+    { css: "'Cormorant Garamond', serif",   etiqueta: 'Cormorant — serif fina' },
+    { css: "'Cinzel', serif",               etiqueta: 'Cinzel — mayúsculas romanas' },
+    { css: "Georgia, serif",                etiqueta: 'Georgia — serif sencilla' },
+    { css: "'Arial Black', Arial, sans-serif", etiqueta: 'Arial Black — palo seco gruesa' },
+    { css: "Arial, Helvetica, sans-serif",  etiqueta: 'Arial — palo seco' }
   ];
-
   function llenarSelectFuentes(sel) {
     FUENTES.forEach(function (f) {
       var o = document.createElement('option');
-      o.value = f.css;
-      o.textContent = f.etiqueta;
-      sel.appendChild(o);
+      o.value = f.css; o.textContent = f.etiqueta; sel.appendChild(o);
     });
   }
 
-  // Pide al navegador que cargue la tipografía antes de dibujar en el canvas
-  // (si no está disponible, igual continúa con la letra de respaldo)
+  var fuentesCargadas = {};
   function conFuenteLista(fontCss, cb) {
+    if (fuentesCargadas[fontCss]) { cb(); return; }
     var hecho = false;
-    function listo() { if (!hecho) { hecho = true; cb(); } }
+    function listo() { if (hecho) return; hecho = true; fuentesCargadas[fontCss] = true; cb(); }
     try {
       if (document.fonts && document.fonts.load) {
         document.fonts.load('60px ' + fontCss).then(listo, listo);
-        setTimeout(listo, 1500);   // respaldo por si la promesa no resuelve
-      } else { listo(); }
+        setTimeout(listo, 1500);
+      } else listo();
     } catch (e) { listo(); }
   }
 
-  // Dibuja el texto en un canvas. altoLineaCm es la altura aproximada de cada
-  // renglón. estilo: 'contorno' (solo borde) o 'relleno' (letras macizas).
-  function dibujarTexto(texto, fontCss, altoLineaCm, estilo, dpi) {
-    var lineas = String(texto).split('\n');
-    if (lineas.length === 0) lineas = [''];
-    var ref = 400;
-    var med = document.createElement('canvas').getContext('2d');
-    med.font = ref + 'px ' + fontCss;
-    // Unidad de altura de referencia (ascendente + descendente) con "Hg"
-    var um = med.measureText('Hg');
-    var unidad = (um.actualBoundingBoxAscent || um.fontBoundingBoxAscent || ref * 0.72) +
-                 (um.actualBoundingBoxDescent || um.fontBoundingBoxDescent || ref * 0.21);
-    var objetivoPx = altoLineaCm / 2.54 * dpi;
-    var escala = objetivoPx / unidad;
-    var fontPx = ref * escala;
-
-    med.font = fontPx + 'px ' + fontCss;
-    var anchoMax = 1;
-    lineas.forEach(function (l) {
-      var m = med.measureText(l || ' ');
-      var w = (m.actualBoundingBoxLeft || 0) + (m.actualBoundingBoxRight || m.width);
-      if (!isFinite(w) || w <= 0) w = m.width;
-      anchoMax = Math.max(anchoMax, w);
-    });
-
-    var pad = objetivoPx * 0.18;
-    var slot = objetivoPx * 1.4;                  // espacio vertical por renglón
-    var c = document.createElement('canvas');
-    c.width = Math.max(1, Math.ceil(anchoMax + pad * 2));
-    c.height = Math.max(1, Math.ceil(slot * lineas.length + pad * 2));
-    var ctx = c.getContext('2d');
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, c.width, c.height);
-    ctx.font = fontPx + 'px ' + fontCss;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillStyle = '#000000';
-    ctx.strokeStyle = '#000000';
-    ctx.lineWidth = Math.max(1, fontPx * 0.018);
-    ctx.lineJoin = 'round';
-    lineas.forEach(function (l, i) {
-      var x = c.width / 2;
-      var y = pad + slot * (i + 0.5);
-      if (estilo === 'contorno') ctx.strokeText(l, x, y);
-      else ctx.fillText(l, x, y);
-    });
-    return { canvas: c, wCm: c.width / dpi * 2.54, hCm: c.height / dpi * 2.54 };
-  }
-
-  // ---------- Panel: Letras y palabras ----------
+  // ====================================================================
+  //  MODO 3 · Letras y palabras
+  // ====================================================================
   llenarSelectFuentes($('fuenteLetras'));
 
-  function estiloLetras() {
-    return document.querySelector('input[name="estiloLetras"]:checked').value;
+  function opcionesLetras() {
+    return {
+      fontCss: $('fuenteLetras').value,
+      altoLineaCm: num('altoLetras'),
+      estilo: $('estiloLetras').value,
+      colorRelleno: $('colorRelleno').value,
+      colorContorno: $('colorContorno').value,
+      grosor: parseInt($('grosorLetras').value, 10) / 100,
+      espaciado: parseInt($('espaciadoLetras').value, 10) / 100,
+      align: $('alinearLetras').value
+    };
   }
 
   function refrescarLetras() {
     var texto = $('textoLetras').value;
-    var fontCss = $('fuenteLetras').value;
-    var altoCm = num('altoLetras');
-    var estilo = estiloLetras();
+    var o = opcionesLetras();
 
-    $('opContorno').classList.toggle('elegida', estilo === 'contorno');
-    $('opRelleno').classList.toggle('elegida', estilo === 'relleno');
+    // Mostrar/ocultar controles según el estilo
+    var card = $('estiloLetras').closest('.tarjeta');
+    card.classList.remove('modo-relleno', 'modo-contorno', 'modo-ambos');
+    card.classList.add('modo-' + (o.estilo === 'ambos' ? 'ambos' : o.estilo));
+    $('grosorVal').textContent = o.grosor < 0.3 ? 'fino' : (o.grosor > 0.6 ? 'grueso' : 'medio');
+    $('espaciadoVal').textContent = Math.round(o.espaciado * 100) + '%';
 
-    // Vista previa en HTML con la tipografía elegida
+    // Vista previa en vivo (HTML)
     var pv = $('previaFuente');
-    pv.style.fontFamily = fontCss;
+    pv.style.fontFamily = o.fontCss;
+    pv.style.textAlign = (o.align === 'izquierda' ? 'left' : o.align === 'derecha' ? 'right' : 'center');
+    pv.style.letterSpacing = (o.espaciado * 0.5).toFixed(2) + 'em';
     pv.textContent = texto.trim() ? texto : 'Tu texto aquí';
-    if (estilo === 'contorno') {
-      pv.style.color = 'transparent';
-      pv.style.webkitTextStroke = '1px var(--tinta)';
+    if (o.estilo === 'contorno') {
+      pv.style.color = 'transparent'; pv.style.webkitTextStroke = '1.2px ' + o.colorContorno;
+    } else if (o.estilo === 'relleno') {
+      pv.style.color = o.colorRelleno; pv.style.webkitTextStroke = '0';
     } else {
-      pv.style.color = 'var(--tinta)';
-      pv.style.webkitTextStroke = '0';
+      pv.style.color = o.colorRelleno; pv.style.webkitTextStroke = '1px ' + o.colorContorno;
     }
 
-    var listo = texto.trim().length > 0 && altoCm > 0;
+    var listo = texto.trim().length > 0 && o.altoLineaCm > 0;
     $('pdfLetras').disabled = !listo;
-
     if (!listo) {
       dibujarPrevia($('previaLetras'), null, 1, 1, HOJAS.A4);
       $('pieLetras').textContent = 'Escribe un texto y elige su tamaño';
       $('avisoLetras').classList.remove('visible');
       return;
     }
-
-    conFuenteLista(fontCss, function () {
-      var r = dibujarTexto(texto, fontCss, altoCm, estilo, 30);
+    conFuenteLista(o.fontCss, function () {
+      var r = dibujarTexto(texto, o, 30);
       var pagina = elegirPagina($('hojaLetras').value, r.wCm, r.hCm);
       dibujarPrevia($('previaLetras'), r.canvas, r.wCm, r.hCm, pagina);
       $('pieLetras').textContent = 'Texto de ' + r.wCm.toFixed(1) + ' × ' + r.hCm.toFixed(1) +
@@ -1105,130 +1253,107 @@
       avisarSiNoCabe('avisoLetras', r.wCm, r.hCm, pagina);
     });
   }
+  function pedirRefrescoLetras() { programar('letras', refrescarLetras); }
 
-  $('textoLetras').addEventListener('input', refrescarLetras);
-  $('altoLetras').addEventListener('input', refrescarLetras);
-  $('fuenteLetras').addEventListener('change', refrescarLetras);
-  $('hojaLetras').addEventListener('change', refrescarLetras);
-  document.querySelectorAll('input[name="estiloLetras"]').forEach(function (r) {
-    r.addEventListener('change', refrescarLetras);
+  ['textoLetras', 'altoLetras', 'grosorLetras', 'espaciadoLetras'].forEach(function (id) {
+    $(id).addEventListener('input', pedirRefrescoLetras);
+  });
+  ['fuenteLetras', 'estiloLetras', 'alinearLetras', 'hojaLetras', 'colorRelleno', 'colorContorno'].forEach(function (id) {
+    $(id).addEventListener('change', pedirRefrescoLetras);
+    $(id).addEventListener('input', pedirRefrescoLetras);
   });
 
   $('pdfLetras').addEventListener('click', function () {
-    var texto = $('textoLetras').value, fontCss = $('fuenteLetras').value;
-    var altoCm = num('altoLetras'), estilo = estiloLetras();
-    conFuenteLista(fontCss, function () {
-      var dpi = dpiSeguro(Math.max(altoCm * 1.5, 10));
-      var r = dibujarTexto(texto, fontCss, altoCm, estilo, dpi);
-      var pagina = elegirPagina($('hojaLetras').value, r.wCm, r.hCm);
-      var pdf = construirPdf([{
-        wCm: pagina.w, hCm: pagina.h,
-        imagenes: [{
-          jpeg: jpegDeCanvas(r.canvas), wpx: r.canvas.width, hpx: r.canvas.height,
-          xCm: (pagina.w - r.wCm) / 2, yCm: (pagina.h - r.hCm) / 2, wCm: r.wCm, hCm: r.hCm
-        }]
-      }]);
-      descargar(pdf, 'letras_bordado.pdf');
+    var texto = $('textoLetras').value, o = opcionesLetras();
+    generarPdf(function () {
+      conFuenteLista(o.fontCss, function () {
+        var r = dibujarTexto(texto, o, dpiSeguro(Math.max(o.altoLineaCm * 1.5, 10)));
+        var pagina = elegirPagina($('hojaLetras').value, r.wCm, r.hCm);
+        descargar(pdfImagenCentrada(r.canvas, r.wCm, r.hCm, pagina), 'letras_bordado.pdf');
+      });
     });
   });
 
   // ====================================================================
-  //  Panel: Varios diseños en una hoja
+  //  MODO 4 · Varios diseños en una hoja
   // ====================================================================
   var itemsComp = [];
   var compSeq = 0;
-  var GAP_COMP = 0.6;     // separación entre diseños, en cm
+  var GAP_COMP = 0.6;
 
   function nuevoItemComp() {
     return {
       id: ++compSeq, tipo: 'circulo', img: null,
       diametro: 8, ancho: 6, alto: 6, guia: true,
-      texto: 'Nombre', fuente: FUENTES[0].css, altoLetra: 2, estilo: 'contorno',
+      texto: 'Nombre', fuente: FUENTES[0].css, altoLetra: 2, estilo: 'contorno', color: '#3c332a',
       cantidad: 1
     };
   }
-
   function itemValido(it) {
     if (it.tipo === 'texto') return it.texto.trim().length > 0 && it.altoLetra > 0;
     if (!it.img) return false;
     if (it.tipo === 'circulo') return it.diametro > 0;
     return it.ancho > 0 && it.alto > 0;
   }
-
-  // Dibuja un diseño (canvas) y devuelve su tamaño en cm
   function renderItem(it, dpi) {
     if (it.tipo === 'texto') {
-      return dibujarTexto(it.texto, it.fuente, it.altoLetra, it.estilo, dpi);
+      return dibujarTexto(it.texto, {
+        fontCss: it.fuente, altoLineaCm: it.altoLetra, estilo: it.estilo,
+        colorRelleno: it.color, colorContorno: it.color, grosor: 0.35
+      }, dpi);
     }
     if (it.tipo === 'circulo') {
       var res = dibujarCirculo(it.img, it.diametro / 2, 'lleno', 0, it.guia, dpi, {});
       return { canvas: res.canvas, wCm: res.ladoCm, hCm: res.ladoCm };
     }
-    var c = dibujarRect(it.img, it.ancho, it.alto, dpi);
-    return { canvas: c, wCm: it.ancho, hCm: it.alto };
+    return { canvas: dibujarRect(it.img, it.ancho, it.alto, dpi), wCm: it.ancho, hCm: it.alto };
   }
-
   function ladoItem(it) {
     if (it.tipo === 'circulo') return it.diametro + 0.6;
     if (it.tipo === 'rect') return Math.max(it.ancho, it.alto);
     return Math.max(it.altoLetra * 2, 10);
   }
-
   function paginaComp(hoja, ori) {
     var h = HOJAS[hoja];
     if (ori === 'horizontal') return { w: h.h, h: h.w };
     return { w: h.w, h: h.h };
   }
-
-  // Reparte los diseños en filas dentro de la hoja, saltando a otra hoja si no caben.
-  // Cada diseño se repite según su "cantidad". Devuelve un array de páginas, cada
-  // una con la lista de colocaciones { it, x, y, w, h } (cm desde arriba-izquierda).
   function maquetarComp(items, pagina) {
     var margen = MARGEN_CM;
-    var usableW = pagina.w - margen * 2;
-    var usableH = pagina.h - margen * 2;
+    var usableW = pagina.w - margen * 2, usableH = pagina.h - margen * 2;
     var unidades = [];
     items.forEach(function (it) {
       var n = Math.max(1, Math.min(50, it.cantidad || 1));
       for (var k = 0; k < n; k++) unidades.push(it);
     });
-
     var paginas = [[]];
     var pag = 0, cx = 0, cy = 0, altoFila = 0;
     unidades.forEach(function (it) {
       var w = it._render.wCm, h = it._render.hCm;
-      if (cx > 0 && cx + w > usableW + 1e-6) {        // no cabe en esta fila
-        cx = 0; cy += altoFila + GAP_COMP; altoFila = 0;
-      }
-      if (cy + h > usableH + 1e-6 && (cx > 0 || cy > 0)) {  // no cabe en esta hoja
-        pag++; paginas[pag] = []; cx = 0; cy = 0; altoFila = 0;
-      }
+      if (cx > 0 && cx + w > usableW + 1e-6) { cx = 0; cy += altoFila + GAP_COMP; altoFila = 0; }
+      if (cy + h > usableH + 1e-6 && (cx > 0 || cy > 0)) { pag++; paginas[pag] = []; cx = 0; cy = 0; altoFila = 0; }
       paginas[pag].push({ it: it, x: margen + cx, y: margen + cy, w: w, h: h });
-      cx += w + GAP_COMP;
-      altoFila = Math.max(altoFila, h);
+      cx += w + GAP_COMP; altoFila = Math.max(altoFila, h);
     });
     return paginas;
   }
-
   function dibujarPreviaComp(canvas, pagina, colocaciones) {
     var escala = Math.min(360 / pagina.w, 480 / pagina.h);
-    canvas.width = Math.round(pagina.w * escala);
-    canvas.height = Math.round(pagina.h * escala);
+    var w = Math.round(pagina.w * escala), h = Math.round(pagina.h * escala);
+    if (canvas.width !== w) canvas.width = w;
+    if (canvas.height !== h) canvas.height = h;
     var ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, w, h);
     colocaciones.forEach(function (p) {
       if (p.it._render && p.it._render.canvas) {
         ctx.drawImage(p.it._render.canvas, p.x * escala, p.y * escala, p.w * escala, p.h * escala);
       }
     });
   }
-
   function refrescarComp() {
     var validos = itemsComp.filter(itemValido);
     var pagina = paginaComp($('hojaComp').value, $('oriComp').value);
     $('pdfComp').disabled = validos.length === 0;
-
     if (validos.length === 0) {
       dibujarPreviaComp($('previaComp'), pagina, []);
       $('pieComp').textContent = 'Añade al menos un diseño';
@@ -1237,10 +1362,11 @@
     validos.forEach(function (it) { it._render = renderItem(it, 22); });
     var paginas = maquetarComp(validos, pagina);
     dibujarPreviaComp($('previaComp'), pagina, paginas[0] || []);
-    var totalPiezas = paginas.reduce(function (s, p) { return s + p.length; }, 0);
-    $('pieComp').textContent = totalPiezas + ' diseño(s) en ' + paginas.length + ' hoja(s) ' +
-      $('hojaComp').value + (paginas.length > 1 ? ' — la vista muestra la primera hoja' : '');
+    var total = paginas.reduce(function (s, p) { return s + p.length; }, 0);
+    $('pieComp').textContent = total + ' diseño(s) en ' + paginas.length + ' hoja(s) ' + $('hojaComp').value +
+      (paginas.length > 1 ? ' — la vista muestra la primera' : '');
   }
+  function pedirRefrescoComp() { programar('comp', refrescarComp); }
 
   function crearTarjetaComp(it) {
     var card = document.createElement('div');
@@ -1255,7 +1381,7 @@
           '<option value="rect">📐 Rectángulo</option>' +
           '<option value="texto">✍️ Texto / letras</option>' +
         '</select></div>' +
-      '<div class="it-imagen" style="margin-top:10px;">' +
+      '<div class="it-imagen" style="margin-top:12px;">' +
         '<label class="zona-subida it-zona"><span class="icono">🖼️</span>' +
         '<p>Toca para elegir imagen</p></label>' +
         '<input type="file" class="it-file" accept="image/jpeg,image/png,image/gif,image/webp,image/bmp">' +
@@ -1280,11 +1406,11 @@
           '<div class="campo"><label>Alto letra (cm)</label>' +
             '<input type="number" class="it-altoletra" min="0.3" max="20" step="0.1" value="2" inputmode="decimal"></div>' +
         '</div>' +
-        '<div class="radios" style="margin-top:10px;">' +
-          '<label class="radio-opcion elegida"><input type="radio" name="' + nEstilo + '" value="contorno" checked>' +
-            '<span><strong>Solo contorno</strong></span></label>' +
-          '<label class="radio-opcion"><input type="radio" name="' + nEstilo + '" value="relleno">' +
-            '<span><strong>Relleno</strong></span></label>' +
+        '<div class="fila">' +
+          '<div class="campo"><label>Estilo</label><select class="it-estilo">' +
+            '<option value="contorno">Solo contorno</option><option value="relleno">Relleno</option></select></div>' +
+          '<div class="campo campo-color"><label>Color</label>' +
+            '<input type="color" class="it-color" value="#3c332a"></div>' +
         '</div>' +
       '</div>' +
       '<div class="fila"><div class="campo"><label>Cantidad de copias</label>' +
@@ -1302,50 +1428,34 @@
     }
     aplicarTipo();
 
-    q('.it-tipo').addEventListener('change', function () {
-      it.tipo = this.value; aplicarTipo(); refrescarComp();
-    });
+    q('.it-tipo').addEventListener('change', function () { it.tipo = this.value; aplicarTipo(); pedirRefrescoComp(); });
     q('.quitar').addEventListener('click', function () {
       itemsComp = itemsComp.filter(function (x) { return x.id !== it.id; });
-      card.parentNode.removeChild(card);
-      refrescarComp();
+      card.parentNode.removeChild(card); refrescarComp();
     });
 
-    // Subida de imagen de este diseño
     var zona = q('.it-zona'), file = q('.it-file');
     file.addEventListener('change', function () {
       if (!file.files[0]) return;
       cargarImagen(file.files[0], function (img) {
-        it.img = img;
-        zona.innerHTML = '';
-        var mini = document.createElement('img');
-        mini.src = img.src; zona.appendChild(mini);
+        it.img = img; zona.innerHTML = '';
+        var mini = document.createElement('img'); mini.src = img.src; zona.appendChild(mini);
         var p = document.createElement('p'); p.textContent = 'Toca para cambiar'; zona.appendChild(p);
         refrescarComp();
-      }, function (msg) { alert(msg); });
+      }, function (msg) { toast('⚠️ ' + msg); });
       file.value = '';
     });
 
-    // Campos numéricos / texto
-    q('.it-diam').addEventListener('input', function () { it.diametro = parseFloat(this.value) || 0; refrescarComp(); });
-    q('.it-guia').addEventListener('change', function () { it.guia = this.checked; refrescarComp(); });
-    q('.it-ancho').addEventListener('input', function () { it.ancho = parseFloat(this.value) || 0; refrescarComp(); });
-    q('.it-alto').addEventListener('input', function () { it.alto = parseFloat(this.value) || 0; refrescarComp(); });
-    q('.it-txt').addEventListener('input', function () { it.texto = this.value; refrescarComp(); });
-    q('.it-altoletra').addEventListener('input', function () { it.altoLetra = parseFloat(this.value) || 0; refrescarComp(); });
-    q('.it-cant').addEventListener('input', function () { it.cantidad = parseInt(this.value, 10) || 1; refrescarComp(); });
-    q('.it-fuente').addEventListener('change', function () {
-      it.fuente = this.value; conFuenteLista(it.fuente, refrescarComp);
-    });
-    card.querySelectorAll('input[name="' + nEstilo + '"]').forEach(function (r) {
-      r.addEventListener('change', function () {
-        it.estilo = this.value;
-        card.querySelectorAll('.it-texto .radio-opcion').forEach(function (op) {
-          op.classList.toggle('elegida', op.querySelector('input').checked);
-        });
-        refrescarComp();
-      });
-    });
+    q('.it-diam').addEventListener('input', function () { it.diametro = parseFloat(this.value) || 0; pedirRefrescoComp(); });
+    q('.it-guia').addEventListener('change', function () { it.guia = this.checked; pedirRefrescoComp(); });
+    q('.it-ancho').addEventListener('input', function () { it.ancho = parseFloat(this.value) || 0; pedirRefrescoComp(); });
+    q('.it-alto').addEventListener('input', function () { it.alto = parseFloat(this.value) || 0; pedirRefrescoComp(); });
+    q('.it-txt').addEventListener('input', function () { it.texto = this.value; pedirRefrescoComp(); });
+    q('.it-altoletra').addEventListener('input', function () { it.altoLetra = parseFloat(this.value) || 0; pedirRefrescoComp(); });
+    q('.it-cant').addEventListener('input', function () { it.cantidad = parseInt(this.value, 10) || 1; pedirRefrescoComp(); });
+    q('.it-estilo').addEventListener('change', function () { it.estilo = this.value; pedirRefrescoComp(); });
+    q('.it-color').addEventListener('input', function () { it.color = this.value; pedirRefrescoComp(); });
+    q('.it-fuente').addEventListener('change', function () { it.fuente = this.value; conFuenteLista(it.fuente, refrescarComp); });
 
     return card;
   }
@@ -1356,56 +1466,72 @@
     $('listaComp').appendChild(crearTarjetaComp(it));
     refrescarComp();
   });
-
   $('hojaComp').addEventListener('change', refrescarComp);
   $('oriComp').addEventListener('change', refrescarComp);
 
   $('pdfComp').addEventListener('click', function () {
     var validos = itemsComp.filter(itemValido);
     if (validos.length === 0) return;
-    // Asegura que todas las tipografías usadas estén cargadas antes de dibujar
-    var fuentes = validos.filter(function (it) { return it.tipo === 'texto'; })
-                         .map(function (it) { return it.fuente; });
-    var pendientes = fuentes.length;
-    function generar() {
-      validos.forEach(function (it) { it._render = renderItem(it, dpiSeguro(ladoItem(it))); });
-      var pagina = paginaComp($('hojaComp').value, $('oriComp').value);
-      var paginas = maquetarComp(validos, pagina).filter(function (p) { return p.length; });
-      var paginasPdf = paginas.map(function (cols) {
-        return {
-          wCm: pagina.w, hCm: pagina.h,
-          imagenes: cols.map(function (p) {
-            var r = p.it._render;
-            return {
-              jpeg: jpegDeCanvas(r.canvas), wpx: r.canvas.width, hpx: r.canvas.height,
-              xCm: p.x, yCm: p.y, wCm: p.w, hCm: p.h
-            };
-          })
-        };
-      });
-      descargar(construirPdf(paginasPdf), 'bordados_varios.pdf');
-    }
-    if (pendientes === 0) { generar(); return; }
-    fuentes.forEach(function (f) {
-      conFuenteLista(f, function () { if (--pendientes === 0) generar(); });
+    var fuentes = validos.filter(function (it) { return it.tipo === 'texto'; }).map(function (it) { return it.fuente; });
+    generarPdf(function () {
+      var pend = fuentes.length;
+      function generar() {
+        validos.forEach(function (it) { it._render = renderItem(it, dpiSeguro(ladoItem(it))); });
+        var pagina = paginaComp($('hojaComp').value, $('oriComp').value);
+        var paginas = maquetarComp(validos, pagina).filter(function (p) { return p.length; });
+        var pie = pieParaPdf();
+        var paginasPdf = paginas.map(function (cols) {
+          return {
+            wCm: pagina.w, hCm: pagina.h, pie: pie,
+            imagenes: cols.map(function (p) {
+              var r = p.it._render;
+              return { jpeg: jpegDeCanvas(r.canvas), wpx: r.canvas.width, hpx: r.canvas.height,
+                       xCm: p.x, yCm: p.y, wCm: p.w, hCm: p.h };
+            })
+          };
+        });
+        descargar(construirPdf(paginasPdf), 'bordados_varios.pdf');
+      }
+      if (pend === 0) { generar(); return; }
+      fuentes.forEach(function (f) { conFuenteLista(f, function () { if (--pend === 0) generar(); }); });
     });
   });
 
-  // ---------- Pestañas ----------
+  // ====================================================================
+  //  Pestañas, ajustes e inicio
+  // ====================================================================
   document.querySelectorAll('.tab-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
       document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('activa'); });
       document.querySelectorAll('.panel').forEach(function (p) { p.classList.remove('activa'); });
       btn.classList.add('activa');
       $(btn.dataset.panel).classList.add('activa');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   });
 
+  // Modal de ajustes
+  function abrirAjustes() {
+    $('nombreNegocio').value = NEGOCIO.nombre;
+    $('marcaEnPdf').checked = NEGOCIO.enPdf;
+    $('modalAjustes').hidden = false;
+  }
+  function cerrarAjustes() { $('modalAjustes').hidden = true; }
+  $('btnAjustes').addEventListener('click', abrirAjustes);
+  $('cerrarAjustes').addEventListener('click', cerrarAjustes);
+  $('modalAjustes').addEventListener('click', function (e) { if (e.target === this) cerrarAjustes(); });
+  $('guardarAjustes').addEventListener('click', function () {
+    NEGOCIO.nombre = $('nombreNegocio').value.toString();
+    NEGOCIO.enPdf = $('marcaEnPdf').checked;
+    guardarNegocio(); aplicarMarca(); cerrarAjustes();
+    toast('Ajustes guardados  ✓');
+  });
+
   // Estado inicial
+  cargarNegocio(); aplicarMarca();
   refrescarRect();
   refrescarCirc();
   refrescarLetras();
-  // Empezar el panel "Varios en una hoja" con un primer diseño de ejemplo
   (function () {
     var it = nuevoItemComp();
     itemsComp.push(it);
@@ -1413,9 +1539,9 @@
     refrescarComp();
   })();
 
-  // Modo app instalable: solo funciona servido por https (GitHub Pages), no con archivo local
+  // App instalable (offline). Solo cuando se sirve por http(s), no con archivo local.
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-    navigator.serviceWorker.register('sw-bordados.js').catch(function () { /* sin offline, la app igual funciona */ });
+    navigator.serviceWorker.register('swbordados.js').catch(function () {});
   }
 })();
 </script>

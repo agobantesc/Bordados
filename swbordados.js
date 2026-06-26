@@ -1,14 +1,14 @@
 // Service worker del Taller de Bordado: deja la app disponible sin internet.
 // Estrategia "cache primero, actualizar por detrás": abre al tiro desde el
 // caché y descarga la versión nueva en segundo plano para la próxima vez.
-var CACHE = 'bordados-v2';
+var CACHE = 'bordados-v3';
 var ARCHIVOS = [
   './',
   './index.html',
   './manifest.webmanifest',
-  './icono-bordados-192.png',
-  './icono-bordados-512.png',
-  './icono-bordados-180.png'
+  './iconobordados192.png',
+  './iconobordados512.png',
+  './iconobordados180.png'
 ];
 
 self.addEventListener('install', function (e) {
