@@ -19,20 +19,26 @@
 <link href="https://fonts.googleapis.com/css2?family=Allura&family=Caveat:wght@600&family=Cinzel:wght@600&family=Cormorant+Garamond:wght@600&family=Dancing+Script:wght@600&family=Great+Vibes&family=Lobster&family=Pacifico&family=Parisienne&family=Playfair+Display:wght@500;700&family=Sacramento&family=Satisfy&family=Tangerine:wght@700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --papel: #f6f1ea;
-    --papel-2: #fbf8f3;
+    --papel: #f7f3ea;
+    --papel-2: #fdfbf6;
     --superficie: #ffffff;
-    --tinta: #3c332a;
-    --tinta-suave: #8a7c6c;
-    --terracota: #bb6448;
-    --terracota-osc: #9c4f37;
-    --salvia: #7e8c6a;
-    --salvia-osc: #647154;
+    --tinta: #2c4148;
+    --tinta-suave: #6f818a;
+    --titulo: #0f4c5c;
+    --terracota: #c85d3d;
+    --terracota-osc: #a8472a;
+    --teal: #0f4c5c;
+    --teal-osc: #0a3a47;
+    --azul: #5d7a8c;
+    --durazno: #ffb27d;
+    --amarillo: #ffe6a7;
+    --salvia: #98b89a;
+    --salvia-osc: #74997a;
     --oro: #c79a3f;
-    --borde: #e7ddce;
-    --borde-fuerte: #d8cab3;
-    --sombra: 0 8px 24px rgba(74, 59, 42, 0.08);
-    --sombra-sutil: 0 2px 8px rgba(74, 59, 42, 0.06);
+    --borde: #e7ddcb;
+    --borde-fuerte: #d8c9b0;
+    --sombra: 0 8px 24px rgba(15, 76, 92, 0.10);
+    --sombra-sutil: 0 2px 8px rgba(15, 76, 92, 0.07);
     --radio: 18px;
     --radio-sm: 12px;
     --ok: #4f7a52;
@@ -43,8 +49,9 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     background: var(--papel);
     background-image:
-      radial-gradient(1200px 600px at 100% -10%, rgba(187,100,72,0.06), transparent 60%),
-      radial-gradient(1000px 500px at -10% 110%, rgba(126,140,106,0.07), transparent 60%);
+      radial-gradient(1200px 620px at 100% -8%, rgba(255,178,125,0.20), transparent 60%),
+      radial-gradient(1000px 520px at -10% 108%, rgba(152,184,154,0.18), transparent 62%),
+      radial-gradient(900px 500px at 50% -22%, rgba(15,76,92,0.05), transparent 60%);
     color: var(--tinta);
     min-height: 100vh;
     padding: 0 16px calc(40px + env(safe-area-inset-bottom));
@@ -65,12 +72,12 @@
   .logo {
     width: 46px; height: 46px; flex-shrink: 0;
     display: grid; place-items: center; font-size: 1.5rem;
-    background: linear-gradient(135deg, var(--terracota), var(--terracota-osc));
+    background: linear-gradient(135deg, var(--terracota), var(--teal));
     color: #fff; border-radius: 14px; box-shadow: var(--sombra-sutil);
   }
   .marca h1 {
     font-family: "Playfair Display", Georgia, serif;
-    font-size: 1.5rem; font-weight: 700; color: var(--terracota-osc);
+    font-size: 1.5rem; font-weight: 700; color: var(--titulo);
     line-height: 1.1; letter-spacing: .2px;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
@@ -101,8 +108,8 @@
   .tab-btn .ti { font-size: 1.05rem; }
   .tab-btn:active { background: var(--papel-2); }
   .tab-btn.activa {
-    background: linear-gradient(135deg, var(--terracota), var(--terracota-osc));
-    color: #fff; box-shadow: 0 4px 12px rgba(187,100,72,0.28);
+    background: linear-gradient(135deg, var(--teal), var(--teal-osc));
+    color: #fff; box-shadow: 0 4px 12px rgba(15,76,92,0.30);
   }
 
   .panel { display: none; max-width: 920px; margin: 0 auto; animation: aparecer .25s ease; }
@@ -119,7 +126,7 @@
   }
   .tarjeta h2 {
     font-family: "Playfair Display", Georgia, serif;
-    font-size: 1.12rem; font-weight: 700; color: var(--tinta);
+    font-size: 1.12rem; font-weight: 700; color: var(--titulo);
     margin-bottom: 14px; display: flex; align-items: center; gap: 10px;
   }
   .tarjeta h2 .paso {
@@ -156,7 +163,7 @@
   .campo textarea { resize: vertical; min-height: 92px; line-height: 1.4; }
   .campo input:focus, .campo select:focus, .campo textarea:focus {
     outline: none; border-color: var(--terracota); background: #fff;
-    box-shadow: 0 0 0 3px rgba(187,100,72,0.14);
+    box-shadow: 0 0 0 3px rgba(200,93,61,0.16);
   }
   .campo .ayuda { font-size: .8rem; color: var(--tinta-suave); margin-top: 6px; }
   .campo-color { flex: 0 0 auto; min-width: 92px; }
@@ -201,15 +208,15 @@
   .boton-primario, .boton-pdf {
     display: block; width: 100%; padding: 17px; font-size: 1.15rem; font-family: inherit;
     font-weight: 700; color: #fff; border: none; border-radius: 14px; cursor: pointer;
-    background: linear-gradient(135deg, var(--salvia), var(--salvia-osc));
-    box-shadow: 0 6px 16px rgba(100,113,84,0.28); transition: transform .12s, opacity .12s, box-shadow .12s;
+    background: linear-gradient(135deg, var(--terracota), var(--terracota-osc));
+    box-shadow: 0 6px 16px rgba(200,93,61,0.30); transition: transform .12s, opacity .12s, box-shadow .12s;
   }
   .boton-pdf:disabled { opacity: .45; cursor: default; box-shadow: none; }
   .boton-pdf:not(:disabled):active, .boton-primario:active { transform: translateY(1px); opacity: .92; }
 
   .boton-sec {
     margin-top: 12px; padding: 11px 18px; font-size: .95rem; font-family: inherit; font-weight: 600;
-    color: var(--terracota-osc); background: #fbf2ee; border: 1px solid var(--terracota);
+    color: var(--teal); background: #eef4f5; border: 1px solid var(--teal);
     border-radius: 11px; cursor: pointer;
   }
   .boton-sec:active { opacity: .82; }
@@ -228,6 +235,20 @@
   .modo-relleno .solo-relleno { display: block; }
   .modo-contorno .solo-contorno { display: block; }
   .modo-ambos .solo-relleno, .modo-ambos .solo-contorno { display: block; }
+
+  /* Renglones del generador de letras (cada uno con su tamaño y tipografía) */
+  .linea-letra {
+    display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end;
+    padding: 14px; border: 1px solid var(--borde-fuerte); border-radius: var(--radio-sm);
+    background: var(--papel-2); margin-bottom: 10px;
+  }
+  .linea-letra .campo { min-width: 110px; }
+  .linea-letra .ll-quitar {
+    flex: 0 0 auto; height: 48px; align-self: flex-end; padding: 0 14px;
+    font-family: inherit; font-size: 1rem; color: var(--terracota-osc);
+    background: #fbf2ee; border: 1px solid var(--terracota); border-radius: 9px; cursor: pointer;
+  }
+  .linea-letra .ll-quitar:active { opacity: .8; }
 
   /* ---------- Tarjetas de "varios en una hoja" ---------- */
   .item-comp {
@@ -260,7 +281,7 @@
     background: var(--superficie); border-radius: var(--radio); padding: 22px;
     width: 100%; max-width: 440px; box-shadow: 0 18px 50px rgba(0,0,0,0.3);
   }
-  .modal-caja h2 { font-family: "Playfair Display", serif; color: var(--terracota-osc); margin-bottom: 6px; font-size: 1.3rem; }
+  .modal-caja h2 { font-family: "Playfair Display", serif; color: var(--titulo); margin-bottom: 6px; font-size: 1.3rem; }
   .modal-caja .sub { color: var(--tinta-suave); font-size: .9rem; margin-bottom: 16px; }
   .modal-caja .nota { font-size: .82rem; color: var(--tinta-suave); margin-top: 10px; }
   .modal-acciones { display: flex; gap: 10px; margin-top: 20px; }
@@ -445,23 +466,15 @@
   <p class="intro">Crea nombres, iniciales, fechas o frases con tipografías decorativas y colores para complementar tus bordados.</p>
 
   <div class="tarjeta">
-    <h2><span class="paso">1</span> Escribe el texto</h2>
-    <div class="campo">
-      <label for="textoLetras">Letras, números o palabras</label>
-      <textarea id="textoLetras" placeholder="Ej: Familia&#10;Ana &amp; Luis&#10;2026" inputmode="text">Bordados</textarea>
-      <p class="ayuda">Puedes escribir varias líneas: cada salto de línea es un renglón nuevo.</p>
-    </div>
+    <h2><span class="paso">1</span> Renglones de texto</h2>
+    <p class="info-img" style="text-align:left; margin:-4px 0 12px;">Cada renglón puede tener su propio <strong>texto</strong>, <strong>tamaño</strong> y <strong>tipografía</strong>. Así puedes hacer una palabra grande y otra pequeña.</p>
+    <div id="listaLineas"></div>
+    <button class="boton-anadir" id="btnAnadirLinea" type="button">➕ Añadir renglón</button>
   </div>
 
   <div class="tarjeta">
-    <h2><span class="paso">2</span> Tipografía y estilo</h2>
-    <div class="campo">
-      <label for="fuenteLetras">Tipografía / diseño</label>
-      <select id="fuenteLetras"></select>
-    </div>
-    <div class="previa-fuente" id="previaFuente">Bordados</div>
-
-    <div class="fila" style="margin-top:14px;">
+    <h2><span class="paso">2</span> Estilo y color</h2>
+    <div class="fila">
       <div class="campo">
         <label for="estiloLetras">Estilo de trazo</label>
         <select id="estiloLetras">
@@ -483,14 +496,14 @@
     <div class="fila" style="margin-top:14px;">
       <div class="campo campo-color solo-relleno">
         <label for="colorRelleno">Color del relleno</label>
-        <input type="color" id="colorRelleno" value="#bb6448">
+        <input type="color" id="colorRelleno" value="#c85d3d">
       </div>
       <div class="campo campo-color solo-contorno">
         <label for="colorContorno">Color del contorno</label>
-        <input type="color" id="colorContorno" value="#3c332a">
+        <input type="color" id="colorContorno" value="#0f4c5c">
       </div>
       <div class="campo solo-contorno">
-        <label for="grosorLetras">Grosor del contorno: <span id="grosorVal">media</span></label>
+        <label for="grosorLetras">Grosor del contorno: <span id="grosorVal">medio</span></label>
         <input type="range" id="grosorLetras" min="5" max="100" value="35" step="1">
       </div>
     </div>
@@ -504,12 +517,8 @@
   </div>
 
   <div class="tarjeta">
-    <h2><span class="paso">3</span> Tamaño y hoja</h2>
+    <h2><span class="paso">3</span> Hoja</h2>
     <div class="fila">
-      <div class="campo">
-        <label for="altoLetras">Alto de las letras (cm)</label>
-        <input type="number" id="altoLetras" min="0.5" max="25" step="0.1" value="4" inputmode="decimal">
-      </div>
       <div class="campo">
         <label for="hojaLetras">Tamaño de hoja</label>
         <select id="hojaLetras">
@@ -1194,14 +1203,17 @@
   }
 
   // ====================================================================
-  //  MODO 3 · Letras y palabras
+  //  MODO 3 · Letras y palabras (varios renglones, cada uno con su tamaño)
   // ====================================================================
-  llenarSelectFuentes($('fuenteLetras'));
+  var lineasLetras = [];
+  var lineasSeq = 0;
 
-  function opcionesLetras() {
+  function nuevaLinea(texto, alto, fuente) {
+    return { id: ++lineasSeq, texto: texto || '', alto: alto || 4, fuente: fuente || FUENTES[0].css };
+  }
+
+  function opcionesGlobLetras() {
     return {
-      fontCss: $('fuenteLetras').value,
-      altoLineaCm: num('altoLetras'),
       estilo: $('estiloLetras').value,
       colorRelleno: $('colorRelleno').value,
       colorContorno: $('colorContorno').value,
@@ -1211,63 +1223,123 @@
     };
   }
 
-  function refrescarLetras() {
-    var texto = $('textoLetras').value;
-    var o = opcionesLetras();
+  function conFuentesListas(fonts, cb) {
+    var uniq = fonts.filter(function (f, i) { return fonts.indexOf(f) === i; });
+    var pend = uniq.length;
+    if (!pend) { cb(); return; }
+    uniq.forEach(function (f) { conFuenteLista(f, function () { if (--pend === 0) cb(); }); });
+  }
 
-    // Mostrar/ocultar controles según el estilo
+  // Compone todos los renglones (cada uno con su tamaño/tipografía) en un canvas
+  function construirCanvasLetras(lineas, opts, dpi) {
+    var partes = lineas.map(function (l) {
+      return dibujarTexto(l.texto, {
+        fontCss: l.fuente, altoLineaCm: l.alto, estilo: opts.estilo,
+        colorRelleno: opts.colorRelleno, colorContorno: opts.colorContorno,
+        grosor: opts.grosor, espaciado: opts.espaciado, align: opts.align
+      }, dpi);
+    });
+    if (!partes.length) return null;
+    var gap = Math.round(0.12 / 2.54 * dpi);
+    var w = 1, h = 0;
+    partes.forEach(function (p, i) { w = Math.max(w, p.canvas.width); h += p.canvas.height + (i ? gap : 0); });
+    var c = document.createElement('canvas');
+    c.width = w; c.height = Math.max(1, h);
+    var ctx = c.getContext('2d');
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, c.width, c.height);
+    var y = 0;
+    partes.forEach(function (p, i) {
+      if (i) y += gap;
+      var x = opts.align === 'izquierda' ? 0
+            : opts.align === 'derecha' ? (w - p.canvas.width) : (w - p.canvas.width) / 2;
+      ctx.drawImage(p.canvas, x, y);
+      y += p.canvas.height;
+    });
+    return { canvas: c, wCm: c.width / dpi * 2.54, hCm: c.height / dpi * 2.54 };
+  }
+
+  function lineasValidasLetras() {
+    return lineasLetras.filter(function (l) { return l.texto.trim() && l.alto > 0; });
+  }
+
+  function refrescarLetras() {
+    var o = opcionesGlobLetras();
     var card = $('estiloLetras').closest('.tarjeta');
     card.classList.remove('modo-relleno', 'modo-contorno', 'modo-ambos');
     card.classList.add('modo-' + (o.estilo === 'ambos' ? 'ambos' : o.estilo));
     $('grosorVal').textContent = o.grosor < 0.3 ? 'fino' : (o.grosor > 0.6 ? 'grueso' : 'medio');
     $('espaciadoVal').textContent = Math.round(o.espaciado * 100) + '%';
 
-    // Vista previa en vivo (HTML)
-    var pv = $('previaFuente');
-    pv.style.fontFamily = o.fontCss;
-    pv.style.textAlign = (o.align === 'izquierda' ? 'left' : o.align === 'derecha' ? 'right' : 'center');
-    pv.style.letterSpacing = (o.espaciado * 0.5).toFixed(2) + 'em';
-    pv.textContent = texto.trim() ? texto : 'Tu texto aquí';
-    if (o.estilo === 'contorno') {
-      pv.style.color = 'transparent'; pv.style.webkitTextStroke = '1.2px ' + o.colorContorno;
-    } else if (o.estilo === 'relleno') {
-      pv.style.color = o.colorRelleno; pv.style.webkitTextStroke = '0';
-    } else {
-      pv.style.color = o.colorRelleno; pv.style.webkitTextStroke = '1px ' + o.colorContorno;
-    }
-
-    var listo = texto.trim().length > 0 && o.altoLineaCm > 0;
-    $('pdfLetras').disabled = !listo;
-    if (!listo) {
+    var validas = lineasValidasLetras();
+    $('pdfLetras').disabled = validas.length === 0;
+    if (!validas.length) {
       dibujarPrevia($('previaLetras'), null, 1, 1, HOJAS.A4);
-      $('pieLetras').textContent = 'Escribe un texto y elige su tamaño';
+      $('pieLetras').textContent = 'Escribe al menos un renglón';
       $('avisoLetras').classList.remove('visible');
       return;
     }
-    conFuenteLista(o.fontCss, function () {
-      var r = dibujarTexto(texto, o, 30);
+    conFuentesListas(validas.map(function (l) { return l.fuente; }), function () {
+      var r = construirCanvasLetras(validas, o, 30);
       var pagina = elegirPagina($('hojaLetras').value, r.wCm, r.hCm);
       dibujarPrevia($('previaLetras'), r.canvas, r.wCm, r.hCm, pagina);
-      $('pieLetras').textContent = 'Texto de ' + r.wCm.toFixed(1) + ' × ' + r.hCm.toFixed(1) +
+      $('pieLetras').textContent = 'Diseño de ' + r.wCm.toFixed(1) + ' × ' + r.hCm.toFixed(1) +
         ' cm en hoja ' + $('hojaLetras').value;
       avisarSiNoCabe('avisoLetras', r.wCm, r.hCm, pagina);
     });
   }
   function pedirRefrescoLetras() { programar('letras', refrescarLetras); }
 
-  ['textoLetras', 'altoLetras', 'grosorLetras', 'espaciadoLetras'].forEach(function (id) {
+  function crearLineaCard(l) {
+    var row = document.createElement('div');
+    row.className = 'linea-letra';
+    row.innerHTML =
+      '<div class="campo" style="flex:2 1 180px;"><label>Texto</label>' +
+        '<input type="text" class="ll-txt" inputmode="text"></div>' +
+      '<div class="campo" style="flex:0 1 110px;"><label>Alto (cm)</label>' +
+        '<input type="number" class="ll-alto" min="0.5" max="25" step="0.1" inputmode="decimal"></div>' +
+      '<div class="campo" style="flex:2 1 180px;"><label>Tipografía</label><select class="ll-fuente"></select></div>' +
+      '<button class="ll-quitar" type="button" title="Quitar renglón">✕</button>';
+    var q = function (s) { return row.querySelector(s); };
+    llenarSelectFuentes(q('.ll-fuente'));
+    q('.ll-txt').value = l.texto;
+    q('.ll-alto').value = l.alto;
+    q('.ll-fuente').value = l.fuente;
+    q('.ll-txt').addEventListener('input', function () { l.texto = this.value; pedirRefrescoLetras(); });
+    q('.ll-alto').addEventListener('input', function () { l.alto = parseFloat(this.value) || 0; pedirRefrescoLetras(); });
+    q('.ll-fuente').addEventListener('change', function () { l.fuente = this.value; conFuenteLista(l.fuente, refrescarLetras); });
+    q('.ll-quitar').addEventListener('click', function () {
+      if (lineasLetras.length <= 1) { toast('Debe quedar al menos un renglón'); return; }
+      lineasLetras = lineasLetras.filter(function (x) { return x.id !== l.id; });
+      row.parentNode.removeChild(row); refrescarLetras();
+    });
+    return row;
+  }
+
+  function anadirLinea(texto, alto, fuente) {
+    var l = nuevaLinea(texto, alto, fuente);
+    lineasLetras.push(l);
+    $('listaLineas').appendChild(crearLineaCard(l));
+    return l;
+  }
+
+  $('btnAnadirLinea').addEventListener('click', function () { anadirLinea('', 3); refrescarLetras(); });
+  ['estiloLetras', 'alinearLetras', 'hojaLetras', 'colorRelleno', 'colorContorno'].forEach(function (id) {
+    $(id).addEventListener('change', pedirRefrescoLetras);
     $(id).addEventListener('input', pedirRefrescoLetras);
   });
-  ['fuenteLetras', 'estiloLetras', 'alinearLetras', 'hojaLetras', 'colorRelleno', 'colorContorno'].forEach(function (id) {
-    $(id).addEventListener('change', pedirRefrescoLetras);
+  ['grosorLetras', 'espaciadoLetras'].forEach(function (id) {
     $(id).addEventListener('input', pedirRefrescoLetras);
   });
 
   $('pdfLetras').addEventListener('click', function () {
-    var texto = $('textoLetras').value, o = opcionesLetras();
+    var o = opcionesGlobLetras();
+    var validas = lineasValidasLetras();
+    if (!validas.length) return;
     generarPdf(function () {
-      conFuenteLista(o.fontCss, function () {
-        var r = dibujarTexto(texto, o, dpiSeguro(Math.max(o.altoLineaCm * 1.5, 10)));
+      conFuentesListas(validas.map(function (l) { return l.fuente; }), function () {
+        var prov = construirCanvasLetras(validas, o, 30);
+        var dpi = dpiSeguro(Math.max(prov.wCm, prov.hCm, 10));
+        var r = construirCanvasLetras(validas, o, dpi);
         var pagina = elegirPagina($('hojaLetras').value, r.wCm, r.hCm);
         descargar(pdfImagenCentrada(r.canvas, r.wCm, r.hCm, pagina), 'letras_bordado.pdf');
       });
@@ -1372,6 +1444,7 @@
     var card = document.createElement('div');
     card.className = 'item-comp';
     var nEstilo = 'estiloComp' + it.id;
+    var idFile = 'itfile' + it.id;     // id único: el label "for" abre el selector en iPad
     card.innerHTML =
       '<div class="item-cab"><strong>Diseño</strong>' +
         '<button class="quitar" type="button">✕ Quitar</button></div>' +
@@ -1382,9 +1455,9 @@
           '<option value="texto">✍️ Texto / letras</option>' +
         '</select></div>' +
       '<div class="it-imagen" style="margin-top:12px;">' +
-        '<label class="zona-subida it-zona"><span class="icono">🖼️</span>' +
+        '<label class="zona-subida it-zona" for="' + idFile + '"><span class="icono">🖼️</span>' +
         '<p>Toca para elegir imagen</p></label>' +
-        '<input type="file" class="it-file" accept="image/jpeg,image/png,image/gif,image/webp,image/bmp">' +
+        '<input type="file" id="' + idFile + '" class="it-file" accept="image/jpeg,image/png,image/gif,image/webp,image/bmp">' +
       '</div>' +
       '<div class="fila it-medidas-circ">' +
         '<div class="campo"><label>Diámetro (cm)</label>' +
@@ -1531,6 +1604,7 @@
   cargarNegocio(); aplicarMarca();
   refrescarRect();
   refrescarCirc();
+  anadirLinea('Bordados', 4);
   refrescarLetras();
   (function () {
     var it = nuevoItemComp();
