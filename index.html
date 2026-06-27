@@ -47,9 +47,10 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     background: var(--papel);
     background-image:
-      radial-gradient(820px 480px at 102% 0%, rgba(216,196,160,0.22), transparent 58%),
-      radial-gradient(760px 460px at -8% 16%, rgba(188,198,180,0.20), transparent 60%),
-      radial-gradient(820px 480px at 50% 118%, rgba(216,196,160,0.16), transparent 60%);
+      radial-gradient(820px 480px at 102% 0%, rgba(231,201,201,0.20), transparent 58%),
+      radial-gradient(760px 460px at -8% 16%, rgba(196,209,222,0.18), transparent 60%),
+      radial-gradient(820px 520px at 50% 118%, rgba(216,196,160,0.18), transparent 60%),
+      radial-gradient(680px 420px at 92% 90%, rgba(190,200,182,0.16), transparent 60%);
     background-attachment: fixed;
     color: var(--tinta);
     min-height: 100vh;
@@ -127,7 +128,7 @@
     display: grid; place-items: center; font-size: .82rem; font-weight: 700;
     background: #efe7d6; color: var(--trigo-osc); font-family: inherit;
   }
-  .flor-tarjeta { position: absolute; top: -6px; right: -6px; width: 54px; height: 54px; opacity: .12; pointer-events: none; }
+  .flor-tarjeta { position: absolute; top: -6px; right: -6px; width: 56px; height: 56px; opacity: .17; pointer-events: none; }
 
   /* ---------- Zona de subida ---------- */
   .zona-subida {
@@ -277,11 +278,28 @@
   .toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom)); transform: translateX(-50%) translateY(12px); z-index: 60; background: var(--marron-osc); color: #fff; padding: 13px 20px; border-radius: 12px; font-size: .95rem; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.3); opacity: 0; transition: opacity .25s, transform .25s; pointer-events: none; max-width: 90vw; text-align: center; }
   .toast.ver { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+  /* ---------- Asistente IA ---------- */
+  .aviso-clave { background: #f7efe0; border: 1px solid #e0cda3; color: #8a6a32; padding: 16px; border-radius: var(--radio-sm); line-height: 1.5; }
+  .aviso-clave .boton-sec { margin-top: 12px; }
+  .chat-msgs { display: flex; flex-direction: column; gap: 10px; max-height: 52vh; overflow-y: auto; padding: 2px; }
+  .burbuja { max-width: 90%; padding: 11px 14px; border-radius: 15px; font-size: .95rem; line-height: 1.46; word-wrap: break-word; }
+  .burbuja.mia { align-self: flex-end; background: linear-gradient(135deg, #7c6b57, #6f6151); color: #fff; border-bottom-right-radius: 5px; }
+  .burbuja.ia { align-self: flex-start; background: var(--papel-2); border: 1px solid var(--borde); color: var(--tinta); border-bottom-left-radius: 5px; }
+  .burbuja.ia strong { color: var(--titulo); }
+  .burbuja em { opacity: .8; }
+  .chat-vacio { text-align: center; color: var(--tinta-suave); padding: 10px 6px 16px; }
+  .puntos { color: var(--tinta-suave); font-style: italic; }
+  .chat-entrada { display: flex; gap: 8px; align-items: flex-end; margin-top: 12px; }
+  .chat-entrada textarea { flex: 1; min-height: 50px; }
+  .chat-enviar { flex-shrink: 0; height: 50px; width: 54px; font-size: 1.3rem; border: none; border-radius: 12px; color: #fff; background: linear-gradient(135deg, #7c6b57, #6f6151); cursor: pointer; }
+  .chat-enviar:disabled { opacity: .5; }
+
   .deco-bg { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
   .flor-deco { position: absolute; width: 300px; height: auto; }
-  .flor-tr { top: 64px; right: -64px; opacity: .16; transform: rotate(8deg); }
-  .flor-bl { bottom: -70px; left: -70px; opacity: .14; transform: rotate(192deg); }
-  @media (min-width: 760px) { .flor-tr { width: 380px; right: -40px; } .flor-bl { width: 380px; left: -40px; } }
+  .flor-tr { top: 56px; right: -58px; opacity: .26; transform: rotate(8deg); }
+  .flor-bl { bottom: -66px; left: -66px; opacity: .22; transform: rotate(192deg); }
+  .flor-md { top: 42%; left: -70px; width: 230px; opacity: .14; transform: rotate(-24deg); }
+  @media (min-width: 760px) { .flor-tr { width: 400px; right: -30px; } .flor-bl { width: 400px; left: -30px; } .flor-md { width: 300px; left: -50px; } }
 
   footer { text-align: center; margin-top: 26px; color: var(--tinta-suave); font-size: .85rem; }
 </style>
@@ -332,6 +350,26 @@
     </g>
     <circle r="9" fill="#d8c4a0"/><circle r="5" fill="#b89a6a"/>
   </g>
+  <!-- margarita rosa pastel -->
+  <g id="margaritaRosa">
+    <g fill="#eccccc" stroke="#dfb6b6" stroke-width=".8">
+      <ellipse rx="7" ry="15" cy="-16"/><ellipse rx="7" ry="15" cy="-16" transform="rotate(45)"/>
+      <ellipse rx="7" ry="15" cy="-16" transform="rotate(90)"/><ellipse rx="7" ry="15" cy="-16" transform="rotate(135)"/>
+      <ellipse rx="7" ry="15" cy="-16" transform="rotate(180)"/><ellipse rx="7" ry="15" cy="-16" transform="rotate(225)"/>
+      <ellipse rx="7" ry="15" cy="-16" transform="rotate(270)"/><ellipse rx="7" ry="15" cy="-16" transform="rotate(315)"/>
+    </g>
+    <circle r="9" fill="#ecd9ad"/><circle r="5" fill="#cf9b6a"/>
+  </g>
+  <!-- margarita azul pastel -->
+  <g id="margaritaAzul">
+    <g fill="#c9d5e0" stroke="#b3c3d2" stroke-width=".8">
+      <ellipse rx="7" ry="15" cy="-16"/><ellipse rx="7" ry="15" cy="-16" transform="rotate(45)"/>
+      <ellipse rx="7" ry="15" cy="-16" transform="rotate(90)"/><ellipse rx="7" ry="15" cy="-16" transform="rotate(135)"/>
+      <ellipse rx="7" ry="15" cy="-16" transform="rotate(180)"/><ellipse rx="7" ry="15" cy="-16" transform="rotate(225)"/>
+      <ellipse rx="7" ry="15" cy="-16" transform="rotate(270)"/><ellipse rx="7" ry="15" cy="-16" transform="rotate(315)"/>
+    </g>
+    <circle r="9" fill="#ecd9ad"/><circle r="5" fill="#cf9b6a"/>
+  </g>
   <!-- ramita / brote -->
   <g id="ramita">
     <path d="M30 56 C 30 40 30 26 30 12" stroke="#a89a78" stroke-width="1.6" fill="none" stroke-linecap="round"/>
@@ -351,6 +389,8 @@
     <use href="#espiga" transform="translate(120,150) scale(0.95)"/>
     <use href="#espiga" transform="translate(145,150) scale(0.8) rotate(12)"/>
     <use href="#margarita" transform="translate(120,150) scale(0.85)"/>
+    <use href="#margaritaRosa" transform="translate(151,137) scale(0.5)"/>
+    <use href="#margaritaAzul" transform="translate(91,140) scale(0.42)"/>
   </g>
   <!-- divisor botánico simétrico -->
   <g id="divisorBot">
@@ -371,6 +411,7 @@
 <div class="deco-bg" aria-hidden="true">
   <svg class="flor-deco flor-tr" viewBox="0 0 240 180"><use href="#ramoAlma"/></svg>
   <svg class="flor-deco flor-bl" viewBox="0 0 240 180"><use href="#ramoAlma"/></svg>
+  <svg class="flor-deco flor-md" viewBox="0 0 240 180"><use href="#ramoAlma"/></svg>
 </div>
 
 <div id="avisoSinJs" style="background:#9c8b6a; color:#fff; padding:16px; border-radius:12px; margin:16px auto; font-size:1.05rem; line-height:1.5; max-width:900px;">
@@ -395,6 +436,7 @@
   <button class="tab-btn" data-panel="panel-circulo"><span class="ti">⭕</span>Bastidor circular</button>
   <button class="tab-btn" data-panel="panel-letras"><span class="ti">✍️</span>Letras y palabras</button>
   <button class="tab-btn" data-panel="panel-varios"><span class="ti">🧩</span>Varios en una hoja</button>
+  <button class="tab-btn" data-panel="panel-asistente"><span class="ti">🪡</span>Asistente</button>
 </nav>
 
 <!-- ============ MODO 1 ============ -->
@@ -566,6 +608,37 @@
   <button class="boton-pdf" id="pdfComp" disabled>📄 Generar PDF para imprimir</button>
 </section>
 
+<!-- ============ MODO 5: ASISTENTE IA ============ -->
+<section id="panel-asistente" class="panel">
+  <p class="intro">Tu asistente de bordado: pídele ideas de diseño, combinaciones de hilos y colores, o que evalúe el diseño que tienes en pantalla.</p>
+  <svg class="divisor" viewBox="0 0 150 22"><use href="#divisorBot"/></svg>
+
+  <div class="tarjeta">
+    <h2><span class="paso">🪡</span> Asistente de bordado</h2>
+    <div class="aviso-clave" id="avisoSinClave" style="display:none;">
+      Para usar el asistente, agrega tu <strong>clave API de Anthropic</strong> en Ajustes. Se guarda solo en este dispositivo y cada consulta se cobra a esa cuenta (unos centavos).
+      <button class="boton-sec" id="irAjustesIA" type="button">⚙️ Abrir Ajustes</button>
+    </div>
+    <div id="zonaChat" style="display:none;">
+      <div class="chat-msgs" id="chatMsgs">
+        <div class="chat-vacio" id="chatVacio">
+          <p style="margin-bottom:10px;">✨ Pregúntame lo que quieras. Por ejemplo:</p>
+          <div class="chips" id="chipsAsist" style="justify-content:center;"></div>
+        </div>
+      </div>
+      <div class="chat-entrada">
+        <textarea id="chatInput" placeholder="Escribe tu pregunta…" inputmode="text"></textarea>
+        <button class="chat-enviar" id="btnEnviarChat" type="button" title="Enviar" aria-label="Enviar">➤</button>
+      </div>
+      <div class="controles-previa">
+        <button class="boton-sec" id="btnAnalizar" type="button">🖼️ Analizar mi diseño actual</button>
+        <button class="boton-sec" id="btnLimpiarChat" type="button">🗑️ Limpiar</button>
+      </div>
+      <p class="pie" style="margin-top:8px;">El asistente puede equivocarse; revisa medidas y colores antes de imprimir o comprar hilos.</p>
+    </div>
+  </div>
+</section>
+
 <footer>Hecho con cariño · Alma bordado</footer>
 
 <div class="modal" id="modalAjustes" hidden>
@@ -577,6 +650,19 @@
     <label class="check-fila"><input type="checkbox" id="reglaEnPdf"><span>Incluir regla de 10 cm para verificar el tamaño al imprimir</span></label>
     <div class="campo" style="margin-top:14px;"><label for="calidadPdf">Calidad de impresión</label>
       <select id="calidadPdf"><option value="150">Borrador (150 ppp · más liviano)</option><option value="300" selected>Normal (300 ppp)</option><option value="600">Alta (600 ppp · más nítido)</option></select>
+    </div>
+
+    <h2 style="font-size:1.2rem; margin:20px 0 6px;">🪡 Asistente de IA</h2>
+    <div class="campo"><label for="claveApi">Clave API de Anthropic</label>
+      <input type="password" id="claveApi" placeholder="sk-ant-…" autocomplete="off" spellcheck="false">
+      <p class="ayuda">Se obtiene en console.anthropic.com → API Keys. Se guarda solo en este dispositivo.</p>
+    </div>
+    <div class="campo" style="margin-top:10px;"><label for="modeloIA">Modelo</label>
+      <select id="modeloIA">
+        <option value="claude-opus-4-8">Más capaz (recomendado)</option>
+        <option value="claude-sonnet-4-6">Equilibrado</option>
+        <option value="claude-haiku-4-5">Más económico y rápido</option>
+      </select>
     </div>
     <p class="nota">🔒 Todo se guarda solo en este dispositivo.</p>
     <div class="modal-acciones"><button class="boton-sec" id="cerrarAjustes" type="button">Cancelar</button><button class="boton-primario" id="guardarAjustes" type="button">Guardar</button></div>
@@ -599,13 +685,16 @@
   function num(id) { var v = parseFloat($(id).value); return isFinite(v) && v > 0 ? v : 0; }
 
   // ---------- Configuración (localStorage) ----------
-  var CONFIG = { nombre: 'Alma bordado', enPdf: false, regla: false, dpi: 300 };
+  var CONFIG = { nombre: 'Alma bordado', enPdf: false, regla: false, dpi: 300, apiKey: '', modelo: 'claude-opus-4-8' };
+  var MODELOS = ['claude-opus-4-8', 'claude-sonnet-4-6', 'claude-haiku-4-5'];
   function cargarConfig() {
     try {
       var s = JSON.parse(localStorage.getItem('alma_config') || '{}');
       if (s.nombre != null) CONFIG.nombre = s.nombre.toString();
       CONFIG.enPdf = !!s.enPdf; CONFIG.regla = !!s.regla;
       CONFIG.dpi = [150, 300, 600].indexOf(s.dpi) >= 0 ? s.dpi : 300;
+      CONFIG.apiKey = (s.apiKey || '').toString();
+      CONFIG.modelo = MODELOS.indexOf(s.modelo) >= 0 ? s.modelo : 'claude-opus-4-8';
     } catch (e) {}
   }
   function guardarConfig() { try { localStorage.setItem('alma_config', JSON.stringify(CONFIG)); } catch (e) {} }
@@ -1299,6 +1388,89 @@
     });
   });
 
+  // ====================================================================
+  //  MODO 5 · Asistente IA (llama a la API de Anthropic con la clave propia)
+  // ====================================================================
+  var ultimoPanelDiseno = 'panel-rect';
+  var NOMBRE_PANEL = { 'panel-rect': 'imagen a medida', 'panel-circulo': 'bastidor circular', 'panel-letras': 'letras y palabras', 'panel-varios': 'varios diseños en una hoja' };
+  var chatHist = [];
+  var SYS_ASIST = 'Eres la asistente de bordado de "Alma bordado", experta en bordado a mano y a máquina. Ayudas a idear y mejorar diseños, evalúas composiciones (equilibrio, tamaño, legibilidad, dificultad), propones combinaciones de colores e hilos —incluye códigos DMC cuando sea útil—, recomiendas puntadas y das consejos prácticos de transferencia y bastidor. Responde SIEMPRE en español, con calidez y de forma concreta y breve; usa viñetas cuando ayude. Si te comparten una imagen de un diseño o vista previa, analízala con detalle.';
+
+  function tieneClave() { return !!(CONFIG.apiKey && CONFIG.apiKey.trim()); }
+  function actualizarEstadoAsistente() {
+    var sin = $('avisoSinClave'), zona = $('zonaChat');
+    if (!sin || !zona) return;
+    sin.style.display = tieneClave() ? 'none' : 'block';
+    zona.style.display = tieneClave() ? 'block' : 'none';
+  }
+  function escaparHtml(s) { return String(s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
+  function fmtMd(s) { return escaparHtml(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>'); }
+  function agregarBurbuja(role, html) {
+    var d = document.createElement('div'); d.className = 'burbuja ' + (role === 'user' ? 'mia' : 'ia');
+    d.innerHTML = html; $('chatMsgs').appendChild(d);
+    $('chatMsgs').scrollTop = $('chatMsgs').scrollHeight; return d;
+  }
+  function enviarAsistente(texto, imagenDataUrl) {
+    if (!tieneClave()) { actualizarEstadoAsistente(); return; }
+    $('chatVacio').style.display = 'none';
+    var contenido;
+    if (imagenDataUrl) {
+      contenido = [{ type: 'image', source: { type: 'base64', media_type: 'image/png', data: imagenDataUrl.split(',')[1] } }, { type: 'text', text: texto }];
+      agregarBurbuja('user', '<em>🖼️ ' + escaparHtml(texto) + '</em>');
+    } else {
+      contenido = texto; agregarBurbuja('user', fmtMd(texto));
+    }
+    chatHist.push({ role: 'user', content: contenido });
+    var pensando = agregarBurbuja('ia', '<span class="puntos">escribiendo…</span>');
+    $('btnEnviarChat').disabled = true; $('btnAnalizar').disabled = true;
+    fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-api-key': CONFIG.apiKey.trim(), 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({ model: CONFIG.modelo || 'claude-opus-4-8', max_tokens: 1024, system: SYS_ASIST, messages: chatHist.slice(-12) })
+    }).then(function (r) {
+      if (!r.ok) return r.text().then(function () { throw new Error('HTTP ' + r.status + (r.status === 401 ? ' · revisa tu clave API en Ajustes' : '')); });
+      return r.json();
+    }).then(function (d) {
+      var txt = (d.content || []).filter(function (b) { return b.type === 'text'; }).map(function (b) { return b.text; }).join('\n') || '(sin respuesta)';
+      chatHist.push({ role: 'assistant', content: txt });
+      pensando.innerHTML = fmtMd(txt);
+    }).catch(function (e) {
+      pensando.innerHTML = '⚠️ ' + escaparHtml(e.message || 'No se pudo conectar');
+    }).then(function () {
+      $('btnEnviarChat').disabled = false; $('btnAnalizar').disabled = false;
+      $('chatMsgs').scrollTop = $('chatMsgs').scrollHeight;
+    });
+  }
+  function enviarDesdeInput() {
+    var t = $('chatInput').value.trim(); if (!t) return;
+    $('chatInput').value = ''; enviarAsistente(t, null);
+  }
+  $('btnEnviarChat').addEventListener('click', enviarDesdeInput);
+  $('chatInput').addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); enviarDesdeInput(); } });
+  $('btnAnalizar').addEventListener('click', function () {
+    var c = document.querySelector('#' + ultimoPanelDiseno + ' canvas');
+    if (!c) { toast('Primero crea un diseño en otra pestaña'); return; }
+    enviarAsistente('Este es mi diseño de "' + (NOMBRE_PANEL[ultimoPanelDiseno] || 'bordado') + '". Evalúalo y dame sugerencias de mejora, colores e hilos.', c.toDataURL('image/png'));
+  });
+  $('btnLimpiarChat').addEventListener('click', function () {
+    chatHist = [];
+    $('chatMsgs').querySelectorAll('.burbuja').forEach(function (b) { b.remove(); });
+    $('chatVacio').style.display = 'block';
+  });
+  $('irAjustesIA').addEventListener('click', abrirAjustes);
+  (function () {
+    var sugerencias = ['Evalúa mi diseño actual', 'Ideas para un nombre de bebé', '¿Qué hilos combinan con terracota?', 'Diseño sencillo para empezar'];
+    var cont = $('chipsAsist');
+    sugerencias.forEach(function (s) {
+      var b = document.createElement('button'); b.className = 'chip'; b.type = 'button'; b.textContent = s;
+      b.addEventListener('click', function () {
+        if (s === 'Evalúa mi diseño actual') { $('btnAnalizar').click(); return; }
+        enviarAsistente(s, null);
+      });
+      cont.appendChild(b);
+    });
+  })();
+
   // ---------- Pestañas y ajustes ----------
   document.querySelectorAll('.tab-btn').forEach(function (btn) {
     btn.setAttribute('role', 'tab');
@@ -1307,10 +1479,12 @@
       document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('activa'); b.setAttribute('aria-selected', 'false'); });
       document.querySelectorAll('.panel').forEach(function (p) { p.classList.remove('activa'); });
       btn.classList.add('activa'); btn.setAttribute('aria-selected', 'true'); $(btn.dataset.panel).classList.add('activa');
+      if (btn.dataset.panel !== 'panel-asistente') ultimoPanelDiseno = btn.dataset.panel;
+      else actualizarEstadoAsistente();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   });
-  function abrirAjustes() { $('nombreNegocio').value = CONFIG.nombre; $('marcaEnPdf').checked = CONFIG.enPdf; $('reglaEnPdf').checked = CONFIG.regla; $('calidadPdf').value = String(CONFIG.dpi); $('modalAjustes').hidden = false; setTimeout(function () { $('nombreNegocio').focus(); }, 30); }
+  function abrirAjustes() { $('nombreNegocio').value = CONFIG.nombre; $('marcaEnPdf').checked = CONFIG.enPdf; $('reglaEnPdf').checked = CONFIG.regla; $('calidadPdf').value = String(CONFIG.dpi); $('claveApi').value = CONFIG.apiKey; $('modeloIA').value = CONFIG.modelo; $('modalAjustes').hidden = false; setTimeout(function () { $('nombreNegocio').focus(); }, 30); }
   function cerrarAjustes() { $('modalAjustes').hidden = true; }
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('modalAjustes').hidden) cerrarAjustes(); });
   $('btnAjustes').addEventListener('click', abrirAjustes);
@@ -1319,7 +1493,9 @@
   $('guardarAjustes').addEventListener('click', function () {
     CONFIG.nombre = $('nombreNegocio').value.toString(); CONFIG.enPdf = $('marcaEnPdf').checked; CONFIG.regla = $('reglaEnPdf').checked;
     CONFIG.dpi = parseInt($('calidadPdf').value, 10) || 300;
-    guardarConfig(); aplicarMarca(); cerrarAjustes(); toast('Ajustes guardados  ✓');
+    CONFIG.apiKey = $('claveApi').value.toString();
+    CONFIG.modelo = MODELOS.indexOf($('modeloIA').value) >= 0 ? $('modeloIA').value : 'claude-opus-4-8';
+    guardarConfig(); aplicarMarca(); actualizarEstadoAsistente(); cerrarAjustes(); toast('Ajustes guardados  ✓');
   });
 
   // ---------- Inicio ----------
@@ -1329,6 +1505,23 @@
   anadirLinea('Alma', 6, "'Great Vibes', cursive"); anadirLinea('bordado', 3.4, "'Cormorant Garamond', serif");
   refrescarLetras();
   (function () { var it = nuevoItemComp(); itemsComp.push(it); $('listaComp').appendChild(crearTarjetaComp(it)); refrescarComp(); })();
+
+  // Margaritas decorativas en las tarjetas (alternando rosa y azul)
+  (function () {
+    var motivos = ['#margaritaRosa', '#margaritaAzul'];
+    var n = 0;
+    document.querySelectorAll('.tarjeta').forEach(function (t) {
+      if (t.querySelector('.flor-tarjeta')) { n++; return; }
+      var s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      s.setAttribute('class', 'flor-tarjeta');
+      s.setAttribute('viewBox', '0 0 80 80');
+      s.setAttribute('aria-hidden', 'true');
+      s.innerHTML = '<use href="' + motivos[n % motivos.length] + '" transform="translate(40,40)"/>';
+      t.appendChild(s);
+      n++;
+    });
+  })();
+  actualizarEstadoAsistente();
 
   if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('swbordados.js').catch(function () {});
 })();
