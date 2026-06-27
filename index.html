@@ -330,6 +330,20 @@
   .hilos li { display: flex; align-items: center; gap: 8px; }
   .diseno-acc { display: flex; flex-wrap: wrap; gap: 8px; }
   .diseno-acc .boton-sec { flex: 1 1 auto; }
+  .btn-dis-fav.guardado { background: #f6e3ea; border-color: #e2b7c8; color: #a14f72; }
+
+  /* Galería de favoritos */
+  .gal-cuenta { font-size: .85rem; font-weight: 600; color: var(--tinta-suave); }
+  .galeria-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; margin-top: 8px; }
+  .gal-card { background: #fbf6ec; border: 1px solid #e0cda3; border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .gal-previa { text-align: center; min-height: 60px; display: flex; align-items: center; justify-content: center; }
+  .gal-previa canvas { max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 3px 12px rgba(0,0,0,.12); background: #fff; }
+  .gal-previa.circ canvas { border-radius: 50%; }
+  .gal-tit { font-weight: 700; color: var(--titulo); font-size: .95rem; line-height: 1.2; }
+  .gal-meta { font-size: .8rem; color: var(--tinta-suave); }
+  .gal-acc { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+  .gal-acc .boton-sec { flex: 1 1 auto; padding: 7px 8px; font-size: .82rem; }
+  .gal-quitar { color: #a14f72; border-color: #e2b7c8; }
 
   .deco-bg { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
   .flor-deco { position: absolute; width: 300px; height: auto; }
@@ -502,6 +516,7 @@
   <button class="tab-btn" data-panel="panel-fototexto"><span class="ti">🌸</span>Foto + texto</button>
   <button class="tab-btn" data-panel="panel-varios"><span class="ti">🧩</span>Varios en una hoja</button>
   <button class="tab-btn" data-panel="panel-asistente"><span class="ti">🪡</span>Asistente</button>
+  <button class="tab-btn" data-panel="panel-galeria"><span class="ti">❤️</span>Favoritos</button>
 </nav>
 
 <!-- ============ MODO 1 ============ -->
@@ -779,6 +794,20 @@
       </div>
       <p class="pie" style="margin-top:8px;">El asistente puede equivocarse; revisa medidas y colores antes de imprimir o comprar hilos.</p>
     </div>
+  </div>
+</section>
+
+<!-- ============ GALERÍA DE FAVORITOS ============ -->
+<section id="panel-galeria" class="panel">
+  <p class="intro">Tus diseños favoritos. Cuando Alma te dibuje algo que te encante, tócale <strong>❤️ Guardar</strong> y quedará aquí para imprimirlo cuando quieras.</p>
+  <svg class="divisor" viewBox="0 0 150 22"><use href="#divisorBot"/></svg>
+  <div class="tarjeta">
+    <h2><span class="paso">❤️</span> Diseños favoritos <span id="galeriaCuenta" class="gal-cuenta"></span></h2>
+    <div class="chat-vacio" id="galeriaVacia">
+      <p style="margin-bottom:6px;">🌸 Todavía no guardaste ningún diseño.</p>
+      <p style="font-size:.9rem;">Ve a <strong>Asistente</strong>, pídele a Alma un diseño (por ejemplo un bastidor de 5&nbsp;cm con ballenitas) y tócale <strong>❤️ Guardar</strong>. Aparecerá aquí.</p>
+    </div>
+    <div id="galeriaGrid" class="galeria-grid"></div>
   </div>
 </section>
 
@@ -1934,7 +1963,7 @@
       '<div class="prop-meta">📐 ' + escaparHtml(medidas) + (dis.dificultad ? ' · ' + escaparHtml(String(dis.dificultad)) : '') + '</div>' +
       (hilos ? '<div class="hilos-tit">🧵 Hilos sugeridos</div><ul class="hilos">' + hilos + '</ul>' : '') +
       '<div class="diseno-acc">' +
-        (sinSvg ? '' : '<button type="button" class="btn-dis-pdf boton-sec">📄 PDF</button><button type="button" class="btn-dis-png boton-sec">🖼️ Imagen</button>') +
+        (sinSvg ? '' : '<button type="button" class="btn-dis-fav boton-sec">❤️ Guardar</button><button type="button" class="btn-dis-pdf boton-sec">📄 PDF</button><button type="button" class="btn-dis-png boton-sec">🖼️ Imagen</button>') +
         '<button type="button" class="btn-dis-cambios boton-sec">✏️ Pedir cambios</button>' +
       '</div>' +
     '</div>';
@@ -1951,9 +1980,18 @@
       });
     }
     var b1 = burbuja.querySelector('.btn-dis-pdf'), b2 = burbuja.querySelector('.btn-dis-png'), b3 = burbuja.querySelector('.btn-dis-cambios');
+    var bf = burbuja.querySelector('.btn-dis-fav');
     if (b1) b1.addEventListener('click', function () { exportarDiseno(dis, 'pdf'); });
     if (b2) b2.addEventListener('click', function () { exportarDiseno(dis, 'png'); });
     if (b3) b3.addEventListener('click', function () { $('chatInput').value = 'Sobre el diseño "' + dis.titulo + '": '; $('chatInput').focus(); });
+    if (bf) {
+      var marcar = function () { if (enGaleria(dis)) { bf.textContent = '❤️ Guardado'; bf.classList.add('guardado'); } else { bf.textContent = '❤️ Guardar'; bf.classList.remove('guardado'); } };
+      marcar();
+      bf.addEventListener('click', function () {
+        if (enGaleria(dis)) { toast('Ya está en Favoritos ❤️'); irAGaleria(); return; }
+        if (agregarAGaleria(dis)) { marcar(); toast('Guardado en Favoritos ❤️'); }
+      });
+    }
   }
   function exportarDiseno(dis, tipo) {
     if (!dis.svg) { toast('Pídeme que lo cree de nuevo'); return; }
@@ -1969,6 +2007,66 @@
         } else { descargarPng(canvas, 'diseno_bordado.png'); toast('Imagen lista  ✓'); }
       } catch (e) { toast('No se pudo generar el diseño'); }
     });
+  }
+
+  // ---- Galería de favoritos (localStorage) ----
+  var galeria = [];
+  var MAX_GALERIA = 60;
+  function cargarGaleria() { try { var s = JSON.parse(localStorage.getItem('alma_galeria') || '[]'); galeria = Array.isArray(s) ? s : []; } catch (e) { galeria = []; } }
+  function guardarGaleria() { try { localStorage.setItem('alma_galeria', JSON.stringify(galeria)); return true; } catch (e) { toast('No hay espacio para guardar más diseños'); return false; } }
+  function firmaDis(dis) { return (dis.titulo || '') + '|' + (dis.forma || '') + '|' + (dis.wCm || '') + 'x' + (dis.hCm || '') + '|' + (dis.svg || '').length + '|' + (dis.svg || '').slice(0, 80); }
+  function enGaleria(dis) { var f = firmaDis(dis); return galeria.some(function (g) { return g.firma === f; }); }
+  function nuevoId() { return 'd' + Date.now().toString(36) + Math.floor(Math.random() * 1e6).toString(36); }
+  function agregarAGaleria(dis) {
+    if (!dis.svg) { toast('Pídeme que lo cree de nuevo'); return false; }
+    if (enGaleria(dis)) return true;
+    var copia = { id: nuevoId(), firma: firmaDis(dis), titulo: dis.titulo, descripcion: dis.descripcion, forma: dis.forma, wCm: dis.wCm, hCm: dis.hCm, svg: dis.svg, colores: dis.colores || [], dificultad: dis.dificultad || '' };
+    galeria.unshift(copia);
+    if (galeria.length > MAX_GALERIA) galeria = galeria.slice(0, MAX_GALERIA);
+    var prev = galeria.slice();
+    if (!guardarGaleria()) { galeria = prev.slice(1); guardarGaleria(); return false; }
+    actualizarCuentaGaleria();
+    return true;
+  }
+  function quitarDeGaleria(id) {
+    galeria = galeria.filter(function (g) { return g.id !== id; });
+    guardarGaleria(); actualizarCuentaGaleria(); renderGaleria();
+  }
+  function actualizarCuentaGaleria() {
+    var c = $('galeriaCuenta'); if (c) c.textContent = galeria.length ? '(' + galeria.length + ')' : '';
+  }
+  function irAGaleria() { var tab = document.querySelector('.tab-btn[data-panel="panel-galeria"]'); if (tab) tab.click(); }
+  function renderGaleria() {
+    var grid = $('galeriaGrid'), vacia = $('galeriaVacia'); if (!grid) return;
+    grid.innerHTML = '';
+    if (!galeria.length) { if (vacia) vacia.style.display = 'block'; actualizarCuentaGaleria(); return; }
+    if (vacia) vacia.style.display = 'none';
+    galeria.forEach(function (dis) {
+      var medidas = dis.forma === 'circulo' ? ('⌀ ' + Number(dis.wCm).toFixed(1).replace(/\.0$/, '') + ' cm') : (Number(dis.wCm).toFixed(1) + ' × ' + Number(dis.hCm).toFixed(1) + ' cm');
+      var card = document.createElement('div'); card.className = 'gal-card';
+      card.innerHTML =
+        '<div class="gal-previa' + (dis.forma === 'circulo' ? ' circ' : '') + '"><span class="puntos">dibujando…</span></div>' +
+        '<div class="gal-tit">' + escaparHtml(dis.titulo || 'Diseño') + '</div>' +
+        '<div class="gal-meta">📐 ' + escaparHtml(medidas) + (dis.dificultad ? ' · ' + escaparHtml(String(dis.dificultad)) : '') + '</div>' +
+        '<div class="gal-acc">' +
+          '<button type="button" class="gal-pdf boton-sec">📄 PDF</button>' +
+          '<button type="button" class="gal-png boton-sec">🖼️ Imagen</button>' +
+          '<button type="button" class="gal-quitar boton-sec">🗑️</button>' +
+        '</div>';
+      grid.appendChild(card);
+      var cont = card.querySelector('.gal-previa');
+      renderDisenoCanvas(dis.svg, dis.forma, dis.wCm, dis.hCm, 40, dis.forma === 'circulo', function (canvas) {
+        if (!cont) return;
+        if (!canvas) { cont.innerHTML = '⚠️'; return; }
+        cont.innerHTML = ''; canvas.style.maxWidth = '100%'; canvas.style.height = 'auto'; cont.appendChild(canvas);
+      });
+      card.querySelector('.gal-pdf').addEventListener('click', function () { exportarDiseno(dis, 'pdf'); });
+      card.querySelector('.gal-png').addEventListener('click', function () { exportarDiseno(dis, 'png'); });
+      card.querySelector('.gal-quitar').addEventListener('click', function () {
+        if (confirm('¿Quitar "' + (dis.titulo || 'este diseño') + '" de Favoritos?')) quitarDeGaleria(dis.id);
+      });
+    });
+    actualizarCuentaGaleria();
   }
 
   // ---- Memoria de la conversación (localStorage) ----
@@ -2245,8 +2343,9 @@
       document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('activa'); b.setAttribute('aria-selected', 'false'); });
       document.querySelectorAll('.panel').forEach(function (p) { p.classList.remove('activa'); });
       btn.classList.add('activa'); btn.setAttribute('aria-selected', 'true'); $(btn.dataset.panel).classList.add('activa');
-      if (btn.dataset.panel !== 'panel-asistente') ultimoPanelDiseno = btn.dataset.panel;
-      else actualizarEstadoAsistente();
+      if (btn.dataset.panel === 'panel-asistente') actualizarEstadoAsistente();
+      else if (btn.dataset.panel === 'panel-galeria') renderGaleria();
+      else ultimoPanelDiseno = btn.dataset.panel;   // solo paneles con lienzo para "analizar"
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   });
@@ -2356,6 +2455,7 @@
     });
   })();
   cargarConversa(); renderConversa(); actualizarEstadoAsistente();
+  cargarGaleria(); actualizarCuentaGaleria();
 
   if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('swbordados.js').catch(function () {});
 })();
