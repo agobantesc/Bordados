@@ -162,6 +162,12 @@
     width: 100%; height: 48px; padding: 4px; border: 1px solid var(--borde-fuerte);
     border-radius: 11px; background: var(--papel-2); cursor: pointer;
   }
+  .swatches-bloque { margin-top: 12px; flex-basis: 100%; }
+  .swatches-tit { display: block; font-size: .8rem; font-weight: 600; color: var(--tinta-suave); margin-bottom: 7px; }
+  .swatches { display: flex; flex-wrap: wrap; gap: 8px; }
+  .swatch { width: 27px; height: 27px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.14); cursor: pointer; padding: 0; transition: transform .1s; }
+  .swatch:active { transform: scale(.88); }
+  .swatch.activa { box-shadow: 0 0 0 2px var(--superficie), 0 0 0 4px var(--trigo-osc); }
 
   .check-fila { display: flex; align-items: center; gap: 11px; margin-top: 14px; font-size: .96rem; cursor: pointer; }
   .check-fila input[type="checkbox"] { width: 23px; height: 23px; accent-color: var(--trigo-osc); flex-shrink: 0; }
@@ -211,6 +217,7 @@
   }
   .boton-pdf:disabled { opacity: .4; cursor: default; box-shadow: none; }
   .boton-pdf:not(:disabled):active { transform: translateY(1px); opacity: .92; }
+  .boton-img { display: block; width: 100%; margin-top: 10px; padding: 13px; }
   .boton-primario {
     padding: 13px 18px; font-size: 1rem; font-family: inherit; font-weight: 700; color: #fff; border: none;
     border-radius: 12px; cursor: pointer; background: linear-gradient(135deg, #7c6b57, #6f6151);
@@ -513,6 +520,7 @@
     </div>
   </div>
   <button class="boton-pdf" id="pdfRect" disabled>📄 Generar PDF para imprimir</button>
+  <button class="boton-sec boton-img" id="imgRect" type="button">🖼️ Guardar imagen (para compartir)</button>
 </section>
 
 <!-- ============ MODO 2 ============ -->
@@ -564,6 +572,7 @@
     </div>
   </div>
   <button class="boton-pdf" id="pdfCirc" disabled>📄 Generar PDF para imprimir</button>
+  <button class="boton-sec boton-img" id="imgCirc" type="button">🖼️ Guardar imagen (para compartir)</button>
 </section>
 
 <!-- ============ MODO 3 ============ -->
@@ -615,6 +624,7 @@
     <div class="pie" id="pieLetras"></div>
   </div>
   <button class="boton-pdf" id="pdfLetras" disabled>📄 Generar PDF para imprimir</button>
+  <button class="boton-sec boton-img" id="imgLetras" type="button">🖼️ Guardar imagen (para compartir)</button>
 </section>
 
 <!-- ============ MODO FOTO + TEXTO ============ -->
@@ -651,14 +661,10 @@
 
   <div class="tarjeta">
     <h2><span class="paso">3</span> Las palabras</h2>
-    <div class="fila">
-      <div class="campo" style="flex:1 1 100%;"><label for="textoFt">Texto (una palabra o frase por renglón)</label><textarea id="textoFt" rows="2" placeholder="Te amo" inputmode="text">Te amo</textarea></div>
-    </div>
-    <div class="fila" style="margin-top:12px;">
-      <div class="campo" style="flex:2 1 180px;"><label for="fuenteFt">Tipografía</label><select id="fuenteFt"></select></div>
-      <div class="campo" style="flex:0 1 110px;"><label for="altoLetraFt">Alto letra (cm)</label><input type="number" id="altoLetraFt" min="0.5" max="20" step="0.1" value="2.2" inputmode="decimal"></div>
-    </div>
-    <div class="fila" style="margin-top:12px;">
+    <p class="info-img" style="text-align:left; margin:-2px 0 12px;">Cada renglón puede tener su propia <strong>tipografía</strong> y <strong>tamaño</strong> (ej. “Te amo” en caligrafía y una fecha en serif chiquita).</p>
+    <div id="listaLineasFt"></div>
+    <button class="boton-anadir" id="btnAnadirLineaFt" type="button">➕ Añadir renglón</button>
+    <div class="fila" style="margin-top:16px;">
       <div class="campo"><label for="posicionFt">¿Dónde van las palabras?</label><select id="posicionFt">
         <option value="arriba" selected>Arriba de la foto</option>
         <option value="abajo">Debajo de la foto</option>
@@ -685,6 +691,7 @@
     </div>
   </div>
   <button class="boton-pdf" id="pdfFt" disabled>📄 Generar PDF para imprimir</button>
+  <button class="boton-sec boton-img" id="imgFt" type="button">🖼️ Guardar imagen (para compartir)</button>
 </section>
 
 <!-- ============ MODO 4 ============ -->
@@ -1034,6 +1041,18 @@
     toast('Generando PDF…');
     setTimeout(function () { try { fn(); toast('PDF listo  ✓'); } catch (e) { toast('Hubo un problema al generar el PDF'); } }, 50);
   }
+  function descargarPng(canvas, nombre) {
+    if (canvas.toBlob) canvas.toBlob(function (b) { if (b) descargar(b, nombre); else descargarPngData(canvas, nombre); }, 'image/png');
+    else descargarPngData(canvas, nombre);
+  }
+  function descargarPngData(canvas, nombre) {
+    try { var a = document.createElement('a'); a.href = canvas.toDataURL('image/png'); a.download = nombre; document.body.appendChild(a); a.click(); document.body.removeChild(a); }
+    catch (e) { toast('No se pudo guardar la imagen'); }
+  }
+  function generarImagen(fn) {
+    toast('Generando imagen…');
+    setTimeout(function () { try { fn(); toast('Imagen lista  ✓'); } catch (e) { toast('No se pudo generar la imagen'); } }, 50);
+  }
 
   // ---------- Dibujo ----------
   function aplicarFlip(ctx, w, h, flip) {
@@ -1096,7 +1115,8 @@
     return t;
   }
   // Dibuja UNA línea de texto. opts: fontCss, altoLineaCm, estilo, colorRelleno, colorContorno,
-  // grosor, espaciado, align, gradiente, color2, dir, sombra
+  // grosor, espaciado, align, gradiente, color2, dir, sombra, transparente
+  var ctxMedicion = document.createElement('canvas').getContext('2d');   // reutilizado para medir (evita crear lienzos en cada render)
   function dibujarTexto(texto, opts, dpi) {
     opts = opts || {};
     var fontCss = opts.fontCss || 'Georgia, serif';
@@ -1107,8 +1127,9 @@
     var align = opts.align || 'centro';
     var lineas = String(texto).split('\n'); if (!lineas.length) lineas = [''];
     var ref = 400;
-    var med = document.createElement('canvas').getContext('2d');
+    var med = ctxMedicion;
     med.font = ref + 'px ' + fontCss;
+    if (med.letterSpacing) med.letterSpacing = '0px';   // limpiar estado previo del contexto reutilizado
     var soporta = ('letterSpacing' in med);
     var um = med.measureText('Hg');
     var unidad = (um.actualBoundingBoxAscent || um.fontBoundingBoxAscent || ref * 0.72) + (um.actualBoundingBoxDescent || um.fontBoundingBoxDescent || ref * 0.21);
@@ -1311,7 +1332,7 @@
     var partes = lineas.map(function (l) {
       return dibujarTexto(aplicarCaso(l.texto, l.caso), {
         fontCss: l.fuente, altoLineaCm: l.alto, estilo: opts.estilo, colorRelleno: opts.colorRelleno, colorContorno: opts.colorContorno,
-        grosor: opts.grosor, espaciado: opts.espaciado, align: opts.align, gradiente: opts.gradiente, color2: opts.color2, dir: opts.dir, sombra: opts.sombra
+        grosor: opts.grosor, espaciado: opts.espaciado, align: opts.align, gradiente: opts.gradiente, color2: opts.color2, dir: opts.dir, sombra: opts.sombra, transparente: opts.transparente
       }, dpi);
     });
     if (!partes.length) return null;
@@ -1319,7 +1340,7 @@
     var w = 1, h = 0;
     partes.forEach(function (p, i) { w = Math.max(w, p.canvas.width); h += p.canvas.height + (i ? gap : 0); });
     var c = document.createElement('canvas'); c.width = w; c.height = Math.max(1, h);
-    var ctx = c.getContext('2d'); ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, c.width, c.height);
+    var ctx = c.getContext('2d'); if (!opts.transparente) { ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, c.width, c.height); }
     var y = 0;
     partes.forEach(function (p, i) {
       if (i) y += gap;
@@ -1408,8 +1429,33 @@
   var imgFt = null, flipFt = { x: false, y: false };
   var ftTxtPos = null;                 // posición libre del texto sobre la foto (fracciones 0..1 del centro) o null = usar preset
   var ftUltimoCentro = { fx: 0.5, fy: 0.5 };
-  llenarSelectFuentes($('fuenteFt'));
-  $('fuenteFt').value = "'Great Vibes', cursive";
+  var lineasFt = [], lineasFtSeq = 0;
+  function nuevaLineaFt(texto, alto, fuente) { return { id: ++lineasFtSeq, texto: texto || '', alto: alto || 2, fuente: fuente || cssDe(FUENTES[0]) }; }
+  function crearLineaCardFt(l) {
+    var row = document.createElement('div'); row.className = 'linea-letra';
+    row.innerHTML =
+      '<div class="campo" style="flex:2 1 150px;"><label>Texto</label><input type="text" class="lf-txt" inputmode="text"></div>' +
+      '<div class="campo" style="flex:0 1 96px;"><label>Alto (cm)</label><input type="number" class="lf-alto" min="0.4" max="25" step="0.1" inputmode="decimal"></div>' +
+      '<div class="campo" style="flex:2 1 160px;"><label>Tipografía</label><select class="lf-fuente"></select></div>' +
+      '<button class="ll-quitar" type="button" title="Quitar" aria-label="Quitar renglón">✕</button>';
+    var q = function (s) { return row.querySelector(s); };
+    llenarSelectFuentes(q('.lf-fuente'));
+    q('.lf-txt').value = l.texto; q('.lf-alto').value = l.alto; q('.lf-fuente').value = l.fuente;
+    q('.lf-txt').addEventListener('input', function () { l.texto = this.value; pedirRefrescoFt(); });
+    q('.lf-alto').addEventListener('input', function () { l.alto = parseFloat(this.value) || 0; pedirRefrescoFt(); });
+    q('.lf-fuente').addEventListener('change', function () { l.fuente = this.value; conFuenteLista(l.fuente, refrescarFt); });
+    q('.ll-quitar').addEventListener('click', function () { if (lineasFt.length <= 1) { toast('Debe quedar al menos un renglón'); return; } lineasFt = lineasFt.filter(function (x) { return x.id !== l.id; }); row.parentNode.removeChild(row); refrescarFt(); });
+    return row;
+  }
+  function anadirLineaFt(texto, alto, fuente) { var l = nuevaLineaFt(texto, alto, fuente); lineasFt.push(l); $('listaLineasFt').appendChild(crearLineaCardFt(l)); return l; }
+  function lineasValidasFt() { return lineasFt.filter(function (l) { return l.texto.trim() && l.alto > 0; }); }
+  function construirTextoFt(dpi, sobre) {
+    var validas = lineasValidasFt(); if (!validas.length) return null;
+    return construirCanvasLetras(validas, {
+      estilo: $('estiloFt').value, colorRelleno: $('colorFt').value, colorContorno: $('colorFt').value,
+      grosor: 0.4, espaciado: 0, align: 'centro', interlinea: 0, sombra: sobre, transparente: true
+    }, dpi);
+  }
   function formaFt() { var r = document.querySelector('input[name="formaFt"]:checked'); return r ? r.value : 'rect'; }
   function ftSobre() { return $('posicionFt').value.indexOf('sobre') === 0; }
   function ftFotoDims() {
@@ -1427,18 +1473,11 @@
     } else {
       var aw = num('anchoFt'), ah = num('altoFt'); foto = dibujarRect(imgFt, aw, ah, dpi, flipFt); fotoWcm = aw; fotoHcm = ah;
     }
-    // 2) Lienzo del texto (si hay)
-    var texto = $('textoFt').value.replace(/\s+$/, '');
+    // 2) Lienzo del texto (cada renglón con su tipografía y tamaño)
     var posicion = $('posicionFt').value, sobre = posicion.indexOf('sobre') === 0;
     var txt = null, txtWcm = 0, txtHcm = 0;
-    if (texto.trim()) {
-      var r2 = dibujarTexto(texto, {
-        fontCss: $('fuenteFt').value, altoLineaCm: num('altoLetraFt') || 2,
-        estilo: $('estiloFt').value, colorRelleno: $('colorFt').value, colorContorno: $('colorFt').value,
-        grosor: 0.4, align: 'centro', sombra: sobre, transparente: true
-      }, dpi);
-      txt = r2.canvas; txtWcm = r2.wCm; txtHcm = r2.hCm;
-    }
+    var rt = construirTextoFt(dpi, sobre);
+    if (rt) { txt = rt.canvas; txtWcm = rt.wCm; txtHcm = rt.hCm; }
     // 3) Composición
     var gap = 0.5, padSobre = Math.max(0.5, fotoHcm * 0.06);
     var totalWcm, totalHcm, fotoX, fotoY, txtX, txtY;
@@ -1492,8 +1531,7 @@
     $('flipFtY').classList.toggle('activo', flipFt.y); $('flipFtY').setAttribute('aria-pressed', flipFt.y ? 'true' : 'false');
     var medidasOk = forma === 'circulo' ? num('diametroFt') > 0 : (num('anchoFt') > 0 && num('altoFt') > 0);
     var listo = imgFt && medidasOk;
-    var conTexto = $('textoFt').value.trim().length > 0;
-    var arrastrable = listo && conTexto && ftSobre();
+    var arrastrable = listo && lineasValidasFt().length > 0 && ftSobre();
     $('pdfFt').disabled = !listo;
     $('previaFt').classList.toggle('arrastrable', arrastrable);
     $('ftAyudaArrastre').style.display = arrastrable ? 'block' : 'none';
@@ -1503,7 +1541,7 @@
       $('pieFt').textContent = imgFt ? 'Indica el tamaño de la foto' : 'Sube una foto para empezar';
       $('avisoFt').classList.remove('visible'); return;
     }
-    conFuenteLista($('fuenteFt').value, function () {
+    conFuentesListas(lineasValidasFt().map(function (l) { return l.fuente; }), function () {
       var r = componerFotoTexto(30);
       var pagina = elegirPagina($('hojaFt').value, r.wCm, r.hCm);
       dibujarPrevia($('previaFt'), r.canvas, r.wCm, r.hCm, pagina);
@@ -1514,10 +1552,10 @@
   function pedirRefrescoFt() { programar('ft', refrescarFt); }
   conectarSubida('zonaFt', 'archivoFt', 'infoFt', function (img) { imgFt = img; flipFt.x = false; flipFt.y = false; refrescarFt(); });
   document.querySelectorAll('input[name="formaFt"]').forEach(function (r) { r.addEventListener('change', refrescarFt); });
-  ['anchoFt', 'altoFt', 'diametroFt', 'altoLetraFt', 'textoFt'].forEach(function (id) { $(id).addEventListener('input', pedirRefrescoFt); });
+  ['anchoFt', 'altoFt', 'diametroFt'].forEach(function (id) { $(id).addEventListener('input', pedirRefrescoFt); });
   ['hojaFt', 'estiloFt', 'colorFt'].forEach(function (id) { $(id).addEventListener('change', pedirRefrescoFt); $(id).addEventListener('input', pedirRefrescoFt); });
   $('posicionFt').addEventListener('change', function () { ftTxtPos = null; pedirRefrescoFt(); });   // un preset cancela el arrastre
-  $('fuenteFt').addEventListener('change', function () { conFuenteLista($('fuenteFt').value, refrescarFt); });
+  $('btnAnadirLineaFt').addEventListener('click', function () { anadirLineaFt('', 1.6); refrescarFt(); });
   $('flipFtX').addEventListener('click', function () { flipFt.x = !flipFt.x; refrescarFt(); });
   $('flipFtY').addEventListener('click', function () { flipFt.y = !flipFt.y; refrescarFt(); });
   $('btnCentrarTextoFt').addEventListener('click', function () { ftTxtPos = null; refrescarFt(); });
@@ -1525,7 +1563,7 @@
   (function () {
     var canvas = $('previaFt'); var arrastrando = false, ultX = 0, ultY = 0;
     canvas.addEventListener('pointerdown', function (e) {
-      if (!imgFt || !ftSobre() || !$('textoFt').value.trim()) return;
+      if (!imgFt || !ftSobre() || !lineasValidasFt().length) return;
       arrastrando = true; ultX = e.clientX; ultY = e.clientY;
       if (!ftTxtPos) ftTxtPos = { fx: ftUltimoCentro.fx, fy: ftUltimoCentro.fy };
       try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
@@ -1543,15 +1581,18 @@
     });
     ['pointerup', 'pointercancel'].forEach(function (ev) { canvas.addEventListener(ev, function () { arrastrando = false; }); });
   })();
+  function renderFtHiRes() {
+    var probe = componerFotoTexto(36);
+    var r = componerFotoTexto(dpiSeguro(Math.max(probe.wCm, probe.hCm, 1)));
+    r.pagina = elegirPagina($('hojaFt').value, r.wCm, r.hCm);
+    return r;
+  }
+  function conFuentesFt(cb) { conFuentesListas(lineasValidasFt().map(function (l) { return l.fuente; }), cb); }
   $('pdfFt').addEventListener('click', function () {
-    generarPdf(function () {
-      conFuenteLista($('fuenteFt').value, function () {
-        var probe = componerFotoTexto(36);
-        var r = componerFotoTexto(dpiSeguro(Math.max(probe.wCm, probe.hCm, 1)));
-        var pagina = elegirPagina($('hojaFt').value, r.wCm, r.hCm);
-        descargar(pdfImagenCentrada(r.canvas, r.wCm, r.hCm, pagina), 'foto_texto_bordado.pdf');
-      });
-    });
+    generarPdf(function () { conFuentesFt(function () {
+      var r = renderFtHiRes();
+      descargar(pdfImagenCentrada(r.canvas, r.wCm, r.hCm, r.pagina), 'foto_texto_bordado.pdf');
+    }); });
   });
 
   // ---------- MODO 4 ----------
@@ -1725,12 +1766,14 @@
     if (p.tipo === 'foto_texto') {
       var tabFt = document.querySelector('.tab-btn[data-panel="panel-fototexto"]');
       if (tabFt) tabFt.click();
-      $('textoFt').value = lns.map(function (l) { return l.texto || ''; }).join('\n').trim() || 'Texto';
-      if (lns[0]) { $('fuenteFt').value = cssDeNombre(lns[0].fuente); $('altoLetraFt').value = parseFloat(lns[0].alto_cm) || 2.2; }
+      lineasFt = []; $('listaLineasFt').innerHTML = '';
+      lns.forEach(function (ln) { anadirLineaFt(ln.texto || '', parseFloat(ln.alto_cm) || 2, cssDeNombre(ln.fuente)); });
+      if (!lineasFt.length) anadirLineaFt('Te amo', 2.4, "'Great Vibes', cursive");
       if (p.estilo) $('estiloFt').value = p.estilo;
-      if (p.color) $('colorFt').value = colorSeguro(p.color);
+      if (p.color) { $('colorFt').value = colorSeguro(p.color); $('colorFt').dispatchEvent(new Event('input')); }
       if (p.posicion && POS_TXT[p.posicion]) $('posicionFt').value = p.posicion;
-      conFuenteLista($('fuenteFt').value, refrescarFt);
+      ftTxtPos = null;
+      conFuentesListas(lineasFt.map(function (l) { return l.fuente; }), refrescarFt);
       toast(imgFt ? 'Propuesta aplicada ✓' : 'Propuesta aplicada ✓ — ahora sube tu foto');
       return;
     }
@@ -1742,8 +1785,8 @@
     if (!lineasLetras.length) anadirLinea('', 4);
     if (p.estilo) $('estiloLetras').value = p.estilo;
     if (p.alineacion) $('alinearLetras').value = p.alineacion;
-    if (p.color) $('colorRelleno').value = colorSeguro(p.color);
-    if (p.color_contorno) $('colorContorno').value = colorSeguro(p.color_contorno);
+    if (p.color) { $('colorRelleno').value = colorSeguro(p.color); $('colorRelleno').dispatchEvent(new Event('input')); }
+    if (p.color_contorno) { $('colorContorno').value = colorSeguro(p.color_contorno); $('colorContorno').dispatchEvent(new Event('input')); }
     refrescarLetras();
     toast('Propuesta aplicada ✓ — ajústala a tu gusto');
   }
@@ -1896,12 +1939,79 @@
     guardarConfig(); aplicarMarca(); actualizarEstadoAsistente(); cerrarAjustes(); toast('Ajustes guardados  ✓');
   });
 
+  // ---------- Paleta pastel de colores (acceso rápido) ----------
+  var PALETA = ['#6f6151', '#5c4f41', '#2e2a25', '#b89a6a', '#cbb088', '#d8c4a0', '#a9745a', '#c98b8b', '#e7c9c9', '#cdd5da', '#9aa9b2', '#bcc6b4', '#94a18a', '#8a7d9b', '#ffffff'];
+  function crearFilaSwatches(getActual, onPick) {
+    var wrap = document.createElement('div'); wrap.className = 'swatches-bloque';
+    var tit = document.createElement('span'); tit.className = 'swatches-tit'; tit.textContent = '🎨 Colores sugeridos';
+    var cont = document.createElement('div'); cont.className = 'swatches';
+    function marcar() {
+      var val = (getActual() || '').toLowerCase();
+      cont.querySelectorAll('.swatch').forEach(function (s) { s.classList.toggle('activa', s.dataset.col === val); });
+    }
+    PALETA.forEach(function (col) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'swatch';
+      b.style.background = col; b.dataset.col = col.toLowerCase(); b.title = col; b.setAttribute('aria-label', 'Color ' + col);
+      b.addEventListener('click', function () { onPick(col); marcar(); });
+      cont.appendChild(b);
+    });
+    wrap.appendChild(tit); wrap.appendChild(cont); marcar();
+    return { wrap: wrap, marcar: marcar };
+  }
+  (function montarPaletas() {
+    // Letras: aplica al color que esté en uso según el trazo (contorno usa el color de contorno)
+    var sl = crearFilaSwatches(
+      function () { return $('estiloLetras').value === 'contorno' ? $('colorContorno').value : $('colorRelleno').value; },
+      function (col) { if ($('estiloLetras').value === 'contorno') $('colorContorno').value = col; else $('colorRelleno').value = col; pedirRefrescoLetras(); }
+    );
+    var fl = $('colorRelleno').closest('.fila'); fl.parentNode.insertBefore(sl.wrap, fl.nextSibling);
+    ['colorRelleno', 'colorContorno', 'estiloLetras'].forEach(function (id) { $(id).addEventListener('input', sl.marcar); $(id).addEventListener('change', sl.marcar); });
+    // Foto + texto
+    var sf = crearFilaSwatches(function () { return $('colorFt').value; }, function (col) { $('colorFt').value = col; pedirRefrescoFt(); });
+    var ff = $('colorFt').closest('.fila'); ff.parentNode.insertBefore(sf.wrap, ff.nextSibling);
+    $('colorFt').addEventListener('input', sf.marcar);
+  })();
+
+  // ---------- Guardar imagen PNG (para compartir) ----------
+  $('imgRect').addEventListener('click', function () {
+    if ($('pdfRect').disabled) { toast('Primero sube una imagen y define el tamaño'); return; }
+    var anchoCm = num('anchoRect'), altoCm = num('altoRect');
+    generarImagen(function () {
+      var canvas = dibujarRect(imgRect, anchoCm, altoCm, dpiSeguro(Math.max(anchoCm, altoCm)), flipRect);
+      descargarPng(canvas, 'bordado_' + anchoCm.toFixed(1) + 'x' + altoCm.toFixed(1) + 'cm.png');
+    });
+  });
+  $('imgCirc').addEventListener('click', function () {
+    if ($('pdfCirc').disabled) { toast('Primero sube una imagen y define el diámetro'); return; }
+    var d = num('diametroCirc');
+    generarImagen(function () {
+      var res = dibujarCirculo(imgCirc, d / 2, modoCirculo(), num('anchoCentro'), $('guiaCirc').checked, dpiSeguro(d + 0.6), { dx: desplCirc.x, dy: desplCirc.y, zoom: zoomCirc, flip: flipCirc });
+      descargarPng(res.canvas, 'bastidor_' + d.toFixed(1) + 'cm.png');
+    });
+  });
+  $('imgLetras').addEventListener('click', function () {
+    var o = opcionesGlobLetras(), validas = lineasValidasLetras();
+    if (!validas.length) { toast('Escribe al menos un renglón'); return; }
+    generarImagen(function () {
+      conFuentesListas(validas.map(function (l) { return l.fuente; }), function () {
+        var prov = construirCanvasLetras(validas, o, 30);
+        var r = construirCanvasLetras(validas, o, dpiSeguro(Math.max(prov.wCm, prov.hCm, 10)));
+        descargarPng(r.canvas, 'letras_bordado.png');
+      });
+    });
+  });
+  $('imgFt').addEventListener('click', function () {
+    if ($('pdfFt').disabled) { toast('Primero sube una foto y define el tamaño'); return; }
+    generarImagen(function () { conFuentesFt(function () { descargarPng(renderFtHiRes().canvas, 'foto_texto_bordado.png'); }); });
+  });
+
   // ---------- Inicio ----------
   cargarConfig(); aplicarMarca();
   refrescarRect();
   refrescarCirc();
   anadirLinea('Alma', 6, "'Great Vibes', cursive"); anadirLinea('bordado', 3.4, "'Cormorant Garamond', serif");
   refrescarLetras();
+  anadirLineaFt('Te amo', 2.4, "'Great Vibes', cursive");
   refrescarFt();
   (function () { var it = nuevoItemComp(); itemsComp.push(it); $('listaComp').appendChild(crearTarjetaComp(it)); refrescarComp(); })();
 
