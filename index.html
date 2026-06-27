@@ -309,6 +309,33 @@
   @media (min-width: 760px) { .flor-tr { width: 400px; right: -30px; } .flor-bl { width: 400px; left: -30px; } .flor-md { width: 300px; left: -50px; } }
 
   footer { text-align: center; margin-top: 26px; color: var(--tinta-suave); font-size: .85rem; }
+
+  /* ---------- Retoque estético (pastel + flores) ---------- */
+  .radios-fila { flex-direction: row; flex-wrap: wrap; }
+  .radios-fila .radio-opcion { flex: 1 1 140px; }
+  /* Acento floral pastel arriba de cada tarjeta */
+  .tarjeta::before {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, #e7c9c9, #d8c4a0 38%, #cdd5da 70%, #bcc6b4);
+    opacity: .8;
+  }
+  .tarjeta.vista-previa::before { opacity: .5; }
+  @media (hover: hover) {
+    .tarjeta { transition: box-shadow .18s, transform .18s; }
+    .tarjeta:hover { box-shadow: 0 10px 28px rgba(111,97,81,0.12); transform: translateY(-1px); }
+    .chip:hover { background: #ece2cd; border-color: var(--trigo-osc); }
+    .tab-btn:not(.activa):hover { background: var(--papel-2); color: var(--tinta); }
+  }
+  /* Burbujas del chat: aparición suave y acento de Alma */
+  .burbuja { animation: burbujaEntra .22s ease; }
+  @keyframes burbujaEntra { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+  .burbuja.ia { border-left: 3px solid var(--salvia); }
+  .chat-vacio .chip { background: #fff; }
+  /* Margaritas un poco más presentes */
+  .flor-tr { opacity: .3; }
+  .flor-bl { opacity: .26; }
+  .flor-md { opacity: .17; }
+  .flor-tarjeta { opacity: .2; }
 </style>
 </head>
 <body>
@@ -442,6 +469,7 @@
   <button class="tab-btn activa" data-panel="panel-rect"><span class="ti">🖼️</span>Imagen a medida</button>
   <button class="tab-btn" data-panel="panel-circulo"><span class="ti">⭕</span>Bastidor circular</button>
   <button class="tab-btn" data-panel="panel-letras"><span class="ti">✍️</span>Letras y palabras</button>
+  <button class="tab-btn" data-panel="panel-fototexto"><span class="ti">🌸</span>Foto + texto</button>
   <button class="tab-btn" data-panel="panel-varios"><span class="ti">🧩</span>Varios en una hoja</button>
   <button class="tab-btn" data-panel="panel-asistente"><span class="ti">🪡</span>Asistente</button>
 </nav>
@@ -587,6 +615,74 @@
   <button class="boton-pdf" id="pdfLetras" disabled>📄 Generar PDF para imprimir</button>
 </section>
 
+<!-- ============ MODO FOTO + TEXTO ============ -->
+<section id="panel-fototexto" class="panel">
+  <p class="intro">Combina una foto con palabras en una sola plantilla: por ejemplo tu foto con un “Te amo” arriba, un nombre debajo o una frase sobre la imagen.</p>
+  <svg class="divisor" viewBox="0 0 150 22"><use href="#divisorBot"/></svg>
+
+  <div class="tarjeta">
+    <svg class="flor-tarjeta" viewBox="0 0 80 80"><use href="#margaritaRosa" transform="translate(40,40)"/></svg>
+    <h2><span class="paso">1</span> Sube tu foto</h2>
+    <label class="zona-subida" id="zonaFt" for="archivoFt"><span class="icono">🖼️</span><p>Toca aquí para elegir una foto</p></label>
+    <input type="file" id="archivoFt" accept="image/jpeg,image/png,image/gif,image/webp,image/bmp">
+    <div class="info-img" id="infoFt"></div>
+  </div>
+
+  <div class="tarjeta">
+    <h2><span class="paso">2</span> Forma y tamaño de la foto</h2>
+    <div class="radios radios-fila">
+      <label class="radio-opcion elegida" id="opFtRect"><input type="radio" name="formaFt" value="rect" checked><span><strong>Rectangular</strong><small>Ancho y alto a tu gusto.</small></span></label>
+      <label class="radio-opcion" id="opFtCirc"><input type="radio" name="formaFt" value="circulo"><span><strong>Circular</strong><small>Para bastidor redondo.</small></span></label>
+    </div>
+    <div class="fila" id="ftMedidasRect" style="margin-top:14px;">
+      <div class="campo"><label for="anchoFt">Ancho (cm)</label><input type="number" id="anchoFt" min="2" max="100" step="0.1" value="12" inputmode="decimal"></div>
+      <div class="campo"><label for="altoFt">Alto (cm)</label><input type="number" id="altoFt" min="2" max="100" step="0.1" value="9" inputmode="decimal"></div>
+    </div>
+    <div class="fila" id="ftMedidasCirc" style="display:none; margin-top:14px;">
+      <div class="campo"><label for="diametroFt">Diámetro (cm)</label><input type="number" id="diametroFt" min="4" max="60" step="0.1" value="14" inputmode="decimal"></div>
+    </div>
+    <div class="fila" style="margin-top:12px;">
+      <div class="campo"><label for="hojaFt">Hoja</label><select id="hojaFt"><option value="A4" selected>A4 (21 × 29,7 cm)</option><option value="Carta">Carta (21,6 × 27,9 cm)</option><option value="A3">A3 (29,7 × 42 cm)</option></select></div>
+    </div>
+    <div class="aviso alerta" id="avisoFt"></div>
+  </div>
+
+  <div class="tarjeta">
+    <h2><span class="paso">3</span> Las palabras</h2>
+    <div class="fila">
+      <div class="campo" style="flex:1 1 100%;"><label for="textoFt">Texto (una palabra o frase por renglón)</label><textarea id="textoFt" rows="2" placeholder="Te amo" inputmode="text">Te amo</textarea></div>
+    </div>
+    <div class="fila" style="margin-top:12px;">
+      <div class="campo" style="flex:2 1 180px;"><label for="fuenteFt">Tipografía</label><select id="fuenteFt"></select></div>
+      <div class="campo" style="flex:0 1 110px;"><label for="altoLetraFt">Alto letra (cm)</label><input type="number" id="altoLetraFt" min="0.5" max="20" step="0.1" value="2.2" inputmode="decimal"></div>
+    </div>
+    <div class="fila" style="margin-top:12px;">
+      <div class="campo"><label for="posicionFt">¿Dónde van las palabras?</label><select id="posicionFt">
+        <option value="arriba" selected>Arriba de la foto</option>
+        <option value="abajo">Debajo de la foto</option>
+        <option value="sobre-arriba">Sobre la foto · arriba</option>
+        <option value="sobre-centro">Sobre la foto · al centro</option>
+        <option value="sobre-abajo">Sobre la foto · abajo</option>
+      </select></div>
+      <div class="campo"><label for="estiloFt">Trazo</label><select id="estiloFt"><option value="contorno" selected>Solo contorno — para calcar</option><option value="relleno">Relleno — letras macizas</option><option value="ambos">Relleno + contorno</option></select></div>
+    </div>
+    <div class="fila" style="margin-top:12px;">
+      <div class="campo campo-color"><label for="colorFt">Color del texto</label><input type="color" id="colorFt" value="#6f6151"></div>
+    </div>
+  </div>
+
+  <div class="tarjeta vista-previa">
+    <h2><span class="paso">4</span> Vista previa</h2>
+    <div class="lienzo-wrap"><canvas id="previaFt" width="300" height="420"></canvas></div>
+    <div class="pie" id="pieFt"></div>
+    <div class="controles-previa">
+      <button class="boton-sec" id="flipFtX" type="button">⇋ Espejo</button>
+      <button class="boton-sec" id="flipFtY" type="button">⇅ Voltear</button>
+    </div>
+  </div>
+  <button class="boton-pdf" id="pdfFt" disabled>📄 Generar PDF para imprimir</button>
+</section>
+
 <!-- ============ MODO 4 ============ -->
 <section id="panel-varios" class="panel">
   <p class="intro">Aprovecha el papel: coloca varios diseños pequeños (bastidores, rectángulos o letras) en la misma hoja.</p>
@@ -617,11 +713,11 @@
 
 <!-- ============ MODO 5: ASISTENTE IA ============ -->
 <section id="panel-asistente" class="panel">
-  <p class="intro">Tu asistente de bordado: pídele ideas de diseño, combinaciones de hilos y colores, o que evalúe el diseño que tienes en pantalla.</p>
+  <p class="intro">Alma, tu asistente de bordado: pídele ideas, que diseñe un “Te amo” para tu foto, combinaciones de hilos y colores, o que evalúe lo que tienes en pantalla. Recuerda lo que conversan en este dispositivo.</p>
   <svg class="divisor" viewBox="0 0 150 22"><use href="#divisorBot"/></svg>
 
   <div class="tarjeta">
-    <h2><span class="paso">🪡</span> Asistente de bordado</h2>
+    <h2><span class="paso">🪡</span> Alma · asistente de bordado</h2>
     <div class="aviso-clave" id="avisoSinClave" style="display:none;">
       Para usar el asistente, agrega tu <strong>clave API de Anthropic</strong> en Ajustes. Se guarda solo en este dispositivo y cada consulta se cobra a esa cuenta (unos centavos).
       <button class="boton-sec" id="irAjustesIA" type="button">⚙️ Abrir Ajustes</button>
@@ -629,7 +725,8 @@
     <div id="zonaChat" style="display:none;">
       <div class="chat-msgs" id="chatMsgs">
         <div class="chat-vacio" id="chatVacio">
-          <p style="margin-bottom:10px;">✨ Pregúntame lo que quieras. Por ejemplo:</p>
+          <p style="margin-bottom:6px;">🌸 ¡Hola! Soy <strong>Alma</strong>. Cuéntame qué quieres bordar y lo pensamos juntas.</p>
+          <p style="margin-bottom:10px; font-size:.9rem;">Puedo proponerte diseños, elegir tipografías y colores, o evaluar tu vista previa. Por ejemplo:</p>
           <div class="chips" id="chipsAsist" style="justify-content:center;"></div>
         </div>
       </div>
@@ -1027,11 +1124,12 @@
     var sombra = opts.sombra ? fontPx * 0.05 : 0;
     var pad = objetivoPx * 0.2 + (estilo !== 'relleno' ? grosorPx : 0) + sombra * 2;
     var slot = objetivoPx * 1.34;
+    var rawW = anchoMax + pad * 2, rawH = slot * lineas.length + pad * 2;
     var c = document.createElement('canvas');
-    c.width = Math.max(1, Math.ceil(anchoMax + pad * 2));
-    c.height = Math.max(1, Math.ceil(slot * lineas.length + pad * 2));
+    c.width = Math.max(1, Math.ceil(rawW));
+    c.height = Math.max(1, Math.ceil(rawH));
     var ctx = c.getContext('2d');
-    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, c.width, c.height);
+    if (!opts.transparente) { ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, c.width, c.height); }
     ctx.font = fontPx + 'px ' + fontCss; if (soporta) ctx.letterSpacing = espPx + 'px';
     ctx.textBaseline = 'middle'; ctx.lineJoin = 'round'; ctx.lineWidth = Math.max(1, grosorPx);
     var relleno = opts.colorRelleno || '#000';
@@ -1055,7 +1153,7 @@
       else { ctx.fillText(l, x, y); if (sombra) { ctx.shadowColor = 'transparent'; } ctx.strokeText(l, x, y); }
       if (sombra) ctx.restore();
     });
-    return { canvas: c, wCm: c.width / dpi * 2.54, hCm: c.height / dpi * 2.54 };
+    return { canvas: c, wCm: rawW / dpi * 2.54, hCm: rawH / dpi * 2.54 };
   }
   function espejarCanvas(canvas) {
     var c = document.createElement('canvas'); c.width = canvas.width; c.height = canvas.height;
@@ -1302,6 +1400,110 @@
     });
   });
 
+  // ---------- MODO FOTO + TEXTO ----------
+  var imgFt = null, flipFt = { x: false, y: false };
+  llenarSelectFuentes($('fuenteFt'));
+  $('fuenteFt').value = "'Great Vibes', cursive";
+  function formaFt() { var r = document.querySelector('input[name="formaFt"]:checked'); return r ? r.value : 'rect'; }
+  // Compone la foto + el texto en un solo lienzo a tamaño real. dpi = puntos por pulgada.
+  function componerFotoTexto(dpi) {
+    var forma = formaFt(), px = function (cm) { return cm / 2.54 * dpi; };
+    // 1) Lienzo de la foto
+    var foto, fotoWcm, fotoHcm;
+    if (forma === 'circulo') {
+      var diam = num('diametroFt'); var res = dibujarCirculo(imgFt, diam / 2, 'lleno', 0, false, dpi, { flip: flipFt });
+      foto = res.canvas; fotoWcm = fotoHcm = res.ladoCm;
+    } else {
+      var aw = num('anchoFt'), ah = num('altoFt'); foto = dibujarRect(imgFt, aw, ah, dpi, flipFt); fotoWcm = aw; fotoHcm = ah;
+    }
+    // 2) Lienzo del texto (si hay)
+    var texto = $('textoFt').value.replace(/\s+$/, '');
+    var posicion = $('posicionFt').value, sobre = posicion.indexOf('sobre') === 0;
+    var txt = null, txtWcm = 0, txtHcm = 0;
+    if (texto.trim()) {
+      var r2 = dibujarTexto(texto, {
+        fontCss: $('fuenteFt').value, altoLineaCm: num('altoLetraFt') || 2,
+        estilo: $('estiloFt').value, colorRelleno: $('colorFt').value, colorContorno: $('colorFt').value,
+        grosor: 0.4, align: 'centro', sombra: sobre, transparente: true
+      }, dpi);
+      txt = r2.canvas; txtWcm = r2.wCm; txtHcm = r2.hCm;
+    }
+    // 3) Composición
+    var gap = 0.5, padSobre = Math.max(0.5, fotoHcm * 0.06);
+    var totalWcm, totalHcm, fotoX, fotoY, txtX, txtY;
+    if (!txt) { totalWcm = fotoWcm; totalHcm = fotoHcm; }
+    else if (sobre) {
+      // El texto va SOBRE la foto: la plantilla mide lo mismo que la foto y el
+      // texto se escala (si hace falta) para caber dentro con un margen.
+      totalWcm = fotoWcm; totalHcm = fotoHcm; fotoX = 0; fotoY = 0;
+      var maxW = Math.max(0.1, fotoWcm - padSobre * 2), maxH = Math.max(0.1, fotoHcm - padSobre * 2);
+      var esc = Math.min(1, maxW / txtWcm, maxH / txtHcm);
+      txtWcm *= esc; txtHcm *= esc;
+      txtX = (fotoWcm - txtWcm) / 2;
+      if (posicion === 'sobre-arriba') txtY = padSobre;
+      else if (posicion === 'sobre-abajo') txtY = fotoHcm - txtHcm - padSobre;
+      else txtY = (fotoHcm - txtHcm) / 2;
+    } else {
+      totalWcm = Math.max(fotoWcm, txtWcm); totalHcm = fotoHcm + txtHcm + gap;
+      fotoX = (totalWcm - fotoWcm) / 2; txtX = (totalWcm - txtWcm) / 2;
+      if (posicion === 'arriba') { txtY = 0; fotoY = txtHcm + gap; }
+      else { fotoY = 0; txtY = fotoHcm + gap; }
+    }
+    var c = document.createElement('canvas');
+    c.width = Math.max(1, Math.round(px(totalWcm)));
+    c.height = Math.max(1, Math.round(px(totalHcm)));
+    var ctx = c.getContext('2d');
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, c.width, c.height);
+    if (!txt) { ctx.drawImage(foto, 0, 0, c.width, c.height); }
+    else {
+      ctx.drawImage(foto, Math.round(px(fotoX)), Math.round(px(fotoY)), Math.round(px(fotoWcm)), Math.round(px(fotoHcm)));
+      ctx.drawImage(txt, Math.round(px(txtX)), Math.round(px(txtY)), Math.round(px(txtWcm)), Math.round(px(txtHcm)));
+    }
+    return { canvas: c, wCm: totalWcm, hCm: totalHcm };
+  }
+  function refrescarFt() {
+    var forma = formaFt();
+    $('ftMedidasRect').style.display = forma === 'rect' ? 'flex' : 'none';
+    $('ftMedidasCirc').style.display = forma === 'circulo' ? 'flex' : 'none';
+    $('opFtRect').classList.toggle('elegida', forma === 'rect');
+    $('opFtCirc').classList.toggle('elegida', forma === 'circulo');
+    $('flipFtX').classList.toggle('activo', flipFt.x); $('flipFtX').setAttribute('aria-pressed', flipFt.x ? 'true' : 'false');
+    $('flipFtY').classList.toggle('activo', flipFt.y); $('flipFtY').setAttribute('aria-pressed', flipFt.y ? 'true' : 'false');
+    var medidasOk = forma === 'circulo' ? num('diametroFt') > 0 : (num('anchoFt') > 0 && num('altoFt') > 0);
+    var listo = imgFt && medidasOk;
+    $('pdfFt').disabled = !listo;
+    if (!listo) {
+      dibujarPrevia($('previaFt'), null, 1, 1, HOJAS.A4);
+      $('pieFt').textContent = imgFt ? 'Indica el tamaño de la foto' : 'Sube una foto para empezar';
+      $('avisoFt').classList.remove('visible'); return;
+    }
+    conFuenteLista($('fuenteFt').value, function () {
+      var r = componerFotoTexto(30);
+      var pagina = elegirPagina($('hojaFt').value, r.wCm, r.hCm);
+      dibujarPrevia($('previaFt'), r.canvas, r.wCm, r.hCm, pagina);
+      $('pieFt').textContent = 'Diseño de ' + r.wCm.toFixed(1) + ' × ' + r.hCm.toFixed(1) + ' cm en hoja ' + $('hojaFt').value;
+      avisarSiNoCabe('avisoFt', r.wCm, r.hCm, pagina);
+    });
+  }
+  function pedirRefrescoFt() { programar('ft', refrescarFt); }
+  conectarSubida('zonaFt', 'archivoFt', 'infoFt', function (img) { imgFt = img; flipFt.x = false; flipFt.y = false; refrescarFt(); });
+  document.querySelectorAll('input[name="formaFt"]').forEach(function (r) { r.addEventListener('change', refrescarFt); });
+  ['anchoFt', 'altoFt', 'diametroFt', 'altoLetraFt', 'textoFt'].forEach(function (id) { $(id).addEventListener('input', pedirRefrescoFt); });
+  ['hojaFt', 'posicionFt', 'estiloFt', 'colorFt'].forEach(function (id) { $(id).addEventListener('change', pedirRefrescoFt); $(id).addEventListener('input', pedirRefrescoFt); });
+  $('fuenteFt').addEventListener('change', function () { conFuenteLista($('fuenteFt').value, refrescarFt); });
+  $('flipFtX').addEventListener('click', function () { flipFt.x = !flipFt.x; refrescarFt(); });
+  $('flipFtY').addEventListener('click', function () { flipFt.y = !flipFt.y; refrescarFt(); });
+  $('pdfFt').addEventListener('click', function () {
+    generarPdf(function () {
+      conFuenteLista($('fuenteFt').value, function () {
+        var probe = componerFotoTexto(36);
+        var r = componerFotoTexto(dpiSeguro(Math.max(probe.wCm, probe.hCm, 1)));
+        var pagina = elegirPagina($('hojaFt').value, r.wCm, r.hCm);
+        descargar(pdfImagenCentrada(r.canvas, r.wCm, r.hCm, pagina), 'foto_texto_bordado.pdf');
+      });
+    });
+  });
+
   // ---------- MODO 4 ----------
   var itemsComp = [], compSeq = 0, GAP_COMP = 0.6;
   function nuevoItemComp() { return { id: ++compSeq, tipo: 'circulo', img: null, diametro: 8, ancho: 6, alto: 6, guia: true, texto: 'Nombre', fuente: cssDe(FUENTES[0]), altoLetra: 2, estilo: 'contorno', color: '#6f6151', cantidad: 1 }; }
@@ -1399,20 +1601,32 @@
   //  MODO 5 · Asistente IA (llama a la API de Anthropic con la clave propia)
   // ====================================================================
   var ultimoPanelDiseno = 'panel-rect';
-  var NOMBRE_PANEL = { 'panel-rect': 'imagen a medida', 'panel-circulo': 'bastidor circular', 'panel-letras': 'letras y palabras', 'panel-varios': 'varios diseños en una hoja' };
-  var chatHist = [];
-  var SYS_ASIST = 'Eres la asistente de bordado de "Alma bordado", experta en bordado a mano y a máquina. Ayudas a idear y mejorar diseños, evalúas composiciones (equilibrio, tamaño, legibilidad, dificultad), propones combinaciones de colores e hilos —incluye códigos DMC cuando sea útil—, recomiendas puntadas y das consejos prácticos de transferencia y bastidor. Responde SIEMPRE en español, con calidez y de forma concreta y breve; usa viñetas cuando ayude. Si te comparten una imagen de un diseño o vista previa, analízala con detalle.\n\nCuando la usuaria te pida CREAR o DISEÑAR un bordado con palabras, nombres o frases (por ejemplo "escribe \'Te amo\' con un estilo bonito"), usa la herramienta crear_propuesta para entregar una propuesta lista para aplicar en la app: elige la o las frases, una tipografía adecuada de la lista permitida, el tamaño en cm, los colores (hex) y el trazo. Elige fuentes acordes al tono (script/caligrafía para algo romántico o delicado, serif para algo clásico, etc.). Si además mencionan una FOTO (la app no superpone texto sobre la foto en una sola plantilla), igual diseña el texto con la herramienta y explica en la descripción cómo combinarlo: imprimir el texto y la foto y ubicar la frase encima de la imagen al bordar.';
+  var NOMBRE_PANEL = { 'panel-rect': 'imagen a medida', 'panel-circulo': 'bastidor circular', 'panel-letras': 'letras y palabras', 'panel-fototexto': 'foto + texto', 'panel-varios': 'varios diseños en una hoja' };
+  // Memoria de la conversación (solo en este dispositivo; sin imágenes, para no llenar el almacenamiento)
+  var conversa = [];
+  var MAX_CONTEXTO = 18;   // cuántos turnos recientes recibe la IA como contexto
+  var MAX_GUARDA = 80;     // cuántos turnos se guardan y se muestran
+  var SYS_ASIST = [
+    'Eres Alma, la asistente de bordado de la app "Alma bordado". Eres cálida, cercana y alentadora, como una amiga bordadora con años de oficio que se alegra de acompañar cada proyecto. Hablas SIEMPRE en español, con ternura y entusiasmo genuino, pero sin exagerar ni sonar artificial; usa un emoji ocasional con gusto (🌸🧵✨) y, cuando venga al caso, algún diminutivo cariñoso natural.',
+    'Sabes mucho de bordado a mano y a máquina: puntadas (pespunte, punto atrás, cadeneta, festón, nudo francés, punto satín/relleno, margarita/lazy daisy, punto de cruz), hilos y colores (sugiere combinaciones y códigos DMC cuando ayude), telas y entretelas, bastidores, y métodos de transferencia (papel transfer, lápiz hidrosoluble, calco a contraluz, papel soluble). Evalúas diseños con criterio: equilibrio, tamaño real, legibilidad, contraste, nivel de dificultad y tiempo aproximado.',
+    'Eres creativa e imaginativa: ofreces ideas frescas, pequeños detalles que enamoran (una ramita, una fecha escondida, iniciales entrelazadas, una paleta inesperada pero armónica) y das opciones cuando es útil. Eres concreta y resolutiva; usa viñetas cuando aclaren. Recuerdas lo que se ha conversado antes y construyes sobre ello con naturalidad.',
+    'La app tiene modos para: imagen rectangular a medida, bastidor circular, letras y palabras, FOTO + TEXTO (combina una foto con palabras en una sola plantilla) y varios diseños en una hoja.',
+    'Cuando te pidan CREAR o DISEÑAR algo con palabras (un nombre, una frase como "Te amo", una fecha, un monograma), usa la herramienta crear_propuesta para entregar una propuesta lista para aplicar con un toque. Elige tipografías de la lista permitida acordes al tono (script/caligrafía para lo romántico o delicado; serif para lo clásico; etc.), define tamaño en cm, colores en hex y el trazo. Si la idea combina una FOTO con palabras (por ejemplo "Te amo" sobre o encima de una foto), usa tipo "foto_texto" e indica la posición; explica con cariño en la descripción cómo quedará y recuerda que deberá subir su foto en el modo Foto + texto. Si solo es texto, usa tipo "letras". Tú igual puedes conversar y aconsejar libremente sin la herramienta cuando no se trate de crear un diseño.',
+    'Si te comparten una imagen de un diseño o de una vista previa, analízala con detalle y cariño: qué está lindo, qué mejorarías y sugerencias de hilos y puntadas.'
+  ].join('\n\n');
 
   // Familias permitidas (sincronizadas con el selector de fuentes)
   var NOMBRES_FUENTE = FUENTES.map(function (f) { return f.fam; });
   var HERRAMIENTAS = [{
     name: 'crear_propuesta',
-    description: 'Crea una propuesta de bordado de texto/letras lista para aplicar con un toque en la pestaña "Letras y palabras". Úsala cuando la usuaria pida diseñar o crear un bordado con palabras, nombres, fechas o frases. Devuelve las líneas de texto con su tipografía, tamaño en cm y color.',
+    description: 'Crea una propuesta de bordado con palabras lista para aplicar con un toque. Úsala cuando la usuaria pida diseñar o crear un bordado con palabras, nombres, fechas, frases o monogramas. Si la idea combina una FOTO con palabras, usa tipo "foto_texto"; si es solo texto, usa tipo "letras". Devuelve las líneas de texto con su tipografía, tamaño en cm y color.',
     input_schema: {
       type: 'object',
       properties: {
         titulo: { type: 'string', description: 'Nombre corto y bonito de la propuesta' },
-        descripcion: { type: 'string', description: 'Explicación cálida y breve del diseño: por qué la fuente y los colores combinan, y si aplica, cómo ubicarlo respecto a una foto.' },
+        descripcion: { type: 'string', description: 'Explicación cálida y breve del diseño: por qué la fuente y los colores combinan; si es foto_texto, cómo quedará el texto respecto a la foto y el recordatorio de subir la foto.' },
+        tipo: { type: 'string', enum: ['letras', 'foto_texto'], description: 'letras = solo palabras; foto_texto = palabras combinadas con una foto en una sola plantilla' },
+        posicion: { type: 'string', enum: ['arriba', 'abajo', 'sobre-arriba', 'sobre-centro', 'sobre-abajo'], description: 'Solo para tipo foto_texto: dónde van las palabras respecto a la foto (arriba/abajo de la foto, o sobre la foto arriba/centro/abajo)' },
         estilo: { type: 'string', enum: ['contorno', 'relleno', 'ambos'], description: 'contorno = solo línea para calcar; relleno = letras macizas; ambos = relleno con contorno' },
         alineacion: { type: 'string', enum: ['izquierda', 'centro', 'derecha'] },
         color: { type: 'string', description: 'Color principal del relleno o trazo en hex, ej #b89a6a' },
@@ -1440,35 +1654,77 @@
     var f = todas.filter(function (x) { return x.fam === nombre; })[0];
     return f ? cssDe(f) : cssDe(FUENTES[0]);
   }
+  var POS_TXT = { 'arriba': 'arriba de la foto', 'abajo': 'debajo de la foto', 'sobre-arriba': 'sobre la foto · arriba', 'sobre-centro': 'sobre la foto · centro', 'sobre-abajo': 'sobre la foto · abajo' };
   function renderPropuesta(p) {
+    var esFt = p.tipo === 'foto_texto';
     var filas = (p.lineas || []).map(function (ln) {
       return '<li>“<strong>' + escaparHtml(ln.texto || '') + '</strong>” · ' + escaparHtml(ln.fuente || '') + ' · ' + (ln.alto_cm || '?') + ' cm</li>';
     }).join('');
-    var sw = p.color ? '<span class="prop-sw" style="background:' + escaparHtml(p.color) + '"></span>' : '';
-    var meta = [p.estilo, p.alineacion].filter(Boolean).join(' · ');
+    var sw = p.color ? '<span class="prop-sw" style="background:' + colorSeguro(p.color) + '"></span>' : '';
+    var meta = [p.estilo, p.alineacion, esFt && p.posicion ? POS_TXT[p.posicion] : ''].filter(Boolean).join(' · ');
     return '<div class="propuesta">' +
-      '<div class="prop-tit">✨ ' + escaparHtml(p.titulo || 'Propuesta') + '</div>' +
+      '<div class="prop-tit">' + (esFt ? '🌸' : '✨') + ' ' + escaparHtml(p.titulo || 'Propuesta') + '</div>' +
       (p.descripcion ? '<div class="prop-desc">' + fmtMd(p.descripcion) + '</div>' : '') +
       '<ul class="prop-lineas">' + filas + '</ul>' +
       (sw || meta ? '<div class="prop-meta">' + sw + escaparHtml(meta) + '</div>' : '') +
-      '<button type="button" class="btn-aplicar">✨ Aplicar en Letras</button>' +
+      '<button type="button" class="btn-aplicar">' + (esFt ? '🌸 Aplicar en Foto + texto' : '✨ Aplicar en Letras') + '</button>' +
       '</div>';
   }
   function aplicarPropuesta(p) {
+    var lns = p.lineas || [];
+    if (p.tipo === 'foto_texto') {
+      var tabFt = document.querySelector('.tab-btn[data-panel="panel-fototexto"]');
+      if (tabFt) tabFt.click();
+      $('textoFt').value = lns.map(function (l) { return l.texto || ''; }).join('\n').trim() || 'Texto';
+      if (lns[0]) { $('fuenteFt').value = cssDeNombre(lns[0].fuente); $('altoLetraFt').value = parseFloat(lns[0].alto_cm) || 2.2; }
+      if (p.estilo) $('estiloFt').value = p.estilo;
+      if (p.color) $('colorFt').value = colorSeguro(p.color);
+      if (p.posicion && POS_TXT[p.posicion]) $('posicionFt').value = p.posicion;
+      conFuenteLista($('fuenteFt').value, refrescarFt);
+      toast(imgFt ? 'Propuesta aplicada ✓' : 'Propuesta aplicada ✓ — ahora sube tu foto');
+      return;
+    }
     var tab = document.querySelector('.tab-btn[data-panel="panel-letras"]');
     if (tab) tab.click();
     lineasLetras = [];
     $('listaLineas').innerHTML = '';
-    (p.lineas || []).forEach(function (ln) {
-      anadirLinea(ln.texto || '', parseFloat(ln.alto_cm) || 4, cssDeNombre(ln.fuente));
-    });
+    lns.forEach(function (ln) { anadirLinea(ln.texto || '', parseFloat(ln.alto_cm) || 4, cssDeNombre(ln.fuente)); });
     if (!lineasLetras.length) anadirLinea('', 4);
     if (p.estilo) $('estiloLetras').value = p.estilo;
     if (p.alineacion) $('alinearLetras').value = p.alineacion;
-    if (p.color) $('colorRelleno').value = p.color;
-    if (p.color_contorno) $('colorContorno').value = p.color_contorno;
+    if (p.color) $('colorRelleno').value = colorSeguro(p.color);
+    if (p.color_contorno) $('colorContorno').value = colorSeguro(p.color_contorno);
     refrescarLetras();
     toast('Propuesta aplicada ✓ — ajústala a tu gusto');
+  }
+
+  // ---- Memoria de la conversación (localStorage) ----
+  function guardarConversa() { try { localStorage.setItem('alma_chat', JSON.stringify(conversa.slice(-MAX_GUARDA))); } catch (e) {} }
+  function cargarConversa() { try { var s = JSON.parse(localStorage.getItem('alma_chat') || '[]'); conversa = Array.isArray(s) ? s : []; } catch (e) { conversa = []; } }
+  function mensajesApi() {
+    var arr = conversa.slice(-MAX_CONTEXTO);
+    while (arr.length && arr[0].rol !== 'user') arr.shift();   // la API exige empezar por el usuario
+    return arr.map(function (e) {
+      if (e.rol === 'user') return { role: 'user', content: e.texto + (e.conImagen ? '\n[Te compartí una imagen de mi diseño.]' : '') };
+      if (e.prop) return { role: 'assistant', content: (e.texto ? e.texto + ' ' : '') + 'Le propuse el diseño "' + (e.prop.titulo || '') + '": ' + (e.prop.descripcion || '') };
+      return { role: 'assistant', content: (e.texto && e.texto.trim()) ? e.texto : '…' };
+    });
+  }
+  function pintarIA(burbuja, textos, prop) {
+    burbuja.innerHTML = (textos ? fmtMd(textos) + '<br>' : '') + renderPropuesta(prop);
+    var btn = burbuja.querySelector('.btn-aplicar');
+    if (btn) btn.addEventListener('click', function () { aplicarPropuesta(prop); });
+  }
+  function renderConversa() {
+    var cont = $('chatMsgs'); if (!cont) return;
+    cont.querySelectorAll('.burbuja').forEach(function (b) { b.remove(); });
+    if (!conversa.length) { if ($('chatVacio')) $('chatVacio').style.display = 'block'; return; }
+    if ($('chatVacio')) $('chatVacio').style.display = 'none';
+    conversa.forEach(function (e) {
+      if (e.rol === 'user') agregarBurbuja('user', e.conImagen ? '<em>🖼️ ' + escaparHtml(e.texto) + '</em>' : fmtMd(e.texto));
+      else if (e.prop) pintarIA(agregarBurbuja('ia', ''), e.texto, e.prop);
+      else agregarBurbuja('ia', fmtMd(e.texto || ''));
+    });
   }
 
   function tieneClave() { return !!(CONFIG.apiKey && CONFIG.apiKey.trim()); }
@@ -1478,50 +1734,55 @@
     sin.style.display = tieneClave() ? 'none' : 'block';
     zona.style.display = tieneClave() ? 'block' : 'none';
   }
-  function escaparHtml(s) { return String(s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
+  function escaparHtml(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  // Solo admite un color hex o un nombre simple; cualquier otra cosa (que podría inyectar CSS) cae a un color seguro.
+  function colorSeguro(c) { c = String(c || ''); return (/^#[0-9a-fA-F]{3,8}$/.test(c) || /^[a-zA-Z]{1,20}$/.test(c)) ? c : '#6f6151'; }
   function fmtMd(s) { return escaparHtml(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>'); }
   function agregarBurbuja(role, html) {
     var d = document.createElement('div'); d.className = 'burbuja ' + (role === 'user' ? 'mia' : 'ia');
     d.innerHTML = html; $('chatMsgs').appendChild(d);
     $('chatMsgs').scrollTop = $('chatMsgs').scrollHeight; return d;
   }
+  var enviando = false;
   function enviarAsistente(texto, imagenDataUrl) {
     if (!tieneClave()) { actualizarEstadoAsistente(); return; }
+    if (enviando) { toast('Espera la respuesta anterior…'); return; }
+    enviando = true;
     $('chatVacio').style.display = 'none';
-    var contenido;
-    if (imagenDataUrl) {
-      contenido = [{ type: 'image', source: { type: 'base64', media_type: 'image/png', data: imagenDataUrl.split(',')[1] } }, { type: 'text', text: texto }];
-      agregarBurbuja('user', '<em>🖼️ ' + escaparHtml(texto) + '</em>');
-    } else {
-      contenido = texto; agregarBurbuja('user', fmtMd(texto));
+    // Registrar y pintar el turno de la usuaria
+    conversa.push({ rol: 'user', texto: texto, conImagen: !!imagenDataUrl });
+    agregarBurbuja('user', imagenDataUrl ? '<em>🖼️ ' + escaparHtml(texto) + '</em>' : fmtMd(texto));
+    guardarConversa();
+    // Mensajes para la API (la imagen va solo en la petición, no se guarda)
+    var msgs = mensajesApi();
+    if (imagenDataUrl && msgs.length) {
+      msgs[msgs.length - 1] = { role: 'user', content: [
+        { type: 'image', source: { type: 'base64', media_type: 'image/png', data: imagenDataUrl.split(',')[1] } },
+        { type: 'text', text: texto }
+      ] };
     }
-    chatHist.push({ role: 'user', content: contenido });
     var pensando = agregarBurbuja('ia', '<span class="puntos">escribiendo…</span>');
     $('btnEnviarChat').disabled = true; $('btnAnalizar').disabled = true;
     fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-api-key': CONFIG.apiKey.trim(), 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-      body: JSON.stringify({ model: CONFIG.modelo || 'claude-opus-4-8', max_tokens: 1024, system: SYS_ASIST, tools: HERRAMIENTAS, messages: chatHist.slice(-12) })
+      body: JSON.stringify({ model: CONFIG.modelo || 'claude-opus-4-8', max_tokens: 1100, system: SYS_ASIST, tools: HERRAMIENTAS, messages: msgs })
     }).then(function (r) {
       if (!r.ok) return r.text().then(function () { throw new Error('HTTP ' + r.status + (r.status === 401 ? ' · revisa tu clave API en Ajustes' : '')); });
       return r.json();
     }).then(function (d) {
       var bloques = d.content || [];
-      chatHist.push({ role: 'assistant', content: bloques });
       var textos = bloques.filter(function (b) { return b.type === 'text'; }).map(function (b) { return b.text; }).join('\n').trim();
       var tu = bloques.filter(function (b) { return b.type === 'tool_use' && b.name === 'crear_propuesta'; })[0];
-      if (tu) {
-        pensando.innerHTML = (textos ? fmtMd(textos) + '<br>' : '') + renderPropuesta(tu.input);
-        var btn = pensando.querySelector('.btn-aplicar');
-        if (btn) btn.addEventListener('click', function () { aplicarPropuesta(tu.input); });
-        // Cerramos el ciclo de la herramienta para que el historial siga siendo válido
-        chatHist.push({ role: 'user', content: [{ type: 'tool_result', tool_use_id: tu.id, content: 'Propuesta mostrada a la usuaria con un botón para aplicarla en la app.' }] });
-      } else {
-        pensando.innerHTML = fmtMd(textos || '(sin respuesta)');
-      }
+      if (tu) { conversa.push({ rol: 'ia', texto: textos, prop: tu.input }); pintarIA(pensando, textos, tu.input); }
+      else { conversa.push({ rol: 'ia', texto: textos }); pensando.innerHTML = fmtMd(textos || '(sin respuesta)'); }
+      guardarConversa();
     }).catch(function (e) {
       pensando.innerHTML = '⚠️ ' + escaparHtml(e.message || 'No se pudo conectar');
+      // Quitamos el turno sin responder para que la memoria quede consistente
+      if (conversa.length && conversa[conversa.length - 1].rol === 'user') { conversa.pop(); guardarConversa(); }
     }).then(function () {
+      enviando = false;
       $('btnEnviarChat').disabled = false; $('btnAnalizar').disabled = false;
       $('chatMsgs').scrollTop = $('chatMsgs').scrollHeight;
     });
@@ -1538,13 +1799,15 @@
     enviarAsistente('Este es mi diseño de "' + (NOMBRE_PANEL[ultimoPanelDiseno] || 'bordado') + '". Evalúalo y dame sugerencias de mejora, colores e hilos.', c.toDataURL('image/png'));
   });
   $('btnLimpiarChat').addEventListener('click', function () {
-    chatHist = [];
+    if (conversa.length && !confirm('¿Borrar la conversación con Alma? Se olvidará lo que hablaron.')) return;
+    conversa = [];
+    try { localStorage.removeItem('alma_chat'); } catch (e) {}
     $('chatMsgs').querySelectorAll('.burbuja').forEach(function (b) { b.remove(); });
     $('chatVacio').style.display = 'block';
   });
   $('irAjustesIA').addEventListener('click', abrirAjustes);
   (function () {
-    var sugerencias = ['✨ Crea una propuesta de "Te amo"', 'Evalúa mi diseño actual', 'Ideas para un nombre de bebé', '¿Qué hilos combinan con terracota?'];
+    var sugerencias = ['🌸 Diseña "Te amo" para una foto', '✨ Una propuesta para un nombre', 'Evalúa mi diseño actual', '¿Qué hilos combinan con terracota?'];
     var cont = $('chipsAsist');
     sugerencias.forEach(function (s) {
       var b = document.createElement('button'); b.className = 'chip'; b.type = 'button'; b.textContent = s;
@@ -1589,6 +1852,7 @@
   refrescarCirc();
   anadirLinea('Alma', 6, "'Great Vibes', cursive"); anadirLinea('bordado', 3.4, "'Cormorant Garamond', serif");
   refrescarLetras();
+  refrescarFt();
   (function () { var it = nuevoItemComp(); itemsComp.push(it); $('listaComp').appendChild(crearTarjetaComp(it)); refrescarComp(); })();
 
   // Margaritas decorativas en las tarjetas (alternando rosa y azul)
@@ -1606,7 +1870,7 @@
       n++;
     });
   })();
-  actualizarEstadoAsistente();
+  cargarConversa(); renderConversa(); actualizarEstadoAsistente();
 
   if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('swbordados.js').catch(function () {});
 })();
