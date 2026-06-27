@@ -232,6 +232,8 @@
   input[type="range"] { width: 100%; accent-color: var(--trigo-osc); height: 34px; }
   #previaCirc { touch-action: none; cursor: grab; }
   #previaCirc:active { cursor: grabbing; }
+  #previaFt.arrastrable { touch-action: none; cursor: grab; }
+  #previaFt.arrastrable:active { cursor: grabbing; }
 
   /* ---------- Letras ---------- */
   .solo-relleno, .solo-contorno, .solo-degradado { display: none; }
@@ -675,9 +677,11 @@
     <h2><span class="paso">4</span> Vista previa</h2>
     <div class="lienzo-wrap"><canvas id="previaFt" width="300" height="420"></canvas></div>
     <div class="pie" id="pieFt"></div>
+    <p class="pie" id="ftAyudaArrastre" style="display:none">👆 Arrastra el texto para moverlo sobre la foto</p>
     <div class="controles-previa">
       <button class="boton-sec" id="flipFtX" type="button">⇋ Espejo</button>
       <button class="boton-sec" id="flipFtY" type="button">⇅ Voltear</button>
+      <button class="boton-sec" id="btnCentrarTextoFt" type="button" style="display:none">↺ Restablecer texto</button>
     </div>
   </div>
   <button class="boton-pdf" id="pdfFt" disabled>📄 Generar PDF para imprimir</button>
@@ -1402,9 +1406,16 @@
 
   // ---------- MODO FOTO + TEXTO ----------
   var imgFt = null, flipFt = { x: false, y: false };
+  var ftTxtPos = null;                 // posición libre del texto sobre la foto (fracciones 0..1 del centro) o null = usar preset
+  var ftUltimoCentro = { fx: 0.5, fy: 0.5 };
   llenarSelectFuentes($('fuenteFt'));
   $('fuenteFt').value = "'Great Vibes', cursive";
   function formaFt() { var r = document.querySelector('input[name="formaFt"]:checked'); return r ? r.value : 'rect'; }
+  function ftSobre() { return $('posicionFt').value.indexOf('sobre') === 0; }
+  function ftFotoDims() {
+    if (formaFt() === 'circulo') { var d = num('diametroFt'); return { wCm: d + 0.6, hCm: d + 0.6 }; }
+    return { wCm: num('anchoFt'), hCm: num('altoFt') };
+  }
   // Compone la foto + el texto en un solo lienzo a tamaño real. dpi = puntos por pulgada.
   function componerFotoTexto(dpi) {
     var forma = formaFt(), px = function (cm) { return cm / 2.54 * dpi; };
@@ -1439,10 +1450,20 @@
       var maxW = Math.max(0.1, fotoWcm - padSobre * 2), maxH = Math.max(0.1, fotoHcm - padSobre * 2);
       var esc = Math.min(1, maxW / txtWcm, maxH / txtHcm);
       txtWcm *= esc; txtHcm *= esc;
-      txtX = (fotoWcm - txtWcm) / 2;
-      if (posicion === 'sobre-arriba') txtY = padSobre;
-      else if (posicion === 'sobre-abajo') txtY = fotoHcm - txtHcm - padSobre;
-      else txtY = (fotoHcm - txtHcm) / 2;
+      var cx, cy;
+      if (ftTxtPos) { cx = ftTxtPos.fx * fotoWcm; cy = ftTxtPos.fy * fotoHcm; }   // posición arrastrada
+      else {
+        cx = fotoWcm / 2;
+        if (posicion === 'sobre-arriba') cy = padSobre + txtHcm / 2;
+        else if (posicion === 'sobre-abajo') cy = fotoHcm - padSobre - txtHcm / 2;
+        else cy = fotoHcm / 2;
+      }
+      // Mantener el texto dentro de la foto
+      var minX = txtWcm / 2, maxX = fotoWcm - txtWcm / 2; if (minX > maxX) { minX = maxX = fotoWcm / 2; }
+      var minY = txtHcm / 2, maxY = fotoHcm - txtHcm / 2; if (minY > maxY) { minY = maxY = fotoHcm / 2; }
+      cx = Math.min(maxX, Math.max(minX, cx)); cy = Math.min(maxY, Math.max(minY, cy));
+      txtX = cx - txtWcm / 2; txtY = cy - txtHcm / 2;
+      ftUltimoCentro = { fx: cx / fotoWcm, fy: cy / fotoHcm };
     } else {
       totalWcm = Math.max(fotoWcm, txtWcm); totalHcm = fotoHcm + txtHcm + gap;
       fotoX = (totalWcm - fotoWcm) / 2; txtX = (totalWcm - txtWcm) / 2;
@@ -1471,7 +1492,12 @@
     $('flipFtY').classList.toggle('activo', flipFt.y); $('flipFtY').setAttribute('aria-pressed', flipFt.y ? 'true' : 'false');
     var medidasOk = forma === 'circulo' ? num('diametroFt') > 0 : (num('anchoFt') > 0 && num('altoFt') > 0);
     var listo = imgFt && medidasOk;
+    var conTexto = $('textoFt').value.trim().length > 0;
+    var arrastrable = listo && conTexto && ftSobre();
     $('pdfFt').disabled = !listo;
+    $('previaFt').classList.toggle('arrastrable', arrastrable);
+    $('ftAyudaArrastre').style.display = arrastrable ? 'block' : 'none';
+    $('btnCentrarTextoFt').style.display = (arrastrable && ftTxtPos) ? 'inline-block' : 'none';
     if (!listo) {
       dibujarPrevia($('previaFt'), null, 1, 1, HOJAS.A4);
       $('pieFt').textContent = imgFt ? 'Indica el tamaño de la foto' : 'Sube una foto para empezar';
@@ -1489,10 +1515,34 @@
   conectarSubida('zonaFt', 'archivoFt', 'infoFt', function (img) { imgFt = img; flipFt.x = false; flipFt.y = false; refrescarFt(); });
   document.querySelectorAll('input[name="formaFt"]').forEach(function (r) { r.addEventListener('change', refrescarFt); });
   ['anchoFt', 'altoFt', 'diametroFt', 'altoLetraFt', 'textoFt'].forEach(function (id) { $(id).addEventListener('input', pedirRefrescoFt); });
-  ['hojaFt', 'posicionFt', 'estiloFt', 'colorFt'].forEach(function (id) { $(id).addEventListener('change', pedirRefrescoFt); $(id).addEventListener('input', pedirRefrescoFt); });
+  ['hojaFt', 'estiloFt', 'colorFt'].forEach(function (id) { $(id).addEventListener('change', pedirRefrescoFt); $(id).addEventListener('input', pedirRefrescoFt); });
+  $('posicionFt').addEventListener('change', function () { ftTxtPos = null; pedirRefrescoFt(); });   // un preset cancela el arrastre
   $('fuenteFt').addEventListener('change', function () { conFuenteLista($('fuenteFt').value, refrescarFt); });
   $('flipFtX').addEventListener('click', function () { flipFt.x = !flipFt.x; refrescarFt(); });
   $('flipFtY').addEventListener('click', function () { flipFt.y = !flipFt.y; refrescarFt(); });
+  $('btnCentrarTextoFt').addEventListener('click', function () { ftTxtPos = null; refrescarFt(); });
+  // Arrastrar el texto sobre la foto
+  (function () {
+    var canvas = $('previaFt'); var arrastrando = false, ultX = 0, ultY = 0;
+    canvas.addEventListener('pointerdown', function (e) {
+      if (!imgFt || !ftSobre() || !$('textoFt').value.trim()) return;
+      arrastrando = true; ultX = e.clientX; ultY = e.clientY;
+      if (!ftTxtPos) ftTxtPos = { fx: ftUltimoCentro.fx, fy: ftUltimoCentro.fy };
+      try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
+      e.preventDefault();
+    });
+    canvas.addEventListener('pointermove', function (e) {
+      if (!arrastrando) return;
+      var foto = ftFotoDims(); if (!(foto.wCm > 0 && foto.hCm > 0)) return;
+      var pagina = elegirPagina($('hojaFt').value, foto.wCm, foto.hCm);
+      var escala = Math.min(360 / pagina.w, 480 / pagina.h);
+      var cssAcanvas = canvas.width / canvas.getBoundingClientRect().width;
+      ftTxtPos.fx = Math.min(1, Math.max(0, ftTxtPos.fx + (e.clientX - ultX) * cssAcanvas / escala / foto.wCm));
+      ftTxtPos.fy = Math.min(1, Math.max(0, ftTxtPos.fy + (e.clientY - ultY) * cssAcanvas / escala / foto.hCm));
+      ultX = e.clientX; ultY = e.clientY; programar('ft', refrescarFt);
+    });
+    ['pointerup', 'pointercancel'].forEach(function (ev) { canvas.addEventListener(ev, function () { arrastrando = false; }); });
+  })();
   $('pdfFt').addEventListener('click', function () {
     generarPdf(function () {
       conFuenteLista($('fuenteFt').value, function () {
