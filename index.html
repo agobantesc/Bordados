@@ -84,26 +84,31 @@
   }
   .icono-btn:active { transform: scale(.94); background: var(--papel-2); }
 
-  /* ---------- Pestañas ---------- */
+  /* ---------- Pestañas (menú de módulos en mosaico) ---------- */
   .tabs {
-    display: flex; gap: 6px; position: sticky; top: 74px; z-index: 20;
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px;
+    position: sticky; top: 74px; z-index: 20;
     max-width: 920px; margin: 0 auto 16px; padding: 6px;
     background: var(--superficie); border: 1px solid var(--borde); border-radius: 15px;
-    box-shadow: var(--sombra-sutil); overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+    box-shadow: var(--sombra-sutil);
   }
-  .tabs::-webkit-scrollbar { display: none; }
   .tab-btn {
-    flex: 1 0 auto; white-space: nowrap; padding: 11px 14px; font-size: .94rem;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+    min-width: 0; padding: 9px 4px 8px; font-size: .76rem; line-height: 1.1; text-align: center;
     font-family: inherit; font-weight: 600; border: none; border-radius: 11px;
     background: transparent; color: var(--tinta-suave); cursor: pointer; transition: all .15s;
-    display: flex; align-items: center; gap: 7px; justify-content: center;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
-  .tab-btn .ti { font-size: 1.02rem; }
-  .tab-btn:active { background: var(--papel-2); }
+  .tab-btn .ti { font-size: 1.32rem; line-height: 1; }
+  .tab-btn .tl { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+  .tab-btn:active { background: var(--papel-2); transform: scale(.96); }
   .tab-btn.activa {
     background: linear-gradient(135deg, #7c6b57, #6f6151);
     color: #fff; box-shadow: 0 4px 12px rgba(111,97,81,0.28);
   }
+  /* Tablet angosta / móvil: el menú se reparte en filas parejas, sin scroll */
+  @media (max-width: 720px) { .tabs { grid-template-columns: repeat(4, 1fr); } }
+  @media (max-width: 380px) { .tabs { grid-template-columns: repeat(3, 1fr); } .tab-btn { font-size: .72rem; } }
 
   .panel { display: none; max-width: 920px; margin: 0 auto; animation: aparecer .25s ease; }
   .panel.activa { display: block; }
@@ -510,13 +515,13 @@
 </header>
 
 <nav class="tabs" id="tabs" role="tablist" aria-label="Modos">
-  <button class="tab-btn activa" data-panel="panel-rect"><span class="ti">🖼️</span>Imagen a medida</button>
-  <button class="tab-btn" data-panel="panel-circulo"><span class="ti">⭕</span>Bastidor circular</button>
-  <button class="tab-btn" data-panel="panel-letras"><span class="ti">✍️</span>Letras y palabras</button>
-  <button class="tab-btn" data-panel="panel-fototexto"><span class="ti">🌸</span>Foto + texto</button>
-  <button class="tab-btn" data-panel="panel-varios"><span class="ti">🧩</span>Varios en una hoja</button>
-  <button class="tab-btn" data-panel="panel-asistente"><span class="ti">🪡</span>Asistente</button>
-  <button class="tab-btn" data-panel="panel-galeria"><span class="ti">❤️</span>Favoritos</button>
+  <button class="tab-btn activa" data-panel="panel-rect" aria-label="Imagen a medida"><span class="ti" aria-hidden="true">🖼️</span><span class="tl">Imagen</span></button>
+  <button class="tab-btn" data-panel="panel-circulo" aria-label="Bastidor circular"><span class="ti" aria-hidden="true">⭕</span><span class="tl">Bastidor</span></button>
+  <button class="tab-btn" data-panel="panel-letras" aria-label="Letras y palabras"><span class="ti" aria-hidden="true">✍️</span><span class="tl">Letras</span></button>
+  <button class="tab-btn" data-panel="panel-fototexto" aria-label="Foto y texto"><span class="ti" aria-hidden="true">🌸</span><span class="tl">Foto+texto</span></button>
+  <button class="tab-btn" data-panel="panel-varios" aria-label="Varios en una hoja"><span class="ti" aria-hidden="true">🧩</span><span class="tl">Varios</span></button>
+  <button class="tab-btn" data-panel="panel-asistente" aria-label="Asistente de bordado"><span class="ti" aria-hidden="true">🪡</span><span class="tl">Asistente</span></button>
+  <button class="tab-btn" data-panel="panel-galeria" aria-label="Diseños favoritos"><span class="ti" aria-hidden="true">❤️</span><span class="tl">Favoritos</span></button>
 </nav>
 
 <!-- ============ MODO 1 ============ -->
