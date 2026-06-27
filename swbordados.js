@@ -1,7 +1,7 @@
 // Service worker del Taller de Bordado: deja la app disponible sin internet.
 // Estrategia "cache primero, actualizar por detrás": abre al tiro desde el
 // caché y descarga la versión nueva en segundo plano para la próxima vez.
-var CACHE = 'bordados-v17';
+var CACHE = 'bordados-v18';
 var ARCHIVOS = [
   './',
   './index.html',
@@ -12,10 +12,13 @@ var ARCHIVOS = [
 ];
 
 self.addEventListener('install', function (e) {
-  e.waitUntil(
-    caches.open(CACHE).then(function (c) { return c.addAll(ARCHIVOS); })
-      .then(function () { return self.skipWaiting(); })
-  );
+  // NO hacemos skipWaiting aquí: la versión nueva espera hasta que la usuaria toque "Actualizar"
+  // (así no se recarga la app a mitad de un diseño). La página avisa con un botón.
+  e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(ARCHIVOS); }));
+});
+
+self.addEventListener('message', function (e) {
+  if (e.data === 'skipWaiting') self.skipWaiting();
 });
 
 self.addEventListener('activate', function (e) {
