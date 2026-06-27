@@ -237,10 +237,14 @@
   .boton-anadir:active { opacity: .85; }
 
   input[type="range"] { width: 100%; accent-color: var(--trigo-osc); height: 34px; }
-  #previaCirc { touch-action: none; cursor: grab; }
-  #previaCirc:active { cursor: grabbing; }
-  #previaFt.arrastrable { touch-action: none; cursor: grab; }
-  #previaFt.arrastrable:active { cursor: grabbing; }
+  /* Lienzos arrastrables con el dedo: touch-action estático (iOS lo lee al tocar) */
+  #previaCirc, #previaFt {
+    touch-action: none;
+    -webkit-user-select: none; user-select: none;
+    -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent;
+  }
+  #previaCirc, #previaFt.arrastrable { cursor: grab; }
+  #previaCirc:active, #previaFt.arrastrable:active { cursor: grabbing; }
 
   /* ---------- Letras ---------- */
   .solo-relleno, .solo-contorno, .solo-degradado { display: none; }
@@ -300,8 +304,14 @@
   .puntos { color: var(--tinta-suave); font-style: italic; }
   .chat-entrada { display: flex; gap: 8px; align-items: flex-end; margin-top: 12px; }
   .chat-entrada textarea { flex: 1; min-height: 50px; }
+  .chat-adjuntar { flex-shrink: 0; height: 50px; width: 48px; font-size: 1.25rem; border: 1px solid var(--borde-fuerte); border-radius: 12px; background: #f3ecdd; color: var(--marron); cursor: pointer; }
+  .chat-adjuntar:disabled { opacity: .5; }
   .chat-enviar { flex-shrink: 0; height: 50px; width: 54px; font-size: 1.3rem; border: none; border-radius: 12px; color: #fff; background: linear-gradient(135deg, #7c6b57, #6f6151); cursor: pointer; }
   .chat-enviar:disabled { opacity: .5; }
+  .adjunto-chat { display: flex; align-items: center; gap: 8px; margin-top: 10px; padding: 6px 10px; background: var(--papel-2); border: 1px solid var(--borde); border-radius: 10px; font-size: .85rem; color: var(--tinta-suave); }
+  .adjunto-chat img { width: 38px; height: 38px; object-fit: cover; border-radius: 7px; }
+  .adjunto-chat span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .adjunto-chat button { border: none; background: none; font-size: 1rem; color: var(--tinta-suave); cursor: pointer; flex-shrink: 0; }
   .propuesta { margin-top: 8px; background: #fbf6ec; border: 1px solid #e0cda3; border-radius: 12px; padding: 12px 13px; }
   .prop-tit { font-family: "Cormorant Garamond", Georgia, serif; font-size: 1.18rem; font-weight: 700; color: var(--titulo); }
   .prop-desc { margin: 5px 0 9px; font-size: .9rem; line-height: 1.45; }
@@ -309,6 +319,17 @@
   .prop-meta { display: flex; align-items: center; gap: 8px; font-size: .82rem; color: var(--tinta-suave); margin-bottom: 11px; text-transform: capitalize; }
   .prop-sw { width: 17px; height: 17px; border-radius: 50%; border: 1px solid rgba(0,0,0,.15); flex-shrink: 0; }
   .btn-aplicar { width: 100%; padding: 11px; font-size: .95rem; font-weight: 600; border: none; border-radius: 10px; color: #fff; background: linear-gradient(135deg, #7c6b57, #6f6151); cursor: pointer; }
+  /* Tarjeta de diseño generado por la IA */
+  .diseno { margin-top: 8px; background: #fbf6ec; border: 1px solid #e0cda3; border-radius: 12px; padding: 12px 13px; }
+  .diseno-previa { margin: 10px 0; text-align: center; min-height: 60px; display: flex; align-items: center; justify-content: center; }
+  .diseno-previa canvas { max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,.12); background: #fff; }
+  .diseno-previa.circ canvas { border-radius: 50%; }
+  .diseno-nota { margin: 8px 0; font-size: .85rem; color: var(--tinta-suave); font-style: italic; }
+  .hilos-tit { font-size: .82rem; font-weight: 700; color: var(--titulo); margin: 6px 0 4px; }
+  .hilos { list-style: none; margin: 0 0 10px; padding: 0; display: flex; flex-direction: column; gap: 4px; font-size: .85rem; }
+  .hilos li { display: flex; align-items: center; gap: 8px; }
+  .diseno-acc { display: flex; flex-wrap: wrap; gap: 8px; }
+  .diseno-acc .boton-sec { flex: 1 1 auto; }
 
   .deco-bg { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
   .flor-deco { position: absolute; width: 300px; height: auto; }
@@ -737,11 +758,18 @@
       <div class="chat-msgs" id="chatMsgs">
         <div class="chat-vacio" id="chatVacio">
           <p style="margin-bottom:6px;">🌸 ¡Hola! Soy <strong>Alma</strong>. Cuéntame qué quieres bordar y lo pensamos juntas.</p>
-          <p style="margin-bottom:10px; font-size:.9rem;">Puedo proponerte diseños, elegir tipografías y colores, o evaluar tu vista previa. Por ejemplo:</p>
+          <p style="margin-bottom:10px; font-size:.9rem;">Puedo <strong>dibujarte un diseño</strong> (forma, tamaño, dibujos y texto), proponerte letras y colores, o mirar una <strong>foto</strong> que me adjuntes con 📎. Por ejemplo:</p>
           <div class="chips" id="chipsAsist" style="justify-content:center;"></div>
         </div>
       </div>
+      <div id="adjuntoChat" class="adjunto-chat" style="display:none;">
+        <img id="adjuntoMini" alt="">
+        <span id="adjuntoNombre">foto</span>
+        <button id="quitarAdjunto" type="button" aria-label="Quitar foto">✕</button>
+      </div>
       <div class="chat-entrada">
+        <button class="chat-adjuntar" id="btnAdjuntar" type="button" title="Adjuntar foto" aria-label="Adjuntar foto">📎</button>
+        <input type="file" id="archivoChat" accept="image/*" hidden>
         <textarea id="chatInput" placeholder="Escribe tu pregunta…" inputmode="text"></textarea>
         <button class="chat-enviar" id="btnEnviarChat" type="button" title="Enviar" aria-label="Enviar">➤</button>
       </div>
@@ -823,6 +851,65 @@
     requestAnimationFrame(function () { t.classList.add('ver'); });
     clearTimeout(toastT);
     toastT = setTimeout(function () { t.classList.remove('ver'); setTimeout(function () { t.hidden = true; }, 280); }, 2200);
+  }
+
+  // Arrastre robusto con el dedo (iPad Safari) y con mouse. opts: { puede(), onInicio(), onMover(dx,dy), onFin() }
+  // dx/dy son el desplazamiento en píxeles internos del canvas desde el inicio (1:1 con el dedo).
+  function hacerArrastrable(canvas, opts) {
+    var activo = false, idPuntero = null, ini = null, rafPend = false, ultimo = null;
+    function aLienzo(e) {
+      var r = canvas.getBoundingClientRect();
+      return { x: (e.clientX - r.left) * (canvas.width / r.width), y: (e.clientY - r.top) * (canvas.height / r.height) };
+    }
+    function procesar() {
+      rafPend = false; if (!activo || !ultimo) return;
+      var p = aLienzo(ultimo);
+      if (opts.onMover) opts.onMover(p.x - ini.x, p.y - ini.y);
+    }
+    function inicio(e) {
+      if (activo) return; if (opts.puede && !opts.puede()) return;
+      activo = true; idPuntero = e.pointerId; ini = aLienzo(e);
+      try { if (canvas.setPointerCapture && e.pointerId != null) canvas.setPointerCapture(e.pointerId); } catch (err) {}
+      if (opts.onInicio) opts.onInicio();
+      if (e.cancelable) e.preventDefault();
+    }
+    function mover(e) {
+      if (!activo) return;
+      if (idPuntero != null && e.pointerId != null && e.pointerId !== idPuntero) return;
+      ultimo = e; if (!rafPend) { rafPend = true; requestAnimationFrame(procesar); }
+      if (e.cancelable) e.preventDefault();
+    }
+    function fin(e) {
+      if (!activo) return;
+      if (idPuntero != null && e.pointerId != null && e.pointerId !== idPuntero) return;
+      // Aplicar la posición final del dedo aunque el último movimiento no alcanzara a procesarse
+      // (un toque rápido suelta antes de que corra el requestAnimationFrame y perdería ese tramo).
+      // En cancelación del sistema (llamada entrante, palm-reject) NO movemos: dejaría un salto raro.
+      var cancelado = e && (e.type === 'pointercancel' || e.type === 'touchcancel');
+      if (!cancelado && opts.onMover && ini && e && typeof e.clientX === 'number') { var p = aLienzo(e); opts.onMover(p.x - ini.x, p.y - ini.y); }
+      activo = false; try { if (canvas.releasePointerCapture && idPuntero != null) canvas.releasePointerCapture(idPuntero); } catch (err) {}
+      idPuntero = null; ini = null; ultimo = null; if (opts.onFin) opts.onFin();
+    }
+    if (window.PointerEvent) {
+      canvas.addEventListener('pointerdown', inicio, { passive: false });
+      window.addEventListener('pointermove', mover, { passive: false });
+      window.addEventListener('pointerup', fin);
+      window.addEventListener('pointercancel', fin);
+    } else {
+      var nm = function (e) { return { clientX: e.clientX, clientY: e.clientY, pointerId: null, type: e.type, cancelable: e.cancelable, preventDefault: function () { if (e.cancelable) e.preventDefault(); } }; };
+      var nt = function (e) { var t = (e.changedTouches && e.changedTouches[0]) || null; return { clientX: t ? t.clientX : undefined, clientY: t ? t.clientY : undefined, pointerId: t ? t.identifier : null, type: e.type, cancelable: e.cancelable, preventDefault: function () { if (e.cancelable) e.preventDefault(); } }; };
+      canvas.addEventListener('mousedown', function (e) { inicio(nm(e)); }, { passive: false });
+      window.addEventListener('mousemove', function (e) { mover(nm(e)); });
+      window.addEventListener('mouseup', function (e) { fin(nm(e)); });
+      canvas.addEventListener('touchstart', function (e) { inicio(nt(e)); }, { passive: false });
+      window.addEventListener('touchmove', function (e) { mover(nt(e)); }, { passive: false });
+      window.addEventListener('touchend', function (e) { fin(nt(e)); });
+      window.addEventListener('touchcancel', function (e) { fin(nt(e)); });
+    }
+    // Refuerzo anti-scroll en iOS aunque usemos Pointer Events
+    canvas.addEventListener('touchmove', function (e) { if (activo && e.cancelable) e.preventDefault(); }, { passive: false });
+    canvas.addEventListener('gesturestart', function (e) { e.preventDefault(); });
+    return { estaActivo: function () { return activo; } };
   }
 
   function cargarImagen(archivo, cb, cbError) {
@@ -1280,19 +1367,19 @@
   }
   conectarSubida('zonaCirc', 'archivoCirc', 'infoCirc', function (img) { imgCirc = img; desplCirc.x = 0; desplCirc.y = 0; zoomCirc = 1; flipCirc.x = false; flipCirc.y = false; $('zoomCirc').value = 100; refrescarCirc(); });
   (function () {
-    var canvas = $('previaCirc'); var arrastrando = false, ultX = 0, ultY = 0;
-    canvas.addEventListener('pointerdown', function (e) { if (!imgCirc) return; arrastrando = true; ultX = e.clientX; ultY = e.clientY; try { canvas.setPointerCapture(e.pointerId); } catch (err) {} e.preventDefault(); });
-    canvas.addEventListener('pointermove', function (e) {
-      if (!arrastrando) return;
-      var pagina = elegirPagina($('hojaCirc').value, 1, 1);
-      var escala = Math.min(360 / pagina.w, 480 / pagina.h);
-      var cssAcanvas = canvas.width / canvas.getBoundingClientRect().width;
-      var sx = flipCirc.x ? -1 : 1, sy = flipCirc.y ? -1 : 1;
-      desplCirc.x += sx * (e.clientX - ultX) * cssAcanvas / escala;
-      desplCirc.y += sy * (e.clientY - ultY) * cssAcanvas / escala;
-      ultX = e.clientX; ultY = e.clientY; programar('circ', refrescarCirc);
+    var iniDespl = null;
+    hacerArrastrable($('previaCirc'), {
+      puede: function () { return !!imgCirc; },
+      onInicio: function () { iniDespl = { x: desplCirc.x, y: desplCirc.y }; },
+      onMover: function (dx, dy) {
+        var pagina = elegirPagina($('hojaCirc').value, 1, 1);
+        var escala = Math.min(360 / pagina.w, 480 / pagina.h);
+        var sx = flipCirc.x ? -1 : 1, sy = flipCirc.y ? -1 : 1;
+        desplCirc.x = iniDespl.x + sx * dx / escala;
+        desplCirc.y = iniDespl.y + sy * dy / escala;
+        programar('circ', refrescarCirc);
+      }
     });
-    ['pointerup', 'pointercancel'].forEach(function (ev) { canvas.addEventListener(ev, function () { arrastrando = false; }); });
   })();
   $('btnCentrarCirc').addEventListener('click', function () { desplCirc.x = 0; desplCirc.y = 0; zoomCirc = 1; $('zoomCirc').value = 100; refrescarCirc(); });
   $('zoomCirc').addEventListener('input', function () { zoomCirc = parseInt($('zoomCirc').value, 10) / 100; if (!isFinite(zoomCirc) || zoomCirc < 1) zoomCirc = 1; programar('circ', refrescarCirc); });
@@ -1526,7 +1613,7 @@
     $('flipFtY').classList.toggle('activo', flipFt.y); $('flipFtY').setAttribute('aria-pressed', flipFt.y ? 'true' : 'false');
     var medidasOk = forma === 'circulo' ? num('diametroFt') > 0 : (num('anchoFt') > 0 && num('altoFt') > 0);
     var listo = imgFt && medidasOk;
-    var arrastrable = listo && lineasValidasFt().length > 0 && ftSobre();
+    var arrastrable = listo && lineasValidasFt().length > 0;   // arrastrar el texto siempre que haya foto + texto
     $('pdfFt').disabled = !listo;
     $('previaFt').classList.toggle('arrastrable', arrastrable);
     $('ftAyudaArrastre').style.display = arrastrable ? 'block' : 'none';
@@ -1554,27 +1641,25 @@
   $('flipFtX').addEventListener('click', function () { flipFt.x = !flipFt.x; refrescarFt(); });
   $('flipFtY').addEventListener('click', function () { flipFt.y = !flipFt.y; refrescarFt(); });
   $('btnCentrarTextoFt').addEventListener('click', function () { ftTxtPos = null; refrescarFt(); });
-  // Arrastrar el texto sobre la foto
+  // Arrastrar el texto con el dedo: lo lleva SOBRE la foto donde lo sueltes
   (function () {
-    var canvas = $('previaFt'); var arrastrando = false, ultX = 0, ultY = 0;
-    canvas.addEventListener('pointerdown', function (e) {
-      if (!imgFt || !ftSobre() || !lineasValidasFt().length) return;
-      arrastrando = true; ultX = e.clientX; ultY = e.clientY;
-      if (!ftTxtPos) ftTxtPos = { fx: ftUltimoCentro.fx, fy: ftUltimoCentro.fy };
-      try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
-      e.preventDefault();
+    var iniPos = null;
+    hacerArrastrable($('previaFt'), {
+      puede: function () { return !!imgFt && lineasValidasFt().length > 0; },
+      onInicio: function () {
+        if (!ftSobre()) { $('posicionFt').value = 'sobre-centro'; ftTxtPos = null; }   // pasar a "sobre la foto"
+        if (!ftTxtPos) ftTxtPos = { fx: ftUltimoCentro.fx, fy: ftUltimoCentro.fy };
+        iniPos = { fx: ftTxtPos.fx, fy: ftTxtPos.fy };
+      },
+      onMover: function (dx, dy) {
+        var foto = ftFotoDims(); if (!(foto.wCm > 0 && foto.hCm > 0)) return;
+        var pagina = elegirPagina($('hojaFt').value, foto.wCm, foto.hCm);
+        var escala = Math.min(360 / pagina.w, 480 / pagina.h);
+        ftTxtPos.fx = Math.min(1, Math.max(0, iniPos.fx + (dx / escala) / foto.wCm));
+        ftTxtPos.fy = Math.min(1, Math.max(0, iniPos.fy + (dy / escala) / foto.hCm));
+        programar('ft', refrescarFt);
+      }
     });
-    canvas.addEventListener('pointermove', function (e) {
-      if (!arrastrando) return;
-      var foto = ftFotoDims(); if (!(foto.wCm > 0 && foto.hCm > 0)) return;
-      var pagina = elegirPagina($('hojaFt').value, foto.wCm, foto.hCm);
-      var escala = Math.min(360 / pagina.w, 480 / pagina.h);
-      var cssAcanvas = canvas.width / canvas.getBoundingClientRect().width;
-      ftTxtPos.fx = Math.min(1, Math.max(0, ftTxtPos.fx + (e.clientX - ultX) * cssAcanvas / escala / foto.wCm));
-      ftTxtPos.fy = Math.min(1, Math.max(0, ftTxtPos.fy + (e.clientY - ultY) * cssAcanvas / escala / foto.hCm));
-      ultX = e.clientX; ultY = e.clientY; programar('ft', refrescarFt);
-    });
-    ['pointerup', 'pointercancel'].forEach(function (ev) { canvas.addEventListener(ev, function () { arrastrando = false; }); });
   })();
   function renderFtHiRes() {
     var probe = componerFotoTexto(36);
@@ -1697,8 +1782,10 @@
     'Sabes mucho de bordado a mano y a máquina: puntadas (pespunte, punto atrás, cadeneta, festón, nudo francés, punto satín/relleno, margarita/lazy daisy, punto de cruz), hilos y colores (sugiere combinaciones y códigos DMC cuando ayude), telas y entretelas, bastidores, y métodos de transferencia (papel transfer, lápiz hidrosoluble, calco a contraluz, papel soluble). Evalúas diseños con criterio: equilibrio, tamaño real, legibilidad, contraste, nivel de dificultad y tiempo aproximado.',
     'Eres creativa e imaginativa: ofreces ideas frescas, pequeños detalles que enamoran (una ramita, una fecha escondida, iniciales entrelazadas, una paleta inesperada pero armónica) y das opciones cuando es útil. Eres concreta y resolutiva; usa viñetas cuando aclaren. Recuerdas lo que se ha conversado antes y construyes sobre ello con naturalidad.',
     'La app tiene modos para: imagen rectangular a medida, bastidor circular, letras y palabras, FOTO + TEXTO (combina una foto con palabras en una sola plantilla) y varios diseños en una hoja.',
-    'Cuando te pidan CREAR o DISEÑAR algo con palabras (un nombre, una frase como "Te amo", una fecha, un monograma), usa la herramienta crear_propuesta para entregar una propuesta lista para aplicar con un toque. Elige tipografías de la lista permitida acordes al tono (script/caligrafía para lo romántico o delicado; serif para lo clásico; etc.), define tamaño en cm, colores en hex y el trazo. Si la idea combina una FOTO con palabras (por ejemplo "Te amo" sobre o encima de una foto), usa tipo "foto_texto" e indica la posición; explica con cariño en la descripción cómo quedará y recuerda que deberá subir su foto en el modo Foto + texto. Si solo es texto, usa tipo "letras". Tú igual puedes conversar y aconsejar libremente sin la herramienta cuando no se trate de crear un diseño.',
-    'Si te comparten una imagen de un diseño o de una vista previa, analízala con detalle y cariño: qué está lindo, qué mejorarías y sugerencias de hilos y puntadas.'
+    'Tienes DOS herramientas para CREAR. Elige según lo que pidan:\n• crear_propuesta → SOLO palabras editables (un nombre, una fecha, "Te amo", un monograma) sin forma de bastidor ni dibujos. El resultado se aplica a los paneles de Letras o Foto + texto y la usuaria lo sigue editando. Si combina una FOTO con palabras, usa tipo "foto_texto" e indica la posición.\n• crear_diseno → un DISEÑO COMPLETO con SVG line-art: cuando pidan una FORMA (circular/rectangular), un TAMAÑO de bastidor en cm, o MOTIVOS/dibujos (ballenitas, flores, fondo de mar, ramas, marcos, corazones, anclas, animalitos…). Ej: "bordado circular de 5 cm que diga Te Amo Diego con ballenitas y fondo del mar".\nSi dudas y hay cualquier dibujo o tamaño de bastidor concreto, usa crear_diseno. Puedes conversar y aconsejar libremente sin herramienta cuando no toque crear un diseño.',
+    'Cómo construir el SVG de crear_diseno (es para BORDAR a mano, no para pantalla):\n• LINE ART: solo contornos. Usa fill="none" y stroke con un color de la paleta; stroke-width entre 6 y 12 sobre un viewBox de 1000; stroke-linecap="round" y stroke-linejoin="round". La única excepción es el texto, que puede llevar fill del color para que se lea.\n• viewBox = lienzo a tamaño real. Para forma=circulo usa un viewBox CUADRADO (ej "0 0 1000 1000") y mantén TODO dentro de un círculo centrado de radio ~440 (deja margen; nada toca el borde). Para rect usa un viewBox con la MISMA proporción que ancho_cm:alto_cm.\n• El texto va DENTRO del SVG como <text> centrado (text-anchor="middle"), grande y legible, con font-family genérica ("cursive", "serif" o "sans-serif").\n• Pocas formas limpias y reconocibles mejor que mucho detalle. Nada más pequeño que ~20 unidades (≈2 mm reales). Sin degradados densos, sombras ni texturas.\n• PROHIBIDO en el SVG: <script>, <foreignObject>, <image>, <a>, <use> externo, atributos on*, href/url externos, javascript:. Todo autónomo y vectorial.\n• Declara en "colores" cada color que usaste (hex), su uso y, si lo sabes, su código DMC, para la leyenda de hilos.',
+    'Tras llamar a crear_diseno, en tu texto explica con cariño y brevedad qué creaste, el tamaño real, las puntadas e hilos sugeridos, y que puede pedir cambios ("hazlo más grande", "quita el fondo", "ponle un ancla", "cambia el azul por verde"). NUNCA pegues el código SVG en el chat: ya va dentro de la herramienta.',
+    'Si te SUBEN una FOTO en el chat, mírala con detalle y cariño: puedes aconsejar sobre ese diseño/tela/puntadas, o —si lo piden— proponer un diseño que la combine con texto (crear_propuesta tipo "foto_texto") o un marco/orla con motivos alrededor (crear_diseno). Si te comparten una vista previa de la app, evalúala: qué está lindo, qué mejorarías, hilos y puntadas.'
   ].join('\n\n');
 
   // Familias permitidas (sincronizadas con el selector de fuentes)
@@ -1732,6 +1819,37 @@
         }
       },
       required: ['titulo', 'descripcion', 'lineas']
+    }
+  }, {
+    name: 'crear_diseno',
+    description: 'Crea un DISEÑO de bordado completo como SVG line-art (vectorial, para calcar e imprimir a tamaño real): forma del bastidor, tamaño en cm, MOTIVOS/dibujos (ballenitas, flores, fondo de mar, ramas, marcos, corazones, anclas…) y, si aplica, el texto integrado. Úsala cuando pidan un diseño con una FORMA o TAMAÑO de bastidor concreto, o con DIBUJOS/imágenes, no solo palabras. Para texto suelto y editable usa crear_propuesta.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        titulo: { type: 'string', description: 'Nombre corto y bonito del diseño' },
+        descripcion: { type: 'string', description: 'Explicación cálida y breve: qué incluye, por qué los motivos y la paleta combinan, dificultad y puntadas sugeridas. NO pegues el SVG aquí.' },
+        forma: { type: 'string', enum: ['circulo', 'rect'], description: 'circulo = bastidor redondo; rect = rectangular o cuadrado' },
+        diametro_cm: { type: 'number', description: 'Solo si forma=circulo: diámetro del bastidor en cm (ej 5)' },
+        ancho_cm: { type: 'number', description: 'Solo si forma=rect: ancho en cm' },
+        alto_cm: { type: 'number', description: 'Solo si forma=rect: alto en cm' },
+        svg: { type: 'string', description: 'SVG completo y autónomo, line-art (fill="none", solo contornos finos, salvo el texto). Empieza con <svg ...> con viewBox CUADRADO si forma=circulo (ej "0 0 1000 1000") o con la proporción ancho:alto si forma=rect. Sin <script>, <foreignObject>, <image>, <a>, sin on*, sin url() ni href externos. Incluye el texto como <text> centrado. Deja margen interior (~8%) para que nada toque el aro.' },
+        colores: {
+          type: 'array',
+          description: 'Paleta de hilos usada, en orden de protagonismo (para la leyenda de hilos)',
+          items: {
+            type: 'object',
+            properties: {
+              hex: { type: 'string', description: 'Color en hex, ej #2e6f8e' },
+              nombre: { type: 'string', description: 'Nombre legible, ej "azul mar"' },
+              dmc: { type: 'string', description: 'Código DMC sugerido si lo sabes, ej "3842"' },
+              uso: { type: 'string', description: 'Para qué parte del diseño, ej "olas y ballenitas"' }
+            },
+            required: ['hex']
+          }
+        },
+        dificultad: { type: 'string', enum: ['fácil', 'media', 'avanzada'] }
+      },
+      required: ['titulo', 'descripcion', 'forma', 'svg']
     }
   }];
 
@@ -1786,15 +1904,104 @@
     toast('Propuesta aplicada ✓ — ajústala a tu gusto');
   }
 
+  // ---- Diseños completos generados por la IA (SVG) ----
+  function normalizarDiseno(input) {
+    var forma = input.forma === 'rect' ? 'rect' : 'circulo';
+    var svg = sanearSVG(input.svg);   // lanza si es inválido
+    var vb = leerViewBox(svg);
+    var wCm, hCm;
+    if (forma === 'circulo') {
+      wCm = hCm = parseFloat(input.diametro_cm) > 0 ? parseFloat(input.diametro_cm) : 10;
+    } else {
+      wCm = parseFloat(input.ancho_cm) > 0 ? parseFloat(input.ancho_cm) : 0;
+      hCm = parseFloat(input.alto_cm) > 0 ? parseFloat(input.alto_cm) : 0;
+      if (!(wCm > 0 && hCm > 0)) { var asp = vb ? vb.w / vb.h : 1; if (asp >= 1) { wCm = 12; hCm = 12 / asp; } else { hCm = 12; wCm = 12 * asp; } }
+    }
+    wCm = Math.min(40, Math.max(2, wCm)); hCm = Math.min(40, Math.max(2, hCm));
+    return { titulo: String(input.titulo || 'Diseño'), descripcion: String(input.descripcion || ''), forma: forma, wCm: wCm, hCm: hCm, svg: svg, colores: Array.isArray(input.colores) ? input.colores.slice(0, 12) : [], dificultad: input.dificultad || '' };
+  }
+  function renderDiseno(dis) {
+    var medidas = dis.forma === 'circulo' ? ('⌀ ' + dis.wCm.toFixed(1).replace(/\.0$/, '') + ' cm') : (dis.wCm.toFixed(1) + ' × ' + dis.hCm.toFixed(1) + ' cm');
+    var hilos = (dis.colores || []).map(function (c) {
+      return '<li><span class="prop-sw" style="background:' + colorSeguro(c.hex) + '"></span>' + escaparHtml(c.nombre || c.hex || '') + (c.dmc ? ' · DMC ' + escaparHtml(String(c.dmc)) : '') + (c.uso ? ' — ' + escaparHtml(String(c.uso)) : '') + '</li>';
+    }).join('');
+    var sinSvg = !dis.svg;
+    return '<div class="diseno">' +
+      '<div class="prop-tit">✨ ' + escaparHtml(dis.titulo) + '</div>' +
+      (dis.descripcion ? '<div class="prop-desc">' + fmtMd(dis.descripcion) + '</div>' : '') +
+      (sinSvg ? '<div class="diseno-nota">Vista previa no guardada — pídeme que lo cree de nuevo para volver a verlo.</div>'
+              : '<div class="diseno-previa' + (dis.forma === 'circulo' ? ' circ' : '') + '"><span class="puntos">dibujando…</span></div>') +
+      '<div class="prop-meta">📐 ' + escaparHtml(medidas) + (dis.dificultad ? ' · ' + escaparHtml(String(dis.dificultad)) : '') + '</div>' +
+      (hilos ? '<div class="hilos-tit">🧵 Hilos sugeridos</div><ul class="hilos">' + hilos + '</ul>' : '') +
+      '<div class="diseno-acc">' +
+        (sinSvg ? '' : '<button type="button" class="btn-dis-pdf boton-sec">📄 PDF</button><button type="button" class="btn-dis-png boton-sec">🖼️ Imagen</button>') +
+        '<button type="button" class="btn-dis-cambios boton-sec">✏️ Pedir cambios</button>' +
+      '</div>' +
+    '</div>';
+  }
+  function pintarDiseno(burbuja, textos, dis) {
+    burbuja.innerHTML = (textos ? fmtMd(textos) + '<br>' : '') + renderDiseno(dis);
+    var cont = burbuja.querySelector('.diseno-previa');
+    if (cont && dis.svg) {
+      renderDisenoCanvas(dis.svg, dis.forma, dis.wCm, dis.hCm, 38, dis.forma === 'circulo', function (canvas) {
+        if (!cont) return;
+        if (!canvas) { cont.innerHTML = '⚠️ No pude dibujar el diseño'; return; }
+        cont.innerHTML = ''; canvas.style.maxWidth = '100%'; canvas.style.height = 'auto'; cont.appendChild(canvas);
+        if ($('chatMsgs')) $('chatMsgs').scrollTop = $('chatMsgs').scrollHeight;
+      });
+    }
+    var b1 = burbuja.querySelector('.btn-dis-pdf'), b2 = burbuja.querySelector('.btn-dis-png'), b3 = burbuja.querySelector('.btn-dis-cambios');
+    if (b1) b1.addEventListener('click', function () { exportarDiseno(dis, 'pdf'); });
+    if (b2) b2.addEventListener('click', function () { exportarDiseno(dis, 'png'); });
+    if (b3) b3.addEventListener('click', function () { $('chatInput').value = 'Sobre el diseño "' + dis.titulo + '": '; $('chatInput').focus(); });
+  }
+  function exportarDiseno(dis, tipo) {
+    if (!dis.svg) { toast('Pídeme que lo cree de nuevo'); return; }
+    toast('Generando…');
+    var dpi = dpiSeguro(Math.max(dis.wCm, dis.hCm, 5));
+    renderDisenoCanvas(dis.svg, dis.forma, dis.wCm, dis.hCm, dpi, dis.forma === 'circulo', function (canvas) {
+      if (!canvas) { toast('No se pudo generar el diseño'); return; }
+      try {
+        if (tipo === 'pdf') {
+          var pagina = elegirPagina('A4', dis.wCm, dis.hCm);
+          descargar(pdfImagenCentrada(canvas, dis.wCm, dis.hCm, pagina), 'diseno_bordado.pdf');
+          toast('PDF listo  ✓');
+        } else { descargarPng(canvas, 'diseno_bordado.png'); toast('Imagen lista  ✓'); }
+      } catch (e) { toast('No se pudo generar el diseño'); }
+    });
+  }
+
   // ---- Memoria de la conversación (localStorage) ----
-  function guardarConversa() { try { localStorage.setItem('alma_chat', JSON.stringify(conversa.slice(-MAX_GUARDA))); } catch (e) {} }
+  function guardarConversa() {
+    var datos = conversa.slice(-MAX_GUARDA);
+    try { localStorage.setItem('alma_chat', JSON.stringify(datos)); return; } catch (e) {}
+    // Si no cabe (SVG de diseños pesados), conserva el SVG solo del último diseño
+    try {
+      var visto = false;
+      var ligero = datos.slice().reverse().map(function (en) {
+        if (en.diseno && en.diseno.svg) { if (visto) { var d2 = {}; for (var k in en.diseno) d2[k] = en.diseno[k]; d2.svg = ''; return { rol: en.rol, texto: en.texto, diseno: d2 }; } visto = true; }
+        return en;
+      }).reverse();
+      localStorage.setItem('alma_chat', JSON.stringify(ligero));
+      return;
+    } catch (e2) {}
+    // Último recurso: guardar SIN ningún SVG (un solo diseño pesado igual cabe como texto)
+    try {
+      var minimo = datos.map(function (en) {
+        if (en.diseno && en.diseno.svg) { var d3 = {}; for (var k3 in en.diseno) d3[k3] = en.diseno[k3]; d3.svg = ''; return { rol: en.rol, texto: en.texto, diseno: d3 }; }
+        return en;
+      });
+      localStorage.setItem('alma_chat', JSON.stringify(minimo));
+    } catch (e3) {}
+  }
   function cargarConversa() { try { var s = JSON.parse(localStorage.getItem('alma_chat') || '[]'); conversa = Array.isArray(s) ? s : []; } catch (e) { conversa = []; } }
   function mensajesApi() {
     var arr = conversa.slice(-MAX_CONTEXTO);
     while (arr.length && arr[0].rol !== 'user') arr.shift();   // la API exige empezar por el usuario
     return arr.map(function (e) {
-      if (e.rol === 'user') return { role: 'user', content: e.texto + (e.conImagen ? '\n[Te compartí una imagen de mi diseño.]' : '') };
+      if (e.rol === 'user') return { role: 'user', content: e.texto + (e.conImagen ? '\n[Adjunté una foto.]' : '') };
       if (e.prop) return { role: 'assistant', content: (e.texto ? e.texto + ' ' : '') + 'Le propuse el diseño "' + (e.prop.titulo || '') + '": ' + (e.prop.descripcion || '') };
+      if (e.diseno) return { role: 'assistant', content: (e.texto ? e.texto + ' ' : '') + 'Creé el diseño "' + (e.diseno.titulo || '') + '" (' + (e.diseno.forma === 'circulo' ? 'círculo ' + e.diseno.wCm + ' cm' : e.diseno.wCm + '×' + e.diseno.hCm + ' cm') + '): ' + (e.diseno.descripcion || '') };
       return { role: 'assistant', content: (e.texto && e.texto.trim()) ? e.texto : '…' };
     });
   }
@@ -1811,6 +2018,7 @@
     conversa.forEach(function (e) {
       if (e.rol === 'user') agregarBurbuja('user', e.conImagen ? '<em>🖼️ ' + escaparHtml(e.texto) + '</em>' : fmtMd(e.texto));
       else if (e.prop) pintarIA(agregarBurbuja('ia', ''), e.texto, e.prop);
+      else if (e.diseno) pintarDiseno(agregarBurbuja('ia', ''), e.texto, e.diseno);
       else agregarBurbuja('ia', fmtMd(e.texto || ''));
     });
   }
@@ -1826,6 +2034,80 @@
   // Solo admite un color hex o un nombre simple; cualquier otra cosa (que podría inyectar CSS) cae a un color seguro.
   function colorSeguro(c) { c = String(c || ''); return (/^#[0-9a-fA-F]{3,8}$/.test(c) || /^[a-zA-Z]{1,20}$/.test(c)) ? c : '#6f6151'; }
   function fmtMd(s) { return escaparHtml(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>'); }
+
+  // ---- SVG de diseño generado por la IA: saneo (allowlist) y render seguro a canvas ----
+  var SVG_TAGS_OK = { svg: 1, g: 1, defs: 1, title: 1, desc: 1, path: 1, line: 1, polyline: 1, polygon: 1, rect: 1, circle: 1, ellipse: 1, text: 1, tspan: 1, textpath: 1, use: 1, clippath: 1, mask: 1, lineargradient: 1, radialgradient: 1, stop: 1, marker: 1, symbol: 1, pattern: 1 };
+  var SVG_ATTRS_OK = { d: 1, points: 1, x: 1, y: 1, x1: 1, y1: 1, x2: 1, y2: 1, cx: 1, cy: 1, r: 1, rx: 1, ry: 1, width: 1, height: 1, dx: 1, dy: 1, rotate: 1, transform: 1, 'transform-origin': 1, viewbox: 1, preserveaspectratio: 1, xmlns: 1, version: 1, fill: 1, 'fill-opacity': 1, 'fill-rule': 1, stroke: 1, 'stroke-width': 1, 'stroke-linecap': 1, 'stroke-linejoin': 1, 'stroke-dasharray': 1, 'stroke-dashoffset': 1, 'stroke-miterlimit': 1, 'stroke-opacity': 1, opacity: 1, color: 1, visibility: 1, display: 1, 'font-family': 1, 'font-size': 1, 'font-weight': 1, 'font-style': 1, 'text-anchor': 1, 'letter-spacing': 1, 'word-spacing': 1, 'dominant-baseline': 1, 'baseline-shift': 1, 'writing-mode': 1, id: 1, 'class': 1, 'clip-path': 1, 'clip-rule': 1, mask: 1, offset: 1, 'stop-color': 1, 'stop-opacity': 1, gradientunits: 1, gradienttransform: 1, spreadmethod: 1, fx: 1, fy: 1, 'marker-start': 1, 'marker-mid': 1, 'marker-end': 1, markerwidth: 1, markerheight: 1, refx: 1, refy: 1, orient: 1, markerunits: 1, patternunits: 1, patterncontentunits: 1 };
+  function sanearSVG(svgString) {
+    var doc = new DOMParser().parseFromString(String(svgString || ''), 'image/svg+xml');
+    if (doc.querySelector('parsererror')) throw new Error('SVG mal formado');
+    var root = doc.documentElement;
+    if (!root || (root.localName || '').toLowerCase() !== 'svg') throw new Error('La raíz no es <svg>');
+    var SVGNS = 'http://www.w3.org/2000/svg';
+    var elems = [root], w = doc.createTreeWalker(root, NodeFilter.SHOW_ELEMENT, null), n;
+    while ((n = w.nextNode())) elems.push(n);
+    var fuera = [];
+    elems.forEach(function (el) {
+      var name = (el.localName || '').toLowerCase();
+      if (el.namespaceURI && el.namespaceURI !== SVGNS) { fuera.push(el); return; }
+      if (name !== 'svg' && !SVG_TAGS_OK[name]) { fuera.push(el); return; }
+      Array.prototype.slice.call(el.attributes).forEach(function (attr) {
+        var an = attr.name.toLowerCase(), ln = (attr.localName || attr.name).toLowerCase(), v = attr.value || '';
+        if (an.indexOf('on') === 0) { el.removeAttributeNode(attr); return; }
+        if (ln === 'href') { if (!/^#[\w:.\-]+$/.test(v.trim())) el.removeAttributeNode(attr); return; }
+        if (an === 'style') { el.removeAttributeNode(attr); return; }
+        if (an === 'xmlns' || an === 'xmlns:xlink' || an.indexOf('xml:') === 0) return;
+        if (/javascript:/i.test(v)) { el.removeAttributeNode(attr); return; }
+        if (/url\s*\(/i.test(v) && !/url\(\s*['"]?#/i.test(v)) { el.removeAttributeNode(attr); return; }
+        if (!SVG_ATTRS_OK[ln] && !SVG_ATTRS_OK[an]) { el.removeAttributeNode(attr); return; }
+      });
+    });
+    fuera.forEach(function (el) { if (el.parentNode) el.parentNode.removeChild(el); });
+    Array.prototype.slice.call(root.querySelectorAll('style, script, foreignObject, image, a')).forEach(function (el) { if (el.parentNode) el.parentNode.removeChild(el); });
+    if (!root.getAttribute('xmlns')) root.setAttribute('xmlns', SVGNS);
+    return new XMLSerializer().serializeToString(root);
+  }
+  function svgADataUrl(svg) { return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg); }
+  function svgConTamano(svg, pxW, pxH) {
+    return svg.replace(/<svg\b([^>]*?)>/i, function (full, attrs) {
+      var a = attrs.replace(/\swidth\s*=\s*["'][^"']*["']/i, '').replace(/\sheight\s*=\s*["'][^"']*["']/i, '');
+      return '<svg' + a + ' width="' + pxW + '" height="' + pxH + '">';
+    });
+  }
+  function leerViewBox(svg) {
+    var m = svg.match(/viewBox\s*=\s*["']\s*[\d.eE+\-]+\s+[\d.eE+\-]+\s+([\d.eE+\-]+)\s+([\d.eE+\-]+)\s*["']/);
+    if (m) { var vw = parseFloat(m[1]), vh = parseFloat(m[2]); if (vw > 0 && vh > 0) return { w: vw, h: vh }; }
+    return null;
+  }
+  // Renderiza el SVG sano a un canvas a tamaño real. Asíncrono (carga vía <img> en modo imagen seguro).
+  function renderDisenoCanvas(svgSano, forma, wCm, hCm, dpi, conGuia, cb) {
+    var pxW = Math.max(1, Math.round(wCm / 2.54 * dpi)), pxH = Math.max(1, Math.round(hCm / 2.54 * dpi));
+    // Tope de seguridad: ningún lado supera MAX_LADO_PX (evita colgar la pestaña o exportar en blanco)
+    var kLim = Math.min(1, MAX_LADO_PX / Math.max(pxW, pxH));
+    pxW = Math.max(1, Math.round(pxW * kLim)); pxH = Math.max(1, Math.round(pxH * kLim));
+    var vb = leerViewBox(svgSano) || { w: pxW, h: pxH };
+    var esc = Math.min(pxW / vb.w, pxH / vb.h);
+    var drawW = Math.max(1, Math.round(vb.w * esc)), drawH = Math.max(1, Math.round(vb.h * esc));
+    var dx = Math.round((pxW - drawW) / 2), dy = Math.round((pxH - drawH) / 2);
+    var img = new Image();
+    img.onload = function () {
+      var c = document.createElement('canvas'); c.width = pxW; c.height = pxH;
+      var ctx = c.getContext('2d'); ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, pxW, pxH);
+      ctx.save();
+      if (forma === 'circulo') { ctx.beginPath(); ctx.arc(pxW / 2, pxH / 2, pxW / 2, 0, Math.PI * 2); ctx.clip(); }
+      ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(img, dx, dy, drawW, drawH);
+      ctx.restore();
+      if (forma === 'circulo' && conGuia) {
+        var lw = Math.max(1, Math.round(0.03 / 2.54 * dpi));
+        ctx.strokeStyle = '#999999'; ctx.lineWidth = lw; ctx.setLineDash([Math.round(0.3 / 2.54 * dpi), Math.round(0.2 / 2.54 * dpi)]);
+        ctx.beginPath(); ctx.arc(pxW / 2, pxH / 2, pxW / 2 - lw, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+      }
+      cb(c);
+    };
+    img.onerror = function () { cb(null); };
+    img.src = svgADataUrl(svgConTamano(svgSano, drawW, drawH));
+  }
   function agregarBurbuja(role, html) {
     var d = document.createElement('div'); d.className = 'burbuja ' + (role === 'user' ? 'mia' : 'ia');
     d.innerHTML = html; $('chatMsgs').appendChild(d);
@@ -1844,17 +2126,18 @@
     // Mensajes para la API (la imagen va solo en la petición, no se guarda)
     var msgs = mensajesApi();
     if (imagenDataUrl && msgs.length) {
+      var mt = imagenDataUrl.slice(5, imagenDataUrl.indexOf(';')) || 'image/jpeg';
       msgs[msgs.length - 1] = { role: 'user', content: [
-        { type: 'image', source: { type: 'base64', media_type: 'image/png', data: imagenDataUrl.split(',')[1] } },
+        { type: 'image', source: { type: 'base64', media_type: mt, data: imagenDataUrl.split(',')[1] } },
         { type: 'text', text: texto }
       ] };
     }
     var pensando = agregarBurbuja('ia', '<span class="puntos">escribiendo…</span>');
-    $('btnEnviarChat').disabled = true; $('btnAnalizar').disabled = true;
+    $('btnEnviarChat').disabled = true; $('btnAnalizar').disabled = true; $('btnAdjuntar').disabled = true;
     fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-api-key': CONFIG.apiKey.trim(), 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-      body: JSON.stringify({ model: CONFIG.modelo || MODELO_IA, max_tokens: 1100, system: SYS_ASIST, tools: HERRAMIENTAS, messages: msgs })
+      body: JSON.stringify({ model: CONFIG.modelo || MODELO_IA, max_tokens: 4000, system: SYS_ASIST, tools: HERRAMIENTAS, messages: msgs })
     }).then(function (r) {
       if (!r.ok) return r.text().then(function () { throw new Error('HTTP ' + r.status + (r.status === 401 ? ' · revisa tu clave API en Ajustes' : '')); });
       return r.json();
@@ -1862,7 +2145,18 @@
       var bloques = d.content || [];
       var textos = bloques.filter(function (b) { return b.type === 'text'; }).map(function (b) { return b.text; }).join('\n').trim();
       var tu = bloques.filter(function (b) { return b.type === 'tool_use' && b.name === 'crear_propuesta'; })[0];
+      var td = bloques.filter(function (b) { return b.type === 'tool_use' && b.name === 'crear_diseno'; })[0];
       if (tu) { conversa.push({ rol: 'ia', texto: textos, prop: tu.input }); pintarIA(pensando, textos, tu.input); }
+      else if (td) {
+        try {
+          var dis = normalizarDiseno(td.input);
+          conversa.push({ rol: 'ia', texto: textos, diseno: dis }); pintarDiseno(pensando, textos, dis);
+        } catch (err) {
+          var cola = d.stop_reason === 'max_tokens' ? 'El diseño salió muy grande y se cortó. Pídeme una versión más simple. 🌸' : 'No pude dibujar ese diseño. Pídeme que lo intente de nuevo o más sencillo. 🌸';
+          conversa.push({ rol: 'ia', texto: (textos ? textos + ' ' : '') + '(no se pudo dibujar el diseño)' });
+          pensando.innerHTML = (textos ? fmtMd(textos) + '<br>' : '') + '⚠️ ' + cola;
+        }
+      }
       else { conversa.push({ rol: 'ia', texto: textos }); pensando.innerHTML = fmtMd(textos || '(sin respuesta)'); }
       guardarConversa();
     }).catch(function (e) {
@@ -1871,13 +2165,49 @@
       if (conversa.length && conversa[conversa.length - 1].rol === 'user') { conversa.pop(); guardarConversa(); }
     }).then(function () {
       enviando = false;
-      $('btnEnviarChat').disabled = false; $('btnAnalizar').disabled = false;
+      $('btnEnviarChat').disabled = false; $('btnAnalizar').disabled = false; $('btnAdjuntar').disabled = false;
       $('chatMsgs').scrollTop = $('chatMsgs').scrollHeight;
     });
   }
+  // ---- Adjuntar foto al chat ----
+  var adjuntoChat = null;   // dataURL JPEG de la foto pendiente de enviar
+  function prepararImagenChat(file, cb) {
+    var img = new Image(), url = URL.createObjectURL(file);
+    img.onload = function () {
+      var MAX = 1280, e = Math.min(1, MAX / Math.max(img.naturalWidth, img.naturalHeight));
+      var w = Math.max(1, Math.round(img.naturalWidth * e)), h = Math.max(1, Math.round(img.naturalHeight * e));
+      var c = document.createElement('canvas'); c.width = w; c.height = h;
+      c.getContext('2d').drawImage(img, 0, 0, w, h);
+      URL.revokeObjectURL(url);
+      try { cb(c.toDataURL('image/jpeg', 0.82)); } catch (err) { cb(null); }
+    };
+    img.onerror = function () { URL.revokeObjectURL(url); cb(null); };
+    img.src = url;
+  }
+  function mostrarAdjunto() {
+    var z = $('adjuntoChat');
+    if (adjuntoChat) { $('adjuntoMini').src = adjuntoChat; $('adjuntoNombre').textContent = 'Foto lista para enviar'; z.style.display = 'flex'; }
+    else { z.style.display = 'none'; $('adjuntoMini').removeAttribute('src'); }
+  }
+  function limpiarAdjunto() { adjuntoChat = null; $('archivoChat').value = ''; mostrarAdjunto(); }
+  $('btnAdjuntar').addEventListener('click', function () { $('archivoChat').click(); });
+  $('archivoChat').addEventListener('change', function () {
+    var f = this.files && this.files[0]; if (!f) return;
+    toast('Preparando foto…');
+    prepararImagenChat(f, function (dataUrl) {
+      if (!dataUrl) { toast('No se pudo leer la foto'); return; }
+      adjuntoChat = dataUrl; mostrarAdjunto();
+    });
+  });
+  $('quitarAdjunto').addEventListener('click', limpiarAdjunto);
   function enviarDesdeInput() {
-    var t = $('chatInput').value.trim(); if (!t) return;
-    $('chatInput').value = ''; enviarAsistente(t, null);
+    var t = $('chatInput').value.trim();
+    var img = adjuntoChat;
+    if (!t && !img) return;
+    if (!t && img) t = '¿Qué te parece esta foto para bordar?';   // texto por defecto si solo manda foto
+    $('chatInput').value = '';
+    if (img) limpiarAdjunto();
+    enviarAsistente(t, img);
   }
   $('btnEnviarChat').addEventListener('click', enviarDesdeInput);
   $('chatInput').addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); enviarDesdeInput(); } });
@@ -1895,7 +2225,7 @@
   });
   $('irAjustesIA').addEventListener('click', abrirAjustes);
   (function () {
-    var sugerencias = ['🌸 Diseña "Te amo" para una foto', '✨ Una propuesta para un nombre', 'Evalúa mi diseño actual', '¿Qué hilos combinan con terracota?'];
+    var sugerencias = ['🐳 Diseña un bastidor de 5 cm "Te Amo Diego" con ballenitas y mar', '✨ Una propuesta para un nombre', 'Evalúa mi diseño actual', '¿Qué hilos combinan con terracota?'];
     var cont = $('chipsAsist');
     sugerencias.forEach(function (s) {
       var b = document.createElement('button'); b.className = 'chip'; b.type = 'button'; b.textContent = s;
