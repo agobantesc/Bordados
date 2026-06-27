@@ -772,13 +772,6 @@
       <input type="password" id="claveApi" placeholder="sk-ant-…" autocomplete="off" spellcheck="false">
       <p class="ayuda">Se obtiene en console.anthropic.com → API Keys. Se guarda solo en este dispositivo.</p>
     </div>
-    <div class="campo" style="margin-top:10px;"><label for="modeloIA">Modelo</label>
-      <select id="modeloIA">
-        <option value="claude-opus-4-8">Más capaz (recomendado)</option>
-        <option value="claude-sonnet-4-6">Equilibrado</option>
-        <option value="claude-haiku-4-5">Más económico y rápido</option>
-      </select>
-    </div>
     <p class="nota">🔒 Todo se guarda solo en este dispositivo.</p>
     <div class="modal-acciones"><button class="boton-sec" id="cerrarAjustes" type="button">Cancelar</button><button class="boton-primario" id="guardarAjustes" type="button">Guardar</button></div>
   </div>
@@ -800,8 +793,10 @@
   function num(id) { var v = parseFloat($(id).value); return isFinite(v) && v > 0 ? v : 0; }
 
   // ---------- Configuración (localStorage) ----------
-  var CONFIG = { nombre: 'Alma bordado', enPdf: false, regla: false, dpi: 300, apiKey: '', modelo: 'claude-opus-4-8' };
-  var MODELOS = ['claude-opus-4-8', 'claude-sonnet-4-6', 'claude-haiku-4-5'];
+  // El modelo de la IA lo controla solo el código (no se puede cambiar desde la app).
+  // Para cambiarlo en el futuro, edita esta línea: claude-sonnet-4-6 | claude-opus-4-8 | claude-haiku-4-5
+  var MODELO_IA = 'claude-sonnet-4-6';
+  var CONFIG = { nombre: 'Alma bordado', enPdf: false, regla: false, dpi: 300, apiKey: '', modelo: MODELO_IA };
   function cargarConfig() {
     try {
       var s = JSON.parse(localStorage.getItem('alma_config') || '{}');
@@ -809,7 +804,7 @@
       CONFIG.enPdf = !!s.enPdf; CONFIG.regla = !!s.regla;
       CONFIG.dpi = [150, 300, 600].indexOf(s.dpi) >= 0 ? s.dpi : 300;
       CONFIG.apiKey = (s.apiKey || '').toString();
-      CONFIG.modelo = MODELOS.indexOf(s.modelo) >= 0 ? s.modelo : 'claude-opus-4-8';
+      CONFIG.modelo = MODELO_IA;   // siempre el del código, ignora lo guardado
     } catch (e) {}
   }
   function guardarConfig() { try { localStorage.setItem('alma_config', JSON.stringify(CONFIG)); } catch (e) {} }
@@ -1695,7 +1690,7 @@
   var NOMBRE_PANEL = { 'panel-rect': 'imagen a medida', 'panel-circulo': 'bastidor circular', 'panel-letras': 'letras y palabras', 'panel-fototexto': 'foto + texto', 'panel-varios': 'varios diseños en una hoja' };
   // Memoria de la conversación (solo en este dispositivo; sin imágenes, para no llenar el almacenamiento)
   var conversa = [];
-  var MAX_CONTEXTO = 18;   // cuántos turnos recientes recibe la IA como contexto
+  var MAX_CONTEXTO = 10;   // cuántos turnos recientes recibe la IA como contexto
   var MAX_GUARDA = 80;     // cuántos turnos se guardan y se muestran
   var SYS_ASIST = [
     'Eres Alma, la asistente de bordado de la app "Alma bordado". Eres cálida, cercana y alentadora, como una amiga bordadora con años de oficio que se alegra de acompañar cada proyecto. Hablas SIEMPRE en español, con ternura y entusiasmo genuino, pero sin exagerar ni sonar artificial; usa un emoji ocasional con gusto (🌸🧵✨) y, cuando venga al caso, algún diminutivo cariñoso natural.',
@@ -1859,7 +1854,7 @@
     fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-api-key': CONFIG.apiKey.trim(), 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-      body: JSON.stringify({ model: CONFIG.modelo || 'claude-opus-4-8', max_tokens: 1100, system: SYS_ASIST, tools: HERRAMIENTAS, messages: msgs })
+      body: JSON.stringify({ model: CONFIG.modelo || MODELO_IA, max_tokens: 1100, system: SYS_ASIST, tools: HERRAMIENTAS, messages: msgs })
     }).then(function (r) {
       if (!r.ok) return r.text().then(function () { throw new Error('HTTP ' + r.status + (r.status === 401 ? ' · revisa tu clave API en Ajustes' : '')); });
       return r.json();
@@ -1925,7 +1920,7 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   });
-  function abrirAjustes() { $('nombreNegocio').value = CONFIG.nombre; $('marcaEnPdf').checked = CONFIG.enPdf; $('reglaEnPdf').checked = CONFIG.regla; $('calidadPdf').value = String(CONFIG.dpi); $('claveApi').value = CONFIG.apiKey; $('modeloIA').value = CONFIG.modelo; $('modalAjustes').hidden = false; setTimeout(function () { $('nombreNegocio').focus(); }, 30); }
+  function abrirAjustes() { $('nombreNegocio').value = CONFIG.nombre; $('marcaEnPdf').checked = CONFIG.enPdf; $('reglaEnPdf').checked = CONFIG.regla; $('calidadPdf').value = String(CONFIG.dpi); $('claveApi').value = CONFIG.apiKey; $('modalAjustes').hidden = false; setTimeout(function () { $('nombreNegocio').focus(); }, 30); }
   function cerrarAjustes() { $('modalAjustes').hidden = true; }
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('modalAjustes').hidden) cerrarAjustes(); });
   $('btnAjustes').addEventListener('click', abrirAjustes);
@@ -1935,7 +1930,7 @@
     CONFIG.nombre = $('nombreNegocio').value.toString(); CONFIG.enPdf = $('marcaEnPdf').checked; CONFIG.regla = $('reglaEnPdf').checked;
     CONFIG.dpi = parseInt($('calidadPdf').value, 10) || 300;
     CONFIG.apiKey = $('claveApi').value.toString();
-    CONFIG.modelo = MODELOS.indexOf($('modeloIA').value) >= 0 ? $('modeloIA').value : 'claude-opus-4-8';
+    CONFIG.modelo = MODELO_IA;
     guardarConfig(); aplicarMarca(); actualizarEstadoAsistente(); cerrarAjustes(); toast('Ajustes guardados  ✓');
   });
 
