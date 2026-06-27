@@ -86,7 +86,7 @@
 
   /* ---------- Pestañas (menú de módulos en mosaico) ---------- */
   .tabs {
-    display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px;
+    display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px;
     position: sticky; top: 74px; z-index: 20;
     max-width: 920px; margin: 0 auto 16px; padding: 6px;
     background: var(--superficie); border: 1px solid var(--borde); border-radius: 15px;
@@ -107,8 +107,8 @@
     color: #fff; box-shadow: 0 4px 12px rgba(111,97,81,0.28);
   }
   /* Tablet angosta / móvil: el menú se reparte en filas parejas, sin scroll */
-  @media (max-width: 720px) { .tabs { grid-template-columns: repeat(4, 1fr); } }
-  @media (max-width: 380px) { .tabs { grid-template-columns: repeat(3, 1fr); } .tab-btn { font-size: .72rem; } }
+  @media (max-width: 820px) { .tabs { grid-template-columns: repeat(4, 1fr); } }
+  @media (max-width: 380px) { .tabs { grid-template-columns: repeat(4, 1fr); gap: 5px; } .tab-btn { font-size: .68rem; padding: 8px 3px; } }
 
   .panel { display: none; max-width: 920px; margin: 0 auto; animation: aparecer .25s ease; }
   .panel.activa { display: block; }
@@ -350,6 +350,14 @@
   .gal-acc .boton-sec { flex: 1 1 auto; padding: 7px 8px; font-size: .82rem; }
   .gal-quitar { color: #a14f72; border-color: #e2b7c8; }
 
+  /* Punto de cruz: leyenda de hilos */
+  .cruz-leyenda { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 5px 12px; margin-top: 12px; }
+  .cruz-it { display: flex; align-items: center; gap: 7px; font-size: .82rem; min-width: 0; }
+  .cruz-sw { width: 19px; height: 19px; border-radius: 4px; border: 1px solid rgba(0,0,0,.2); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: .72rem; font-weight: 700; line-height: 1; }
+  .cruz-dmc { font-weight: 700; color: var(--titulo); white-space: nowrap; }
+  .cruz-nom { color: var(--tinta-suave); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cruz-cnt { color: var(--tinta-suave); margin-left: auto; flex-shrink: 0; }
+
   .deco-bg { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
   .flor-deco { position: absolute; width: 300px; height: auto; }
   .flor-tr { top: 56px; right: -58px; opacity: .26; transform: rotate(8deg); }
@@ -519,6 +527,7 @@
   <button class="tab-btn" data-panel="panel-circulo" aria-label="Bastidor circular"><span class="ti" aria-hidden="true">⭕</span><span class="tl">Bastidor</span></button>
   <button class="tab-btn" data-panel="panel-letras" aria-label="Letras y palabras"><span class="ti" aria-hidden="true">✍️</span><span class="tl">Letras</span></button>
   <button class="tab-btn" data-panel="panel-fototexto" aria-label="Foto y texto"><span class="ti" aria-hidden="true">🌸</span><span class="tl">Foto+texto</span></button>
+  <button class="tab-btn" data-panel="panel-cruz" aria-label="Punto de cruz"><span class="ti" aria-hidden="true">🧶</span><span class="tl">Punto cruz</span></button>
   <button class="tab-btn" data-panel="panel-varios" aria-label="Varios en una hoja"><span class="ti" aria-hidden="true">🧩</span><span class="tl">Varios</span></button>
   <button class="tab-btn" data-panel="panel-asistente" aria-label="Asistente de bordado"><span class="ti" aria-hidden="true">🪡</span><span class="tl">Asistente</span></button>
   <button class="tab-btn" data-panel="panel-galeria" aria-label="Diseños favoritos"><span class="ti" aria-hidden="true">❤️</span><span class="tl">Favoritos</span></button>
@@ -761,6 +770,59 @@
     <div class="pie" id="pieComp"></div>
   </div>
   <button class="boton-pdf" id="pdfComp" disabled>📄 Generar PDF para imprimir</button>
+</section>
+
+<!-- ============ PUNTO DE CRUZ ============ -->
+<section id="panel-cruz" class="panel">
+  <p class="intro">Sube una foto o dibujo y la app lo convierte en un <strong>patrón de punto de cruz</strong> con su cuadrícula, sus hilos DMC y sus símbolos, listo para imprimir y bordar.</p>
+  <svg class="divisor" viewBox="0 0 150 22"><use href="#divisorBot"/></svg>
+
+  <div class="tarjeta">
+    <svg class="flor-tarjeta" viewBox="0 0 80 80"><use href="#margaritaRosa" transform="translate(40,40)"/></svg>
+    <h2><span class="paso">1</span> Sube tu imagen</h2>
+    <label class="zona-subida" id="zonaCruz" for="archivoCruz"><span class="icono">🧶</span><p>Toca aquí para elegir una imagen</p></label>
+    <input type="file" id="archivoCruz" accept="image/jpeg,image/png,image/gif,image/webp,image/bmp">
+    <div class="info-img" id="infoCruz"></div>
+    <p class="info-img" style="text-align:left; margin-top:10px;">Funciona mejor con dibujos simples, logos o fotos con pocos colores y buen contraste.</p>
+  </div>
+
+  <div class="tarjeta">
+    <h2><span class="paso">2</span> Ajustes del patrón</h2>
+    <div class="fila">
+      <div class="campo"><label for="anchoCruz">Ancho en puntos</label><input type="number" id="anchoCruz" min="20" max="220" step="1" value="70" inputmode="numeric"></div>
+      <div class="campo"><label for="telaCruz">Tela Aida</label><select id="telaCruz">
+        <option value="11">11 ct (puntos grandes)</option>
+        <option value="14" selected>14 ct (la más común)</option>
+        <option value="16">16 ct</option>
+        <option value="18">18 ct (puntos finos)</option>
+      </select></div>
+    </div>
+    <div class="fila" style="margin-top:12px;">
+      <div class="campo"><label for="coloresCruz">Cantidad de colores</label><select id="coloresCruz">
+        <option value="8">8 colores</option>
+        <option value="12">12 colores</option>
+        <option value="16" selected>16 colores</option>
+        <option value="20">20 colores</option>
+        <option value="25">25 colores</option>
+        <option value="30">30 colores</option>
+      </select></div>
+      <div class="campo"><label for="hojaCruz">Hoja</label><select id="hojaCruz"><option value="A4" selected>A4 (21 × 29,7 cm)</option><option value="Carta">Carta (21,6 × 27,9 cm)</option><option value="A3">A3 (29,7 × 42 cm)</option></select></div>
+    </div>
+    <div class="controles-previa" style="margin-top:12px; justify-content:flex-start;">
+      <button class="boton-sec" id="simbolosCruz" type="button" aria-pressed="false">🔤 Mostrar símbolos</button>
+      <button class="boton-sec" id="fondoCruz" type="button" aria-pressed="false">⬜ Quitar fondo claro</button>
+    </div>
+    <div class="aviso alerta" id="avisoCruz"></div>
+  </div>
+
+  <div class="tarjeta vista-previa">
+    <h2><span class="paso">3</span> Vista previa del patrón</h2>
+    <div class="lienzo-wrap"><canvas id="previaCruz" width="320" height="420"></canvas></div>
+    <div class="pie" id="pieCruz">Sube una imagen para ver el patrón</div>
+    <div id="leyendaCruz" class="cruz-leyenda"></div>
+  </div>
+  <button class="boton-pdf" id="pdfCruz" disabled>📄 Generar patrón PDF para imprimir</button>
+  <button class="boton-sec boton-img" id="imgCruz" type="button" disabled>🖼️ Guardar vista a color (imagen)</button>
 </section>
 
 <!-- ============ MODO 5: ASISTENTE IA ============ -->
@@ -1803,10 +1865,295 @@
   });
 
   // ====================================================================
+  //  PUNTO DE CRUZ · convierte una imagen en patrón con hilos DMC
+  // ====================================================================
+  // Paleta DMC curada (código, hex aproximado, nombre). Suficiente para un buen calce.
+  var DMC_RAW = [
+    ['B5200','#ffffff','Blanco nieve'], ['White','#fcfcf9','Blanco'], ['Ecru','#f0e9d2','Crudo'],
+    ['3865','#f4efe6','Blanco invierno'], ['712','#f6ecd4','Crema'], ['739','#eac9a8','Beige claro'],
+    ['738','#dcbb8e','Beige'], ['437','#c89a6a','Beige tostado'], ['436','#b5824f','Tostado'],
+    ['435','#a06f3e','Café claro'], ['434','#8a5d32','Café'], ['801','#5f3a1d','Café oscuro'],
+    ['898','#4a2a16','Café muy oscuro'], ['938','#36200f','Café casi negro'], ['3031','#4a3b25','Café topo'],
+    ['762','#e3e4e6','Gris perla'], ['415','#cdd0d4','Gris claro'], ['318','#a8abae','Gris'],
+    ['414','#85888c','Gris medio'], ['317','#5f6164','Gris oscuro'], ['413','#46484a','Gris pizarra'],
+    ['3799','#2f3133','Gris casi negro'], ['310','#000000','Negro'],
+    ['321','#c8313c','Rojo'], ['666','#e23b3b','Rojo vivo'], ['349','#bf3a2e','Rojo coral'],
+    ['498','#9e1b2e','Rojo oscuro'], ['816','#8d1f33','Granate'], ['815','#74182a','Granate oscuro'],
+    ['347','#b84444','Salmón oscuro'], ['3712','#d56e6e','Salmón'], ['760','#e8a3a0','Rosa salmón'],
+    ['761','#f3c4c1','Rosa claro'], ['335','#d9436b','Rosa fuerte'], ['899','#e87fa0','Rosa'],
+    ['3326','#f4aebd','Rosa pastel'], ['818','#fbe0e3','Rosa bebé'], ['957','#f7a3b4','Rosa chicle'],
+    ['602','#d63b86','Magenta'], ['600','#c8246f','Fucsia'], ['718','#9e2a73','Ciruela'],
+    ['720','#cf561f','Naranja oscuro'], ['721','#e8743b','Naranja'], ['722','#f29b6d','Naranja claro'],
+    ['740','#f57e20','Naranja vivo'], ['742','#f9b94e','Amarillo naranja'], ['743','#fdd06f','Amarillo dorado'],
+    ['744','#fbe08a','Amarillo claro'], ['745','#f8e6a8','Amarillo pálido'], ['973','#f9c70b','Amarillo canario'],
+    ['725','#f5c042','Mostaza clara'], ['783','#cf9b32','Mostaza'], ['781','#a9772a','Ocre'],
+    ['3829','#9c7621','Dorado viejo'],
+    ['704','#90c83c','Verde lima'], ['703','#71b84a','Verde claro'], ['702','#4aa64a','Verde'],
+    ['701','#3a9445','Verde hoja'], ['700','#28823a','Verde fuerte'], ['699','#1f7233','Verde oscuro'],
+    ['986','#3a5f3a','Verde bosque'], ['988','#6e8b4e','Verde musgo'], ['989','#8aa46a','Verde salvia claro'],
+    ['320','#86a07a','Verde salvia'], ['367','#5f7f57','Verde pino'], ['319','#3e5a36','Verde pino oscuro'],
+    ['563','#8fd1ae','Verde menta'], ['564','#aadcc0','Menta claro'], ['993','#83c2af','Verde agua'],
+    ['992','#5fae97','Verde mar'], ['991','#3f8576','Verde mar oscuro'], ['943','#1fa183','Esmeralda'],
+    ['3851','#3cba9a','Turquesa verde'],
+    ['3811','#bce0e3','Celeste muy claro'], ['598','#9fd0d6','Celeste'], ['597','#5fa8b6','Azul turquesa'],
+    ['3810','#3f8e9e','Turquesa oscuro'], ['807','#5fb0c4','Azul cielo'], ['519','#7fb6cf','Cielo claro'],
+    ['518','#3f8fb0','Azul medio'], ['517','#2a6f93','Azul acero'], ['996','#27b6e6','Azul eléctrico'],
+    ['3843','#2bb0d6','Azul aqua'], ['813','#9cc0dc','Azul claro'], ['826','#5b8fc0','Azul'],
+    ['825','#3f74ab','Azul fuerte'], ['824','#2c5d92','Azul intenso'], ['3842','#1f5f80','Azul mar'],
+    ['336','#23426b','Azul marino'], ['823','#1c2f5c','Azul noche'], ['939','#16243f','Azul casi negro'],
+    ['3838','#5a76b0','Azul lavanda'], ['794','#8f9fc8','Lavanda claro'], ['793','#6e80b4','Azul violeta'],
+    ['792','#4a5a96','Violeta oscuro'],
+    ['210','#c49bd0','Lila'], ['209','#a877b8','Malva'], ['208','#8e5aa0','Morado'],
+    ['550','#5e2b6e','Morado oscuro'], ['3607','#c0438c','Orquídea'], ['327','#7a4a8e','Violeta'],
+    ['155','#8d80b3','Lavanda azul'], ['3746','#7766a8','Violeta azul'], ['333','#5a4a8c','Violeta intenso']
+  ];
+  function srgbLin(c) { c /= 255; return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }
+  function rgbALab(r, g, b) {
+    var R = srgbLin(r), G = srgbLin(g), B = srgbLin(b);
+    var x = (R * 0.4124 + G * 0.3576 + B * 0.1805) / 0.95047;
+    var y = (R * 0.2126 + G * 0.7152 + B * 0.0722);
+    var z = (R * 0.0193 + G * 0.1192 + B * 0.9505) / 1.08883;
+    function f(t) { return t > 0.008856 ? Math.cbrt(t) : (7.787 * t + 0.137931); }
+    var fx = f(x), fy = f(y), fz = f(z);
+    return [116 * fy - 16, 500 * (fx - fy), 200 * (fy - fz)];
+  }
+  function dELab(a, b) { var dl = a[0] - b[0], da = a[1] - b[1], db = a[2] - b[2]; return dl * dl + da * da + db * db; }
+  var DMC = DMC_RAW.map(function (d) {
+    var hex = d[1], r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
+    return { code: d[0], hex: hex, name: d[2], r: r, g: g, b: b, lab: rgbALab(r, g, b), lum: (0.299 * r + 0.587 * g + 0.114 * b) / 255 };
+  });
+  var CRUZ_SIMBOLOS = ['●','■','▲','◆','★','✚','✖','▼','♥','◐','◑','◧','◨','⬟','⬢','⬣','▣','▤','▥','▦','▧','▨','▩','◫','⊕','⊗','⊞','⊠','⧫','✦','❉','✿','♠','♣','♦'];
+
+  var imgCruz = null, modeloCruz = null, mostrarSimbolosCruz = false, quitarFondoCruz = false;
+
+  // Median-cut: elige hasta n colores representativos de una lista de [r,g,b]
+  function medianCut(pts, n) {
+    if (!pts.length) return [];
+    function caja(a) {
+      var rmin = 255, gmin = 255, bmin = 255, rmax = 0, gmax = 0, bmax = 0, rs = 0, gs = 0, bs = 0, i, p;
+      for (i = 0; i < a.length; i++) { p = a[i]; if (p[0] < rmin) rmin = p[0]; if (p[0] > rmax) rmax = p[0]; if (p[1] < gmin) gmin = p[1]; if (p[1] > gmax) gmax = p[1]; if (p[2] < bmin) bmin = p[2]; if (p[2] > bmax) bmax = p[2]; rs += p[0]; gs += p[1]; bs += p[2]; }
+      var rr = rmax - rmin, gr = gmax - gmin, br = bmax - bmin, m = a.length || 1;
+      return { pts: a, rango: Math.max(rr, gr, br), eje: (rr >= gr && rr >= br) ? 0 : (gr >= br ? 1 : 2), avg: [Math.round(rs / m), Math.round(gs / m), Math.round(bs / m)] };
+    }
+    var cajas = [caja(pts)];
+    while (cajas.length < n) {
+      var idx = -1, mejor = -1;
+      for (var i = 0; i < cajas.length; i++) { if (cajas[i].pts.length < 2) continue; if (cajas[i].rango > mejor) { mejor = cajas[i].rango; idx = i; } }
+      if (idx < 0) break;
+      var c = cajas[idx], ej = c.eje;
+      c.pts.sort(function (p, q) { return p[ej] - q[ej]; });
+      var mid = c.pts.length >> 1;
+      cajas.splice(idx, 1, caja(c.pts.slice(0, mid)), caja(c.pts.slice(mid)));
+    }
+    return cajas.map(function (c) { return c.avg; });
+  }
+
+  function convertirCruz() {
+    var img = imgCruz; if (!img) return null;
+    var cols = Math.round(num('anchoCruz') || 70); cols = Math.max(20, Math.min(220, cols));
+    var aida = parseFloat($('telaCruz').value) || 14;
+    var nCol = parseInt($('coloresCruz').value, 10) || 16;
+    var iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height;
+    var rows = Math.max(1, Math.round(cols * ih / iw));
+    if (cols * rows > 60000) { var k = Math.sqrt(60000 / (cols * rows)); cols = Math.max(20, Math.round(cols * k)); rows = Math.max(1, Math.round(cols * ih / iw)); }
+    var oc = document.createElement('canvas'); oc.width = cols; oc.height = rows;
+    var ox = oc.getContext('2d'); ox.imageSmoothingEnabled = true; ox.imageSmoothingQuality = 'high';
+    ox.drawImage(img, 0, 0, cols, rows);
+    var data; try { data = ox.getImageData(0, 0, cols, rows).data; } catch (e) { return null; }
+    var N = cols * rows, cells = new Int16Array(N), muestras = [], i, r, g, b, a, lum;
+    for (i = 0; i < N; i++) {
+      r = data[i * 4]; g = data[i * 4 + 1]; b = data[i * 4 + 2]; a = data[i * 4 + 3];
+      lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+      if (a < 40 || (quitarFondoCruz && lum > 0.90)) { cells[i] = -1; continue; }
+      muestras.push([r, g, b, i]);
+    }
+    if (!muestras.length) return null;
+    var pts = muestras.map(function (s) { return [s[0], s[1], s[2]]; });
+    var paraCut = pts;
+    if (pts.length > 9000) { var step = Math.ceil(pts.length / 9000); paraCut = []; for (var j = 0; j < pts.length; j += step) paraCut.push(pts[j]); }
+    var reps = medianCut(paraCut, nCol);
+    var usados = {};
+    reps.forEach(function (c) {
+      var lab = rgbALab(c[0], c[1], c[2]), best = 0, bd = 1e9;
+      for (var d = 0; d < DMC.length; d++) { var dd = dELab(lab, DMC[d].lab); if (dd < bd) { bd = dd; best = d; } }
+      usados[best] = true;
+    });
+    var paleta = Object.keys(usados).map(function (di) {
+      var d = DMC[+di];
+      return { code: d.code, name: d.name, hex: d.hex, r: d.r, g: d.g, b: d.b, lab: d.lab, lum: d.lum, count: 0 };
+    });
+    for (var s = 0; s < muestras.length; s++) {
+      var col = muestras[s], lab2 = rgbALab(col[0], col[1], col[2]), bp = 0, bpd = 1e9;
+      for (var p = 0; p < paleta.length; p++) { var d2 = dELab(lab2, paleta[p].lab); if (d2 < bpd) { bpd = d2; bp = p; } }
+      cells[col[3]] = bp; paleta[bp].count++;
+    }
+    var usadosArr = paleta.map(function (p, idx) { return { p: p, idx: idx }; }).filter(function (o) { return o.p.count > 0; });
+    usadosArr.sort(function (x, y) { return y.p.count - x.p.count; });
+    var remap = {}; usadosArr.forEach(function (o, ni) { remap[o.idx] = ni; o.p.symbol = CRUZ_SIMBOLOS[ni % CRUZ_SIMBOLOS.length]; });
+    for (var c2 = 0; c2 < N; c2++) { if (cells[c2] >= 0) cells[c2] = remap[cells[c2]]; }
+    return { cols: cols, rows: rows, aida: aida, cells: cells, palette: usadosArr.map(function (o) { return o.p; }), wCm: cols / aida * 2.54, hCm: rows / aida * 2.54 };
+  }
+
+  // Dibuja una región del patrón a un canvas (con cuadrícula, líneas de decena y, opcional, números y símbolos)
+  function dibujarRegionCruz(m, c0, r0, c1, r1, cell, conNumeros, conSimbolos) {
+    var gut = conNumeros ? Math.round(cell * 1.7) : 0;
+    var cols = c1 - c0, rows = r1 - r0, W = gut + cols * cell, H = gut + rows * cell;
+    var cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    var x = cv.getContext('2d'); x.fillStyle = '#ffffff'; x.fillRect(0, 0, W, H);
+    x.textAlign = 'center'; x.textBaseline = 'middle';
+    var fsym = 'bold ' + Math.round(cell * 0.72) + 'px sans-serif';
+    for (var ry = r0; ry < r1; ry++) {
+      for (var cx = c0; cx < c1; cx++) {
+        var idx = m.cells[ry * m.cols + cx], px = gut + (cx - c0) * cell, py = gut + (ry - r0) * cell;
+        if (idx < 0) { x.fillStyle = '#fbf8f0'; x.fillRect(px, py, cell, cell); continue; }
+        var p = m.palette[idx]; x.fillStyle = p.hex; x.fillRect(px, py, cell, cell);
+        if (conSimbolos && cell >= 7) { x.fillStyle = p.lum > 0.55 ? '#1c1c1c' : '#ffffff'; x.font = fsym; x.fillText(p.symbol, px + cell / 2, py + cell / 2 + 1); }
+      }
+    }
+    x.strokeStyle = 'rgba(120,110,95,0.35)'; x.lineWidth = 1; x.beginPath();
+    for (var c = 0; c <= cols; c++) { x.moveTo(gut + c * cell + 0.5, gut); x.lineTo(gut + c * cell + 0.5, H); }
+    for (var rr = 0; rr <= rows; rr++) { x.moveTo(gut, gut + rr * cell + 0.5); x.lineTo(W, gut + rr * cell + 0.5); }
+    x.stroke();
+    x.strokeStyle = '#5a4f3f'; x.lineWidth = 2; x.beginPath();
+    for (var cc = c0; cc <= c1; cc++) { if (cc % 10 === 0) { x.moveTo(gut + (cc - c0) * cell + 0.5, gut); x.lineTo(gut + (cc - c0) * cell + 0.5, H); } }
+    for (var rc = r0; rc <= r1; rc++) { if (rc % 10 === 0) { x.moveTo(gut, gut + (rc - r0) * cell + 0.5); x.lineTo(W, gut + (rc - r0) * cell + 0.5); } }
+    x.stroke();
+    if (conNumeros) {
+      x.fillStyle = '#5a4f3f'; x.font = 'bold ' + Math.round(gut * 0.42) + 'px sans-serif';
+      x.textAlign = 'center'; x.textBaseline = 'middle';
+      for (var cn = c0; cn <= c1; cn++) { if (cn % 10 === 0) x.fillText(String(cn), gut + (cn - c0) * cell, gut * 0.5); }
+      x.textAlign = 'right';
+      for (var rn = r0; rn <= r1; rn++) { if (rn % 10 === 0) x.fillText(String(rn), gut * 0.82, gut + (rn - r0) * cell); }
+    }
+    return cv;
+  }
+
+  function dibujarPreviaCruz() {
+    var m = modeloCruz, cv = $('previaCruz'); if (!cv) return;
+    var x = cv.getContext('2d');
+    if (!m) { cv.width = 320; cv.height = 180; x.clearRect(0, 0, cv.width, cv.height); return; }
+    var cell = Math.max(3, Math.floor(Math.min(360 / m.cols, 470 / m.rows)));
+    var W = m.cols * cell, H = m.rows * cell; cv.width = W; cv.height = H;
+    for (var ry = 0; ry < m.rows; ry++) for (var cx = 0; cx < m.cols; cx++) {
+      var idx = m.cells[ry * m.cols + cx], px = cx * cell, py = ry * cell;
+      if (idx < 0) { x.fillStyle = '#f6f2e8'; x.fillRect(px, py, cell, cell); continue; }
+      var p = m.palette[idx]; x.fillStyle = p.hex; x.fillRect(px, py, cell, cell);
+      if (mostrarSimbolosCruz && cell >= 7) { x.fillStyle = p.lum > 0.55 ? '#1c1c1c' : '#fff'; x.font = 'bold ' + Math.round(cell * 0.72) + 'px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(p.symbol, px + cell / 2, py + cell / 2 + 1); }
+    }
+    if (cell >= 5) {
+      x.strokeStyle = 'rgba(120,110,95,0.28)'; x.lineWidth = 1; x.beginPath();
+      for (var c = 0; c <= m.cols; c++) { x.moveTo(c * cell + 0.5, 0); x.lineTo(c * cell + 0.5, H); }
+      for (var r = 0; r <= m.rows; r++) { x.moveTo(0, r * cell + 0.5); x.lineTo(W, r * cell + 0.5); }
+      x.stroke();
+    }
+    x.strokeStyle = '#6f6151'; x.lineWidth = 1.6; x.beginPath();
+    for (var c2 = 0; c2 <= m.cols; c2 += 10) { x.moveTo(c2 * cell + 0.5, 0); x.lineTo(c2 * cell + 0.5, H); }
+    for (var r2 = 0; r2 <= m.rows; r2 += 10) { x.moveTo(0, r2 * cell + 0.5); x.lineTo(W, r2 * cell + 0.5); }
+    x.stroke();
+    x.strokeRect(0.5, 0.5, W - 1, H - 1);
+  }
+
+  function renderLeyendaCruz() {
+    var el = $('leyendaCruz'), m = modeloCruz; if (!el) return;
+    if (!m) { el.innerHTML = ''; return; }
+    el.innerHTML = m.palette.map(function (p) {
+      var tc = p.lum > 0.55 ? '#1c1c1c' : '#fff';
+      return '<div class="cruz-it"><span class="cruz-sw" style="background:' + colorSeguro(p.hex) + '; color:' + tc + '">' + p.symbol + '</span><span class="cruz-dmc">DMC ' + escaparHtml(p.code) + '</span><span class="cruz-nom">' + escaparHtml(p.name) + '</span><span class="cruz-cnt">' + p.count + '</span></div>';
+    }).join('');
+  }
+
+  function dibujarPortadaCruz(m, hoja, dpi) {
+    var W = Math.round(hoja.w / 2.54 * dpi), H = Math.round(hoja.h / 2.54 * dpi);
+    var cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    var x = cv.getContext('2d'); x.fillStyle = '#ffffff'; x.fillRect(0, 0, W, H);
+    var M = Math.round(dpi / 2.54), y = M;
+    x.textAlign = 'left'; x.textBaseline = 'top';
+    x.fillStyle = '#6f6151'; x.font = 'bold ' + Math.round(dpi * 0.32) + 'px sans-serif';
+    x.fillText('Patrón de punto de cruz', M, y); y += Math.round(dpi * 0.48);
+    x.fillStyle = '#3a342c'; x.font = Math.round(dpi * 0.16) + 'px sans-serif';
+    var ln = Math.round(dpi * 0.25);
+    x.fillText('Tamaño terminado: ' + m.wCm.toFixed(1) + ' × ' + m.hCm.toFixed(1) + ' cm  ·  tela Aida ' + m.aida + ' ct', M, y); y += ln;
+    x.fillText('Puntos: ' + m.cols + ' × ' + m.rows + ' = ' + (m.cols * m.rows) + ' puntos  ·  ' + m.palette.length + ' colores de hilo', M, y); y += Math.round(ln * 1.2);
+    // miniatura a color
+    var thMaxW = W - 2 * M, thMaxH = Math.round(dpi * 4.2);
+    var tcell = Math.max(1, Math.floor(Math.min(thMaxW / m.cols, thMaxH / m.rows)));
+    for (var ry = 0; ry < m.rows; ry++) for (var cx = 0; cx < m.cols; cx++) {
+      var idx = m.cells[ry * m.cols + cx]; if (idx < 0) continue;
+      x.fillStyle = m.palette[idx].hex; x.fillRect(M + cx * tcell, y + ry * tcell, tcell, tcell);
+    }
+    x.strokeStyle = '#cdbfa6'; x.lineWidth = 1; x.strokeRect(M + 0.5, y + 0.5, m.cols * tcell, m.rows * tcell);
+    y += m.rows * tcell + Math.round(dpi * 0.35);
+    // leyenda de hilos (2 columnas)
+    x.fillStyle = '#6f6151'; x.font = 'bold ' + Math.round(dpi * 0.18) + 'px sans-serif';
+    x.fillText('Hilos a comprar (DMC):', M, y); y += Math.round(dpi * 0.3);
+    var rowH = Math.round(dpi * 0.3), sw = Math.round(dpi * 0.22), colW = Math.round((W - 2 * M) / 2);
+    var filasPorCol = Math.max(1, Math.floor((H - y - M) / rowH));
+    x.font = Math.round(dpi * 0.145) + 'px sans-serif';
+    m.palette.forEach(function (p, i) {
+      var ci = Math.floor(i / filasPorCol), ri = i % filasPorCol;
+      var xx = M + ci * colW, yy = y + ri * rowH;
+      x.fillStyle = p.hex; x.fillRect(xx, yy, sw, sw);
+      x.strokeStyle = 'rgba(0,0,0,.25)'; x.lineWidth = 1; x.strokeRect(xx + 0.5, yy + 0.5, sw, sw);
+      x.fillStyle = p.lum > 0.55 ? '#1c1c1c' : '#ffffff'; x.font = 'bold ' + Math.round(sw * 0.7) + 'px sans-serif';
+      x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(p.symbol, xx + sw / 2, yy + sw / 2 + 1);
+      x.textAlign = 'left'; x.textBaseline = 'middle'; x.fillStyle = '#3a342c'; x.font = Math.round(dpi * 0.145) + 'px sans-serif';
+      x.fillText('DMC ' + p.code + ' · ' + p.name + '  (' + p.count + ')', xx + sw + Math.round(dpi * 0.12), yy + sw / 2);
+      x.textBaseline = 'top';
+    });
+    return cv;
+  }
+
+  function pdfCruzGenerar(m) {
+    var hoja = HOJAS[$('hojaCruz').value] || HOJAS.A4, margen = 1.0, printCellCm = 0.5, dpi = 200;
+    var cellPx = Math.round(printCellCm / 2.54 * dpi);
+    var usableW = hoja.w - margen * 2, usableH = hoja.h - margen * 2 - 0.5;
+    var colsPP = Math.max(10, Math.floor(usableW / printCellCm) - 2), rowsPP = Math.max(10, Math.floor(usableH / printCellCm) - 2);
+    var paginas = [];
+    var cov = dibujarPortadaCruz(m, hoja, 150);
+    paginas.push({ wCm: hoja.w, hCm: hoja.h, pie: pieParaPdf(), regla: false, imagenes: [{ jpeg: jpegDeCanvas(cov), wpx: cov.width, hpx: cov.height, xCm: 0, yCm: 0, wCm: hoja.w, hCm: hoja.h }] });
+    for (var r0 = 0; r0 < m.rows; r0 += rowsPP) {
+      for (var c0 = 0; c0 < m.cols; c0 += colsPP) {
+        var c1 = Math.min(m.cols, c0 + colsPP), r1 = Math.min(m.rows, r0 + rowsPP);
+        var cv = dibujarRegionCruz(m, c0, r0, c1, r1, cellPx, true, true);
+        var wCm = cv.width / cellPx * printCellCm, hCm = cv.height / cellPx * printCellCm;
+        paginas.push({ wCm: hoja.w, hCm: hoja.h, pie: pieParaPdf(), regla: false, imagenes: [{ jpeg: jpegDeCanvas(cv), wpx: cv.width, hpx: cv.height, xCm: (hoja.w - wCm) / 2, yCm: margen, wCm: wCm, hCm: hCm }] });
+      }
+    }
+    descargar(construirPdf(paginas), 'patron_punto_cruz.pdf');
+  }
+
+  function exportarPngCruz(m) {
+    var cell = Math.max(4, Math.min(18, Math.floor(2200 / Math.max(m.cols, m.rows))));
+    var cv = dibujarRegionCruz(m, 0, 0, m.cols, m.rows, cell, false, false);
+    descargarPng(cv, 'punto_cruz_color.png');
+  }
+
+  function recomputeCruz() {
+    if (!imgCruz) { modeloCruz = null; dibujarPreviaCruz(); renderLeyendaCruz(); $('pdfCruz').disabled = true; $('imgCruz').disabled = true; $('pieCruz').textContent = 'Sube una imagen para ver el patrón'; $('avisoCruz').textContent = ''; return; }
+    modeloCruz = convertirCruz();
+    if (!modeloCruz) { dibujarPreviaCruz(); renderLeyendaCruz(); $('pdfCruz').disabled = true; $('imgCruz').disabled = true; $('pieCruz').textContent = 'No pude leer los colores de la imagen'; return; }
+    dibujarPreviaCruz(); renderLeyendaCruz();
+    var m = modeloCruz;
+    $('pieCruz').textContent = '≈ ' + m.wCm.toFixed(1) + ' × ' + m.hCm.toFixed(1) + ' cm en Aida ' + m.aida + ' ct  ·  ' + m.cols + '×' + m.rows + ' puntos  ·  ' + m.palette.length + ' colores';
+    $('pdfCruz').disabled = false; $('imgCruz').disabled = false;
+    $('avisoCruz').textContent = (m.cols * m.rows > 18000) ? 'Patrón grande: el PDF saldrá en varias hojas para que se pueda contar.' : '';
+  }
+
+  conectarSubida('zonaCruz', 'archivoCruz', 'infoCruz', function (img) { imgCruz = img; recomputeCruz(); });
+  ['anchoCruz', 'telaCruz', 'coloresCruz'].forEach(function (id) {
+    $(id).addEventListener('input', function () { programar('cruz', recomputeCruz); });
+    $(id).addEventListener('change', function () { programar('cruz', recomputeCruz); });
+  });
+  $('simbolosCruz').addEventListener('click', function () { mostrarSimbolosCruz = !mostrarSimbolosCruz; this.setAttribute('aria-pressed', mostrarSimbolosCruz ? 'true' : 'false'); this.classList.toggle('activo', mostrarSimbolosCruz); dibujarPreviaCruz(); });
+  $('fondoCruz').addEventListener('click', function () { quitarFondoCruz = !quitarFondoCruz; this.setAttribute('aria-pressed', quitarFondoCruz ? 'true' : 'false'); this.classList.toggle('activo', quitarFondoCruz); programar('cruz', recomputeCruz); });
+  $('pdfCruz').addEventListener('click', function () { if (modeloCruz) generarPdf(function () { pdfCruzGenerar(modeloCruz); }); });
+  $('imgCruz').addEventListener('click', function () { if (modeloCruz) { toast('Generando imagen…'); exportarPngCruz(modeloCruz); } });
+
+  // ====================================================================
   //  MODO 5 · Asistente IA (llama a la API de Anthropic con la clave propia)
   // ====================================================================
   var ultimoPanelDiseno = 'panel-rect';
-  var NOMBRE_PANEL = { 'panel-rect': 'imagen a medida', 'panel-circulo': 'bastidor circular', 'panel-letras': 'letras y palabras', 'panel-fototexto': 'foto + texto', 'panel-varios': 'varios diseños en una hoja' };
+  var NOMBRE_PANEL = { 'panel-rect': 'imagen a medida', 'panel-circulo': 'bastidor circular', 'panel-letras': 'letras y palabras', 'panel-fototexto': 'foto + texto', 'panel-cruz': 'patrón de punto de cruz', 'panel-varios': 'varios diseños en una hoja' };
   // Memoria de la conversación (solo en este dispositivo; sin imágenes, para no llenar el almacenamiento)
   var conversa = [];
   var MAX_CONTEXTO = 10;   // cuántos turnos recientes recibe la IA como contexto
