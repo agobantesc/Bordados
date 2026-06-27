@@ -293,6 +293,13 @@
   .chat-entrada textarea { flex: 1; min-height: 50px; }
   .chat-enviar { flex-shrink: 0; height: 50px; width: 54px; font-size: 1.3rem; border: none; border-radius: 12px; color: #fff; background: linear-gradient(135deg, #7c6b57, #6f6151); cursor: pointer; }
   .chat-enviar:disabled { opacity: .5; }
+  .propuesta { margin-top: 8px; background: #fbf6ec; border: 1px solid #e0cda3; border-radius: 12px; padding: 12px 13px; }
+  .prop-tit { font-family: "Cormorant Garamond", Georgia, serif; font-size: 1.18rem; font-weight: 700; color: var(--titulo); }
+  .prop-desc { margin: 5px 0 9px; font-size: .9rem; line-height: 1.45; }
+  .prop-lineas { list-style: none; margin: 0 0 9px; padding: 0; display: flex; flex-direction: column; gap: 4px; font-size: .9rem; }
+  .prop-meta { display: flex; align-items: center; gap: 8px; font-size: .82rem; color: var(--tinta-suave); margin-bottom: 11px; text-transform: capitalize; }
+  .prop-sw { width: 17px; height: 17px; border-radius: 50%; border: 1px solid rgba(0,0,0,.15); flex-shrink: 0; }
+  .btn-aplicar { width: 100%; padding: 11px; font-size: .95rem; font-weight: 600; border: none; border-radius: 10px; color: #fff; background: linear-gradient(135deg, #7c6b57, #6f6151); cursor: pointer; }
 
   .deco-bg { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
   .flor-deco { position: absolute; width: 300px; height: auto; }
@@ -1394,7 +1401,75 @@
   var ultimoPanelDiseno = 'panel-rect';
   var NOMBRE_PANEL = { 'panel-rect': 'imagen a medida', 'panel-circulo': 'bastidor circular', 'panel-letras': 'letras y palabras', 'panel-varios': 'varios diseños en una hoja' };
   var chatHist = [];
-  var SYS_ASIST = 'Eres la asistente de bordado de "Alma bordado", experta en bordado a mano y a máquina. Ayudas a idear y mejorar diseños, evalúas composiciones (equilibrio, tamaño, legibilidad, dificultad), propones combinaciones de colores e hilos —incluye códigos DMC cuando sea útil—, recomiendas puntadas y das consejos prácticos de transferencia y bastidor. Responde SIEMPRE en español, con calidez y de forma concreta y breve; usa viñetas cuando ayude. Si te comparten una imagen de un diseño o vista previa, analízala con detalle.';
+  var SYS_ASIST = 'Eres la asistente de bordado de "Alma bordado", experta en bordado a mano y a máquina. Ayudas a idear y mejorar diseños, evalúas composiciones (equilibrio, tamaño, legibilidad, dificultad), propones combinaciones de colores e hilos —incluye códigos DMC cuando sea útil—, recomiendas puntadas y das consejos prácticos de transferencia y bastidor. Responde SIEMPRE en español, con calidez y de forma concreta y breve; usa viñetas cuando ayude. Si te comparten una imagen de un diseño o vista previa, analízala con detalle.\n\nCuando la usuaria te pida CREAR o DISEÑAR un bordado con palabras, nombres o frases (por ejemplo "escribe \'Te amo\' con un estilo bonito"), usa la herramienta crear_propuesta para entregar una propuesta lista para aplicar en la app: elige la o las frases, una tipografía adecuada de la lista permitida, el tamaño en cm, los colores (hex) y el trazo. Elige fuentes acordes al tono (script/caligrafía para algo romántico o delicado, serif para algo clásico, etc.). Si además mencionan una FOTO (la app no superpone texto sobre la foto en una sola plantilla), igual diseña el texto con la herramienta y explica en la descripción cómo combinarlo: imprimir el texto y la foto y ubicar la frase encima de la imagen al bordar.';
+
+  // Familias permitidas (sincronizadas con el selector de fuentes)
+  var NOMBRES_FUENTE = FUENTES.map(function (f) { return f.fam; });
+  var HERRAMIENTAS = [{
+    name: 'crear_propuesta',
+    description: 'Crea una propuesta de bordado de texto/letras lista para aplicar con un toque en la pestaña "Letras y palabras". Úsala cuando la usuaria pida diseñar o crear un bordado con palabras, nombres, fechas o frases. Devuelve las líneas de texto con su tipografía, tamaño en cm y color.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        titulo: { type: 'string', description: 'Nombre corto y bonito de la propuesta' },
+        descripcion: { type: 'string', description: 'Explicación cálida y breve del diseño: por qué la fuente y los colores combinan, y si aplica, cómo ubicarlo respecto a una foto.' },
+        estilo: { type: 'string', enum: ['contorno', 'relleno', 'ambos'], description: 'contorno = solo línea para calcar; relleno = letras macizas; ambos = relleno con contorno' },
+        alineacion: { type: 'string', enum: ['izquierda', 'centro', 'derecha'] },
+        color: { type: 'string', description: 'Color principal del relleno o trazo en hex, ej #b89a6a' },
+        color_contorno: { type: 'string', description: 'Color de contorno en hex (opcional, si estilo es "ambos")' },
+        lineas: {
+          type: 'array',
+          description: 'Una entrada por renglón de texto',
+          items: {
+            type: 'object',
+            properties: {
+              texto: { type: 'string' },
+              fuente: { type: 'string', enum: NOMBRES_FUENTE, description: 'Nombre exacto de la familia tipográfica' },
+              alto_cm: { type: 'number', description: 'Alto de las letras en centímetros, ej 6' }
+            },
+            required: ['texto', 'fuente', 'alto_cm']
+          }
+        }
+      },
+      required: ['titulo', 'descripcion', 'lineas']
+    }
+  }];
+
+  function cssDeNombre(nombre) {
+    var todas = FUENTES.concat(FUENTES_SISTEMA);
+    var f = todas.filter(function (x) { return x.fam === nombre; })[0];
+    return f ? cssDe(f) : cssDe(FUENTES[0]);
+  }
+  function renderPropuesta(p) {
+    var filas = (p.lineas || []).map(function (ln) {
+      return '<li>“<strong>' + escaparHtml(ln.texto || '') + '</strong>” · ' + escaparHtml(ln.fuente || '') + ' · ' + (ln.alto_cm || '?') + ' cm</li>';
+    }).join('');
+    var sw = p.color ? '<span class="prop-sw" style="background:' + escaparHtml(p.color) + '"></span>' : '';
+    var meta = [p.estilo, p.alineacion].filter(Boolean).join(' · ');
+    return '<div class="propuesta">' +
+      '<div class="prop-tit">✨ ' + escaparHtml(p.titulo || 'Propuesta') + '</div>' +
+      (p.descripcion ? '<div class="prop-desc">' + fmtMd(p.descripcion) + '</div>' : '') +
+      '<ul class="prop-lineas">' + filas + '</ul>' +
+      (sw || meta ? '<div class="prop-meta">' + sw + escaparHtml(meta) + '</div>' : '') +
+      '<button type="button" class="btn-aplicar">✨ Aplicar en Letras</button>' +
+      '</div>';
+  }
+  function aplicarPropuesta(p) {
+    var tab = document.querySelector('.tab-btn[data-panel="panel-letras"]');
+    if (tab) tab.click();
+    lineasLetras = [];
+    $('listaLineas').innerHTML = '';
+    (p.lineas || []).forEach(function (ln) {
+      anadirLinea(ln.texto || '', parseFloat(ln.alto_cm) || 4, cssDeNombre(ln.fuente));
+    });
+    if (!lineasLetras.length) anadirLinea('', 4);
+    if (p.estilo) $('estiloLetras').value = p.estilo;
+    if (p.alineacion) $('alinearLetras').value = p.alineacion;
+    if (p.color) $('colorRelleno').value = p.color;
+    if (p.color_contorno) $('colorContorno').value = p.color_contorno;
+    refrescarLetras();
+    toast('Propuesta aplicada ✓ — ajústala a tu gusto');
+  }
 
   function tieneClave() { return !!(CONFIG.apiKey && CONFIG.apiKey.trim()); }
   function actualizarEstadoAsistente() {
@@ -1426,14 +1501,24 @@
     fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-api-key': CONFIG.apiKey.trim(), 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-      body: JSON.stringify({ model: CONFIG.modelo || 'claude-opus-4-8', max_tokens: 1024, system: SYS_ASIST, messages: chatHist.slice(-12) })
+      body: JSON.stringify({ model: CONFIG.modelo || 'claude-opus-4-8', max_tokens: 1024, system: SYS_ASIST, tools: HERRAMIENTAS, messages: chatHist.slice(-12) })
     }).then(function (r) {
       if (!r.ok) return r.text().then(function () { throw new Error('HTTP ' + r.status + (r.status === 401 ? ' · revisa tu clave API en Ajustes' : '')); });
       return r.json();
     }).then(function (d) {
-      var txt = (d.content || []).filter(function (b) { return b.type === 'text'; }).map(function (b) { return b.text; }).join('\n') || '(sin respuesta)';
-      chatHist.push({ role: 'assistant', content: txt });
-      pensando.innerHTML = fmtMd(txt);
+      var bloques = d.content || [];
+      chatHist.push({ role: 'assistant', content: bloques });
+      var textos = bloques.filter(function (b) { return b.type === 'text'; }).map(function (b) { return b.text; }).join('\n').trim();
+      var tu = bloques.filter(function (b) { return b.type === 'tool_use' && b.name === 'crear_propuesta'; })[0];
+      if (tu) {
+        pensando.innerHTML = (textos ? fmtMd(textos) + '<br>' : '') + renderPropuesta(tu.input);
+        var btn = pensando.querySelector('.btn-aplicar');
+        if (btn) btn.addEventListener('click', function () { aplicarPropuesta(tu.input); });
+        // Cerramos el ciclo de la herramienta para que el historial siga siendo válido
+        chatHist.push({ role: 'user', content: [{ type: 'tool_result', tool_use_id: tu.id, content: 'Propuesta mostrada a la usuaria con un botón para aplicarla en la app.' }] });
+      } else {
+        pensando.innerHTML = fmtMd(textos || '(sin respuesta)');
+      }
     }).catch(function (e) {
       pensando.innerHTML = '⚠️ ' + escaparHtml(e.message || 'No se pudo conectar');
     }).then(function () {
@@ -1459,7 +1544,7 @@
   });
   $('irAjustesIA').addEventListener('click', abrirAjustes);
   (function () {
-    var sugerencias = ['Evalúa mi diseño actual', 'Ideas para un nombre de bebé', '¿Qué hilos combinan con terracota?', 'Diseño sencillo para empezar'];
+    var sugerencias = ['✨ Crea una propuesta de "Te amo"', 'Evalúa mi diseño actual', 'Ideas para un nombre de bebé', '¿Qué hilos combinan con terracota?'];
     var cont = $('chipsAsist');
     sugerencias.forEach(function (s) {
       var b = document.createElement('button'); b.className = 'chip'; b.type = 'button'; b.textContent = s;
