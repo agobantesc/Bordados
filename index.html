@@ -354,6 +354,9 @@
   .hilos-tit { font-size: .82rem; font-weight: 700; color: var(--titulo); margin: 6px 0 4px; }
   .hilos { list-style: none; margin: 0 0 10px; padding: 0; display: flex; flex-direction: column; gap: 4px; font-size: .85rem; }
   .hilos li { display: flex; align-items: center; gap: 8px; }
+  .plan-mat, .plan-pasos { margin: 0 0 10px; padding-left: 20px; font-size: .9rem; color: var(--tinta); display: flex; flex-direction: column; gap: 5px; }
+  .plan-pasos { gap: 8px; }
+  .plan-det { color: var(--tinta-suave); font-size: .85rem; }
   .diseno-acc { display: flex; flex-wrap: wrap; gap: 8px; }
   .diseno-acc .boton-sec { flex: 1 1 auto; }
   .btn-dis-fav.guardado { background: #f6e3ea; border-color: #e2b7c8; color: #a14f72; }
@@ -382,6 +385,10 @@
   .cruz-tamano { background: #f6efe0; border: 1px solid #e6d8b8; border-radius: 12px; padding: 9px 13px; margin-bottom: 14px; font-size: .92rem; color: var(--tinta); }
   .cruz-tamano strong { color: var(--titulo); font-size: 1.05rem; }
   .cruz-tamano #cruzTamPtos { color: var(--tinta-suave); }
+  .recorte-formas { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 14px; }
+  .recorte-formas .boton-sec { padding: 7px 12px; font-size: .85rem; }
+  .recorte-wrap { display: flex; justify-content: center; }
+  #lienzoRecorteCruz { touch-action: none; max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 2px 10px rgba(60,40,50,.18); cursor: move; }
   small.ayuda-campo { display: block; margin-top: 4px; font-size: .76rem; color: var(--tinta-suave); line-height: 1.25; }
   .fila-zoom { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
   .fila-zoom label { font-size: .85rem; color: var(--tinta-suave); white-space: nowrap; }
@@ -552,6 +559,7 @@
       <p class="lema">Plantillas a tamaño real, listas para bordar</p>
     </div>
   </div>
+  <button class="icono-btn" id="btnGuardarProy" aria-label="Guardar proyecto" title="Guardar este proyecto">💾</button>
   <button class="icono-btn" id="btnAjustes" aria-label="Ajustes" title="Ajustes">⚙️</button>
 </header>
 
@@ -868,6 +876,19 @@
     <p class="info-img" style="text-align:left; margin-top:10px;">Funciona mejor con dibujos simples, logos o fotos con pocos colores y buen contraste. ¿Quieres un dibujito a medida (corazón, ancla, inicial)? Pídeselo a <strong>Alma</strong> en el Asistente. 🌸</p>
   </div>
 
+  <div class="tarjeta" id="recorteSec" style="display:none;">
+    <h2><span class="paso">✂️</span> Encaja tu foto</h2>
+    <p class="info-img" style="text-align:left; margin-top:0;">Arrastra el recuadro o sus esquinas para elegir qué parte de la foto se convierte en bordado. Así centras el dibujo y quitas bordes que sobran. 🌸</p>
+    <div class="recorte-formas">
+      <button class="boton-sec" id="recorteLibre" type="button">⬚ Libre</button>
+      <button class="boton-sec" id="recorteCuad" type="button">⬜ Cuadrado</button>
+      <button class="boton-sec" id="recorteVert" type="button">▯ Vertical</button>
+      <button class="boton-sec" id="recorteHoriz" type="button">▭ Horizontal</button>
+      <button class="boton-sec" id="recorteTodo" type="button">↺ Usar toda la foto</button>
+    </div>
+    <div class="recorte-wrap"><canvas id="lienzoRecorteCruz" width="300" height="300" role="img" aria-label="Recorta tu foto para el patrón"></canvas></div>
+  </div>
+
   <div class="tarjeta">
     <h2><span class="paso">2</span> Ajustes del patrón</h2>
     <div class="cruz-tamano" id="cruzTamano" aria-live="polite">Tamaño terminado: <strong id="cruzTamCm">12,7 × 16,0 cm</strong> <span id="cruzTamPtos">· 70 × 88 puntos</span></div>
@@ -958,8 +979,13 @@
 
 <!-- ============ GALERÍA DE FAVORITOS ============ -->
 <section id="panel-galeria" class="panel">
-  <p class="intro">Tus diseños favoritos. Cuando Alma te dibuje algo que te encante, tócale <strong>❤️ Guardar</strong> y quedará aquí para imprimirlo cuando quieras.</p>
+  <p class="intro">Tus proyectos guardados y los diseños que te hace Alma, todo en un lugar para volver cuando quieras.</p>
   <svg class="divisor" viewBox="0 0 150 22"><use href="#divisorBot"/></svg>
+  <div class="tarjeta" id="proyectosSec" style="display:none;">
+    <h2><span class="paso">📁</span> Mis proyectos</h2>
+    <p class="info-img" style="text-align:left; margin:-2px 0 10px;">Trabajos guardados que puedes reabrir y seguir editando.</p>
+    <div id="proyectosGrid" class="galeria-grid"></div>
+  </div>
   <div class="tarjeta">
     <h2><span class="paso">❤️</span> Diseños favoritos <span id="galeriaCuenta" class="gal-cuenta"></span></h2>
     <div class="chat-vacio" id="galeriaVacia">
@@ -2268,11 +2294,14 @@
     var nCol = parseInt($('coloresCruz').value, 10) || 16;
     var tela = telaCruzActual(), telaOscura = TELAS_CRUZ[tela].oscura;
     var iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height;
-    var rows = Math.max(1, Math.round(cols * ih / iw));
-    if (cols * rows > 60000) { var k = Math.sqrt(60000 / (cols * rows)); cols = Math.max(20, Math.round(cols * k)); rows = Math.max(1, Math.round(cols * ih / iw)); }
+    // Recorte/encaje elegido por la usuaria (región normalizada de la foto); por defecto, foto completa.
+    var rc = recorteCruz, sx = 0, sy = 0, sw = iw, sh = ih;
+    if (rc && rc.w > 0 && rc.h > 0) { sx = rc.x * iw; sy = rc.y * ih; sw = rc.w * iw; sh = rc.h * ih; }
+    var rows = Math.max(1, Math.round(cols * sh / sw));
+    if (cols * rows > 60000) { var k = Math.sqrt(60000 / (cols * rows)); cols = Math.max(20, Math.round(cols * k)); rows = Math.max(1, Math.round(cols * sh / sw)); }
     var oc = document.createElement('canvas'); oc.width = cols; oc.height = rows;
     var ox = oc.getContext('2d', { willReadFrequently: true }); ox.imageSmoothingEnabled = true; ox.imageSmoothingQuality = 'high';
-    ox.drawImage(img, 0, 0, cols, rows);
+    ox.drawImage(img, sx, sy, sw, sh, 0, 0, cols, rows);
     var data; try { data = ox.getImageData(0, 0, cols, rows).data; } catch (e) { return null; }
     var N = cols * rows, cells = new Int16Array(N), muestras = [], i, r, g, b, a, lum;
     for (i = 0; i < N; i++) {
@@ -2519,7 +2548,7 @@
   function recomputeCruz() {
     // Patrón hecho por Alma (sin imagen de fondo): se conserva y solo se redibuja
     if (patronManual && modeloCruz && !imgCruz) { dibujarPreviaCruz(); renderLeyendaCruz(); $('pdfCruz').disabled = false; $('imgCruz').disabled = false; $('filaZoomCruz').style.display = 'flex'; actualizarTamanoCruz(); return; }
-    if (!imgCruz) { modeloCruz = null; dibujarPreviaCruz(); renderLeyendaCruz(); $('pdfCruz').disabled = true; $('imgCruz').disabled = true; $('filaZoomCruz').style.display = 'none'; $('pieCruz').textContent = 'Sube una imagen para ver el patrón'; $('avisoCruz').textContent = ''; actualizarTamanoCruz(); return; }
+    if (!imgCruz) { modeloCruz = null; if ($('recorteSec')) $('recorteSec').style.display = 'none'; dibujarPreviaCruz(); renderLeyendaCruz(); $('pdfCruz').disabled = true; $('imgCruz').disabled = true; $('filaZoomCruz').style.display = 'none'; $('pieCruz').textContent = 'Sube una imagen para ver el patrón'; $('avisoCruz').textContent = ''; actualizarTamanoCruz(); return; }
     modeloCruz = convertirCruz();
     if (!modeloCruz) { dibujarPreviaCruz(); renderLeyendaCruz(); $('pdfCruz').disabled = true; $('imgCruz').disabled = true; $('pieCruz').textContent = 'No pude leer los colores de la imagen'; return; }
     dibujarPreviaCruz(); renderLeyendaCruz();
@@ -2532,7 +2561,85 @@
   }
   function botonToggleCruz(id, getset) { $(id).addEventListener('click', function () { var v = getset(); this.setAttribute('aria-pressed', v ? 'true' : 'false'); this.classList.toggle('activo', v); }); }
 
-  conectarSubida('zonaCruz', 'archivoCruz', 'infoCruz', function (img) { imgCruz = img; patronManual = false; recomputeCruz(); });
+  // ---- Encaje / recorte de la foto antes de convertirla a punto de cruz ----
+  var recorteCruz = null;            // { x, y, w, h } normalizado [0..1] (null = foto completa)
+  var rcDisp = { w: 0, h: 0 };       // tamaño del lienzo de recorte en px
+  var rcDrag = null;                 // estado del arrastre en curso
+  function rectRecorte() { return recorteCruz || { x: 0, y: 0, w: 1, h: 1 }; }
+  function mostrarRecorteCruz() {
+    var sec = $('recorteSec'); if (!sec) return;
+    if (!imgCruz) { sec.style.display = 'none'; return; }
+    sec.style.display = 'block';
+    var iw = imgCruz.naturalWidth || imgCruz.width, ih = imgCruz.naturalHeight || imgCruz.height;
+    var e = Math.min(300 / iw, 340 / ih);
+    rcDisp.w = Math.max(1, Math.round(iw * e)); rcDisp.h = Math.max(1, Math.round(ih * e));
+    var cv = $('lienzoRecorteCruz'); if (!cv) return;
+    cv.width = rcDisp.w; cv.height = rcDisp.h; cv.style.width = rcDisp.w + 'px'; cv.style.height = rcDisp.h + 'px';
+    dibujarRecorteCruz();
+  }
+  function dibujarRecorteCruz() {
+    var cv = $('lienzoRecorteCruz'); if (!cv || !imgCruz) return;
+    var x = cv.getContext('2d'), W = cv.width, H = cv.height;
+    x.clearRect(0, 0, W, H); x.drawImage(imgCruz, 0, 0, W, H);
+    var r = rectRecorte(), rx = r.x * W, ry = r.y * H, rw = r.w * W, rh = r.h * H;
+    x.fillStyle = 'rgba(40,30,40,0.5)';
+    x.fillRect(0, 0, W, ry); x.fillRect(0, ry + rh, W, H - ry - rh);
+    x.fillRect(0, ry, rx, rh); x.fillRect(rx + rw, ry, W - rx - rw, rh);
+    x.lineWidth = 2; x.strokeStyle = '#fff'; x.strokeRect(rx + 1, ry + 1, Math.max(0, rw - 2), Math.max(0, rh - 2));
+    x.fillStyle = '#fff'; x.strokeStyle = 'rgba(0,0,0,0.4)'; x.lineWidth = 1;
+    [[rx, ry], [rx + rw, ry], [rx, ry + rh], [rx + rw, ry + rh]].forEach(function (c) {
+      x.beginPath(); x.arc(c[0], c[1], 7, 0, 6.2832); x.fill(); x.stroke();
+    });
+  }
+  function recorteHit(p) {
+    var W = rcDisp.w, H = rcDisp.h, r = rectRecorte();
+    var rx = r.x * W, ry = r.y * H, rw = r.w * W, rh = r.h * H;
+    var esq = { nw: [rx, ry], ne: [rx + rw, ry], sw: [rx, ry + rh], se: [rx + rw, ry + rh] };
+    var mejor = null, md = 24;
+    for (var k in esq) { var c = esq[k], d = Math.sqrt((p.x - c[0]) * (p.x - c[0]) + (p.y - c[1]) * (p.y - c[1])); if (d <= md) { md = d; mejor = k; } }
+    if (mejor) return mejor;
+    if (p.x >= rx && p.x <= rx + rw && p.y >= ry && p.y <= ry + rh) return 'move';
+    return null;
+  }
+  (function () {
+    var cv = $('lienzoRecorteCruz'); if (!cv) return;
+    hacerArrastrable(cv, {
+      puede: function () { return !!imgCruz; },
+      onInicio: function (p) { var modo = recorteHit(p); rcDrag = modo ? { modo: modo, ini: rectRecorte() } : null; },
+      onMover: function (dx, dy) {
+        if (!rcDrag) return;
+        var W = rcDisp.w || 1, H = rcDisp.h || 1, dnx = dx / W, dny = dy / H, r = rcDrag.ini, MIN = 0.08;
+        var L = r.x, T = r.y, R = r.x + r.w, B = r.y + r.h;
+        if (rcDrag.modo === 'move') {
+          var nx = Math.min(Math.max(0, r.x + dnx), 1 - r.w), ny = Math.min(Math.max(0, r.y + dny), 1 - r.h);
+          L = nx; T = ny; R = nx + r.w; B = ny + r.h;
+        } else {
+          if (rcDrag.modo.indexOf('w') >= 0) L = Math.min(Math.max(0, r.x + dnx), R - MIN);
+          if (rcDrag.modo.indexOf('e') >= 0) R = Math.max(Math.min(1, R + dnx), L + MIN);
+          if (rcDrag.modo.indexOf('n') >= 0) T = Math.min(Math.max(0, r.y + dny), B - MIN);
+          if (rcDrag.modo.indexOf('s') >= 0) B = Math.max(Math.min(1, B + dny), T + MIN);
+        }
+        recorteCruz = { x: L, y: T, w: R - L, h: B - T };
+        dibujarRecorteCruz(); programarRetardo('cruzrec', recomputeCruz, 220);
+      },
+      onFin: function () { if (rcDrag) { rcDrag = null; programar('cruz', recomputeCruz); tocarEstado(); } }
+    });
+    function aplicarForma(pr) {
+      if (!imgCruz) return;
+      var iw = imgCruz.naturalWidth || imgCruz.width, ih = imgCruz.naturalHeight || imgCruz.height;
+      var k = pr * ih / iw, w = 1, h = 1 / k; if (h > 1) { h = 1; w = k; }
+      recorteCruz = { x: (1 - w) / 2, y: (1 - h) / 2, w: w, h: h };
+      dibujarRecorteCruz(); programar('cruz', recomputeCruz); tocarEstado();
+    }
+    function usarTodo() { recorteCruz = null; dibujarRecorteCruz(); programar('cruz', recomputeCruz); tocarEstado(); }
+    $('recorteLibre').addEventListener('click', usarTodo);
+    $('recorteTodo').addEventListener('click', usarTodo);
+    $('recorteCuad').addEventListener('click', function () { aplicarForma(1); });
+    $('recorteVert').addEventListener('click', function () { aplicarForma(3 / 4); });
+    $('recorteHoriz').addEventListener('click', function () { aplicarForma(4 / 3); });
+  })();
+
+  conectarSubida('zonaCruz', 'archivoCruz', 'infoCruz', function (img) { imgCruz = img; patronManual = false; recorteCruz = null; mostrarRecorteCruz(); recomputeCruz(); });
   $('anchoCruz').addEventListener('input', function () { actualizarTamanoCruz(); programarRetardo('cruz', recomputeCruz, 260); });
   ['telaCruz', 'coloresCruz', 'telaColorCruz'].forEach(function (id) {
     $(id).addEventListener('change', function () {
@@ -2575,6 +2682,7 @@
   // Lleva un patrón de Alma al panel de Punto de cruz (sin reconvertir desde imagen)
   function abrirPatronEnCruz(m) {
     patronManual = true; imgCruz = null; modeloCruz = m; cruzZoom = 1;
+    recorteCruz = null; if ($('recorteSec')) $('recorteSec').style.display = 'none';
     try { $('anchoCruz').value = m.cols; $('telaCruz').value = String(m.aida); $('telaColorCruz').value = m.tela || 'blanca'; $('zoomCruz').value = 100; } catch (e) {}
     var tab = document.querySelector('.tab-btn[data-panel="panel-cruz"]'); if (tab) tab.click();
     dibujarPreviaCruz(); renderLeyendaCruz();
@@ -2613,7 +2721,9 @@
     'Para ELEGIR herramienta de punto de cruz: si piden un PATRÓN/gráfico de punto de cruz contable (con cuadrícula y símbolos) usa crear_patron_cruz. Si piden CONVERTIR una FOTO suya a punto de cruz, NO uses herramienta: explícale con cariño que vaya a la pestaña "Punto de cruz", suba su foto y ajuste el ancho/tela/colores (la app lo convierte y calza a hilos DMC, con su leyenda de madejas). Reserva crear_diseno para dibujos a calcar (no punto de cruz) y crear_propuesta para texto editable.',
     'Tienes coordinar_hilos para armar una PALETA de hilos DMC por tema o motivo (ej. "fondo de mar", "rosas de jardín", "marinero", "otoño"). Devuelve 4 a 8 colores que de verdad armonicen, cada uno con su código DMC real y conocido, nombre en español, un hex aproximado para la muestra y para qué parte sirve. Úsala cuando pidan una combinación de colores/hilos (no un diseño dibujado). Si conoces sus gustos por el perfil, inclínate hacia ellos.',
     'Tienes recordar para guardar en memoria, entre sesiones, algo útil sobre quien borda: su nombre o el de su pareja, sus gustos, proyectos en curso, o una nota. Úsala con discreción y solo cuando comparta algo que valga la pena recordar (ej. "mi novio se llama Diego", "me encantan las flores y el mar", "estoy con el mantel de la abuela"). Confírmalo con cariño en una frase y sigue la conversación con naturalidad. No la uses para cosas pasajeras.',
-    'Si tienes un PERFIL de quien borda, personaliza con cariño: usa su nombre y el de su pareja cuando venga al caso, propón motivos y colores afines a sus gustos, y toma su tela favorita como valor por defecto (sin imponerla). No menciones el perfil como si leyeras una ficha; intégralo como lo haría una amiga que la conoce.'
+    'Si tienes un PERFIL de quien borda, personaliza con cariño: usa su nombre y el de su pareja cuando venga al caso, propón motivos y colores afines a sus gustos, y toma su tela favorita como valor por defecto (sin imponerla). No menciones el perfil como si leyeras una ficha; intégralo como lo haría una amiga que la conoce.',
+    'Tienes planificar_proyecto para convertir una idea ("quiero bordar un mantel con flores para mi mamá", "cómo hago un cojín") en un PLAN claro: materiales (incluye telas, hilos DMC, bastidor, agujas), pasos en orden con la puntada sugerida y un consejo, dificultad y tiempo ESTIMADO realista (ni muy optimista). Ajusta los materiales a su tela y nivel si los conoces por el perfil. Úsala cuando pidan una guía o "qué necesito/cómo hago", no un dibujo.',
+    'Tienes ajustar_modulo para configurar tú misma los controles de una pestaña cuando lo pidan en palabras (sobre todo Punto de cruz: tela Aida, ancho en puntos, cantidad de colores, color de tela). Úsala solo para ajustar parámetros que existen; confirma con una frase cálida lo que dejaste puesto. No inventes pestañas ni controles. Para crear contenido usa las herramientas de crear.'
   ].join('\n\n');
 
   // Familias permitidas (sincronizadas con el selector de fuentes)
@@ -2747,6 +2857,47 @@
         confirmacion: { type: 'string', description: 'Frase cálida y breve para mostrarle, ej. "¡Anotado! Me acordaré de que a Diego le encantan las ballenitas 🐳"' }
       },
       required: ['campo', 'valor', 'confirmacion']
+    }
+  }, {
+    name: 'planificar_proyecto',
+    description: 'Arma un PLAN paso a paso para un proyecto de bordado: materiales (telas, hilos DMC, bastidor, agujas), orden de puntadas, dificultad y tiempo estimado. Úsala cuando pidan "cómo hago…", "qué necesito para…", o una guía/plan de un proyecto; no un diseño dibujado.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        titulo: { type: 'string', description: 'Nombre del proyecto, ej. "Mantel de flores para la abuela"' },
+        dificultad: { type: 'string', enum: ['fácil', 'media', 'avanzada'] },
+        tiempo_estimado: { type: 'string', description: 'Rango realista, ej. "una tarde", "8-10 horas", "un fin de semana"' },
+        materiales: {
+          type: 'array', description: 'Lo que necesita comprar/tener',
+          items: { type: 'object', properties: { item: { type: 'string', description: 'ej. "Tela Aida 14 crema, 30×30 cm"' }, detalle: { type: 'string', description: 'cantidad / DMC / medida' } }, required: ['item'] }
+        },
+        pasos: {
+          type: 'array', description: 'En orden, del primero al último',
+          items: { type: 'object', properties: { titulo: { type: 'string' }, puntada: { type: 'string', description: 'Puntada(s) sugerida(s)' }, consejo: { type: 'string' } }, required: ['titulo'] }
+        },
+        cierre: { type: 'string', description: 'Ánimo y siguiente paso, ej. "Empieza por el centro y avísame si quieres que te diseñe las flores ✨"' }
+      },
+      required: ['titulo', 'pasos']
+    }
+  }, {
+    name: 'ajustar_modulo',
+    description: 'Configura por ella los controles de una pestaña de la app cuando lo pida en palabras (ej. "ponme la tela en Aida 14", "cambia el ancho a 60 puntos", "tela color crema", "ábreme letras"). Úsala SOLO para ajustar parámetros que existen; para crear contenido usa crear_propuesta/crear_diseno/crear_patron_cruz.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        panel: { type: 'string', enum: ['panel-cruz', 'panel-letras', 'panel-circulo', 'panel-rect', 'panel-fototexto'], description: 'Qué pestaña abrir/ajustar' },
+        ajustes: {
+          type: 'object', description: 'Solo para panel-cruz por ahora. Pon únicamente lo que pidió.',
+          properties: {
+            aida: { type: 'integer', enum: [11, 14, 16, 18] },
+            ancho_puntos: { type: 'integer', minimum: 20, maximum: 220 },
+            colores: { type: 'integer', minimum: 4, maximum: 30 },
+            tela_color: { type: 'string', enum: ['blanca', 'crema', 'negra'] }
+          }
+        },
+        confirmacion: { type: 'string', description: 'Frase breve y cálida de lo que hiciste, ej. "Te dejé la tela en Aida 14 y el ancho en 60 puntos 🧵"' }
+      },
+      required: ['panel', 'confirmacion']
     }
   }];
 
@@ -2922,6 +3073,73 @@
     if (input.modo === 'agregar' && CONFIG[k]) CONFIG[k] = (CONFIG[k] + '; ' + valor).slice(0, 400); else CONFIG[k] = valor;
     guardarConfig();
   }
+  // --- Plan de proyecto (planificar_proyecto) ---
+  function normalizarPlan(input) {
+    var mats = (Array.isArray(input.materiales) ? input.materiales : []).slice(0, 20).map(function (m) { return { item: String((m && m.item) || '').slice(0, 120), detalle: String((m && m.detalle) || '').slice(0, 80) }; }).filter(function (m) { return m.item; });
+    var pasos = (Array.isArray(input.pasos) ? input.pasos : []).slice(0, 20).map(function (p) { return { titulo: String((p && p.titulo) || '').slice(0, 120), puntada: String((p && p.puntada) || '').slice(0, 60), consejo: String((p && p.consejo) || '').slice(0, 160) }; }).filter(function (p) { return p.titulo; });
+    if (!pasos.length) throw new Error('plan-vacio');
+    return { titulo: String(input.titulo || 'Mi proyecto').slice(0, 80), dificultad: String(input.dificultad || '').slice(0, 20), tiempo: String(input.tiempo_estimado || '').slice(0, 40), materiales: mats, pasos: pasos, cierre: String(input.cierre || '').slice(0, 300) };
+  }
+  function renderPlanCard(pl) {
+    var mats = pl.materiales.length ? '<div class="hilos-tit">🧶 Materiales</div><ul class="plan-mat">' + pl.materiales.map(function (m) { return '<li>' + escaparHtml(m.item) + (m.detalle ? ' <span class="plan-det">— ' + escaparHtml(m.detalle) + '</span>' : '') + '</li>'; }).join('') + '</ul>' : '';
+    var pasos = '<div class="hilos-tit">📋 Paso a paso</div><ol class="plan-pasos">' + pl.pasos.map(function (p) { return '<li><strong>' + escaparHtml(p.titulo) + '</strong>' + (p.puntada ? ' · <em>' + escaparHtml(p.puntada) + '</em>' : '') + (p.consejo ? '<br><span class="plan-det">' + escaparHtml(p.consejo) + '</span>' : '') + '</li>'; }).join('') + '</ol>';
+    var meta = [pl.dificultad ? ('Dificultad: ' + pl.dificultad) : '', pl.tiempo ? ('⏱️ ' + pl.tiempo) : ''].filter(Boolean).join(' · ');
+    return '<div class="diseno"><div class="prop-tit">🗒️ ' + escaparHtml(pl.titulo) + '</div>' +
+      (meta ? '<div class="prop-meta">' + escaparHtml(meta) + '</div>' : '') + mats + pasos +
+      (pl.cierre ? '<div class="prop-desc" style="margin-top:8px;">' + fmtMd(pl.cierre) + '</div>' : '') +
+      '<div class="diseno-acc"><button type="button" class="btn-plan-pdf boton-sec">📄 Guardar plan (PDF)</button></div></div>';
+  }
+  function pintarPlan(burbuja, textos, pl) {
+    burbuja.innerHTML = (textos ? fmtMd(textos) + '<br>' : '') + renderPlanCard(pl);
+    var b = burbuja.querySelector('.btn-plan-pdf');
+    if (b) b.addEventListener('click', function () { generarPdf(function () { exportarPlanPdf(pl); }); });
+  }
+  function textoEnvuelto(x, texto, px, py, maxW, lineH) {
+    var palabras = String(texto).split(/\s+/), linea = '';
+    for (var i = 0; i < palabras.length; i++) {
+      var prueba = linea ? (linea + ' ' + palabras[i]) : palabras[i];
+      if (x.measureText(prueba).width > maxW && linea) { x.fillText(linea, px, py); py += lineH; linea = palabras[i]; }
+      else linea = prueba;
+    }
+    if (linea) { x.fillText(linea, px, py); py += lineH; }
+    return py;
+  }
+  function exportarPlanPdf(pl) {
+    var hoja = HOJAS.A4, dpi = 150, M = Math.round(1.3 / 2.54 * dpi), W = Math.round(hoja.w / 2.54 * dpi), pageH = Math.round(hoja.h / 2.54 * dpi);
+    var sc = document.createElement('canvas'); sc.width = W; sc.height = pageH * 5;
+    var x = sc.getContext('2d'); x.fillStyle = '#ffffff'; x.fillRect(0, 0, sc.width, sc.height);
+    x.textBaseline = 'top'; var maxW = W - 2 * M, y = M;
+    x.fillStyle = '#6f6151'; x.font = 'bold ' + Math.round(dpi * 0.28) + 'px sans-serif'; y = textoEnvuelto(x, pl.titulo, M, y, maxW, Math.round(dpi * 0.34)) + 6;
+    var meta = [pl.dificultad ? ('Dificultad: ' + pl.dificultad) : '', pl.tiempo ? ('Tiempo estimado: ' + pl.tiempo) : ''].filter(Boolean).join('   ·   ');
+    if (meta) { x.fillStyle = '#3a342c'; x.font = Math.round(dpi * 0.14) + 'px sans-serif'; y = textoEnvuelto(x, meta, M, y, maxW, Math.round(dpi * 0.2)) + 10; }
+    function seccion(t) { x.fillStyle = '#6f6151'; x.font = 'bold ' + Math.round(dpi * 0.17) + 'px sans-serif'; x.fillText(t, M, y); y += Math.round(dpi * 0.26); }
+    if (pl.materiales.length) { seccion('Materiales'); x.fillStyle = '#3a342c'; x.font = Math.round(dpi * 0.135) + 'px sans-serif'; pl.materiales.forEach(function (m) { y = textoEnvuelto(x, '•  ' + m.item + (m.detalle ? ' — ' + m.detalle : ''), M, y, maxW, Math.round(dpi * 0.2)); }); y += 8; }
+    seccion('Paso a paso'); x.font = Math.round(dpi * 0.135) + 'px sans-serif';
+    pl.pasos.forEach(function (p, i) { x.fillStyle = '#3a342c'; y = textoEnvuelto(x, (i + 1) + '.  ' + p.titulo + (p.puntada ? '  (' + p.puntada + ')' : ''), M, y, maxW, Math.round(dpi * 0.2)); if (p.consejo) { x.fillStyle = '#6f665a'; y = textoEnvuelto(x, '     ' + p.consejo, M, y, maxW, Math.round(dpi * 0.19)); } y += 4; });
+    if (pl.cierre) { y += 8; x.fillStyle = '#6f6151'; x.font = 'italic ' + Math.round(dpi * 0.14) + 'px sans-serif'; y = textoEnvuelto(x, pl.cierre, M, y, maxW, Math.round(dpi * 0.2)); }
+    var totalH = Math.min(sc.height, y + M), paginas = [];
+    for (var oy = 0; oy < totalH; oy += pageH) {
+      var pc = document.createElement('canvas'); pc.width = W; pc.height = pageH;
+      var pctx = pc.getContext('2d'); pctx.fillStyle = '#ffffff'; pctx.fillRect(0, 0, W, pageH);
+      pctx.drawImage(sc, 0, oy, W, Math.min(pageH, totalH - oy), 0, 0, W, Math.min(pageH, totalH - oy));
+      paginas.push({ wCm: hoja.w, hCm: hoja.h, pie: pieParaPdf(), regla: false, imagenes: [{ jpeg: jpegDeCanvas(pc, 0.9), wpx: pc.width, hpx: pc.height, xCm: 0, yCm: 0, wCm: hoja.w, hCm: hoja.h }] });
+    }
+    descargar(construirPdf(paginas), 'plan_bordado.pdf');
+  }
+  // --- Ajustar un módulo por ella (ajustar_modulo) ---
+  function aplicarAjusteModulo(input) {
+    var paneles = { 'panel-cruz': 1, 'panel-letras': 1, 'panel-circulo': 1, 'panel-rect': 1, 'panel-fototexto': 1 };
+    var panel = input && input.panel; if (!paneles[panel]) return false;
+    var tab = document.querySelector('.tab-btn[data-panel="' + panel + '"]'); if (tab) tab.click();
+    var a = input.ajustes || {};
+    if (panel === 'panel-cruz') {
+      if ([11, 14, 16, 18].indexOf(a.aida) >= 0) { $('telaCruz').value = String(a.aida); $('telaCruz').dispatchEvent(new Event('change', { bubbles: true })); }
+      if (typeof a.ancho_puntos === 'number' && a.ancho_puntos >= 20 && a.ancho_puntos <= 220) { $('anchoCruz').value = String(Math.round(a.ancho_puntos)); $('anchoCruz').dispatchEvent(new Event('input', { bubbles: true })); }
+      if (typeof a.colores === 'number') { var opts = [6, 8, 12, 16, 20, 25, 30], c = Math.max(4, Math.min(30, Math.round(a.colores))); var near = opts.reduce(function (p, o) { return Math.abs(o - c) < Math.abs(p - c) ? o : p; }); $('coloresCruz').value = String(near); $('coloresCruz').dispatchEvent(new Event('change', { bubbles: true })); }
+      if (['blanca', 'crema', 'negra'].indexOf(a.tela_color) >= 0) { $('telaColorCruz').value = a.tela_color; $('telaColorCruz').dispatchEvent(new Event('change', { bubbles: true })); }
+    }
+    return true;
+  }
   function exportarDiseno(dis, tipo) {
     if (!dis.svg) { toast('Pídeme que lo cree de nuevo'); return; }
     toast('Generando…');
@@ -2962,7 +3180,7 @@
     guardarGaleria(); actualizarCuentaGaleria(); renderGaleria();
   }
   function actualizarCuentaGaleria() {
-    var c = $('galeriaCuenta'); if (c) c.textContent = galeria.length ? '(' + galeria.length + ')' : '';
+    var c = $('galeriaCuenta'); if (!c) return; var n = galeria.length + proyectos.length; c.textContent = n ? '(' + n + ')' : '';
   }
   function irAGaleria() { var tab = document.querySelector('.tab-btn[data-panel="panel-galeria"]'); if (tab) tab.click(); }
   function renderGaleria() {
@@ -3033,6 +3251,7 @@
       if (e.diseno) { var dmcd = (e.diseno.colores || []).map(function (c) { return c.dmc; }).filter(Boolean).slice(0, 8).join(', '); return { role: 'assistant', content: (e.texto ? e.texto + ' ' : '') + 'Creé el diseño "' + (e.diseno.titulo || '') + '" (' + (e.diseno.forma === 'circulo' ? 'círculo ' + e.diseno.wCm + ' cm' : e.diseno.wCm + '×' + e.diseno.hCm + ' cm') + (dmcd ? '; hilos DMC ' + dmcd : '') + '): ' + (e.diseno.descripcion || '') }; }
       if (e.patron) { var dmcp = (e.patron.palette || []).map(function (c) { return c.code; }).filter(Boolean).slice(0, 8).join(', '); return { role: 'assistant', content: (e.texto ? e.texto + ' ' : '') + 'Creé el patrón de punto de cruz "' + (e.patron.titulo || '') + '" (' + e.patron.cols + '×' + e.patron.rows + ' puntos' + (dmcp ? '; hilos DMC ' + dmcp : '') + '): ' + (e.patron.descripcion || '') }; }
       if (e.paleta) { var dmcl = (e.paleta.hilos || []).map(function (h) { return h.dmc; }).filter(Boolean).join(', '); return { role: 'assistant', content: (e.texto ? e.texto + ' ' : '') + 'Le sugerí la paleta "' + (e.paleta.titulo || '') + '" (DMC ' + dmcl + ').' }; }
+      if (e.plan) return { role: 'assistant', content: (e.texto ? e.texto + ' ' : '') + 'Le armé el plan "' + (e.plan.titulo || '') + '" (' + (e.plan.pasos ? e.plan.pasos.length : 0) + ' pasos' + (e.plan.tiempo ? ', ' + e.plan.tiempo : '') + ').' };
       return { role: 'assistant', content: (e.texto && e.texto.trim()) ? e.texto : '…' };
     });
   }
@@ -3052,6 +3271,7 @@
       else if (e.diseno) pintarDiseno(agregarBurbuja('ia', ''), e.texto, e.diseno);
       else if (e.patron) pintarPatron(agregarBurbuja('ia', ''), e.texto, e.patron);
       else if (e.paleta) pintarPaleta(agregarBurbuja('ia', ''), e.texto, e.paleta);
+      else if (e.plan) pintarPlan(agregarBurbuja('ia', ''), e.texto, e.plan);
       else agregarBurbuja('ia', fmtMd(e.texto || ''));
     });
   }
@@ -3182,7 +3402,18 @@
       var tp = bloques.filter(function (b) { return b.type === 'tool_use' && b.name === 'crear_patron_cruz'; })[0];
       var tc = bloques.filter(function (b) { return b.type === 'tool_use' && b.name === 'coordinar_hilos'; })[0];
       var tm = bloques.filter(function (b) { return b.type === 'tool_use' && b.name === 'recordar'; })[0];
+      var tpl = bloques.filter(function (b) { return b.type === 'tool_use' && b.name === 'planificar_proyecto'; })[0];
+      var taj = bloques.filter(function (b) { return b.type === 'tool_use' && b.name === 'ajustar_modulo'; })[0];
       if (tu) { conversa.push({ rol: 'ia', texto: textos, prop: tu.input }); pintarIA(pensando, textos, tu.input); }
+      else if (tpl) {
+        try { var pl = normalizarPlan(tpl.input); conversa.push({ rol: 'ia', texto: textos, plan: pl }); pintarPlan(pensando, textos, pl); }
+        catch (err) { conversa.push({ rol: 'ia', texto: textos }); pensando.innerHTML = fmtMd(textos || 'Cuéntame qué quieres bordar y te armo el plan 🌸'); }
+      }
+      else if (taj) {
+        var ok = false; try { ok = aplicarAjusteModulo(taj.input); } catch (e4) {}
+        var confa = (taj.input && taj.input.confirmacion) ? taj.input.confirmacion : (ok ? 'Listo, te lo dejé puesto 🧵' : 'No pude ajustar eso, ¿me lo dices de otra forma? 🌸');
+        conversa.push({ rol: 'ia', texto: textos }); pensando.innerHTML = (textos ? fmtMd(textos) + '<br>' : '') + '<div class="prop-meta">🛠️ ' + escaparHtml(confa) + '</div>';
+      }
       else if (tc) {
         try { var pal = normalizarPaleta(tc.input); conversa.push({ rol: 'ia', texto: textos, paleta: pal }); pintarPaleta(pensando, textos, pal); }
         catch (err) { conversa.push({ rol: 'ia', texto: textos }); pensando.innerHTML = fmtMd(textos || 'Te armo una paleta, dame un tema concreto 🌸'); }
@@ -3314,7 +3545,7 @@
       btn.classList.add('activa'); btn.setAttribute('aria-selected', 'true'); $(btn.dataset.panel).classList.add('activa');
       if (['panel-letras', 'panel-fototexto', 'panel-libre', 'panel-varios'].indexOf(btn.dataset.panel) >= 0) inyectarFuentes();   // asegura tipografías al usarlas
       if (btn.dataset.panel === 'panel-asistente') actualizarEstadoAsistente();
-      else if (btn.dataset.panel === 'panel-galeria') renderGaleria();
+      else if (btn.dataset.panel === 'panel-galeria') { renderProyectos(); renderGaleria(); }
       else ultimoPanelDiseno = btn.dataset.panel;   // solo paneles con lienzo para "analizar"
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
@@ -3341,6 +3572,7 @@
   function cerrarAjustes() { $('modalAjustes').hidden = true; aplicarTema(); }   // si canceló, vuelve al tema guardado
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('modalAjustes').hidden) cerrarAjustes(); });
   $('btnAjustes').addEventListener('click', abrirAjustes);
+  (function () { var b = $('btnGuardarProy'); if (b) b.addEventListener('click', pedirNombreProyecto); })();
   $('cerrarAjustes').addEventListener('click', function () { temaSel = CONFIG.tema || 'trigo'; cerrarAjustes(); });
   $('modalAjustes').addEventListener('click', function (e) { if (e.target === this) cerrarAjustes(); });
   $('guardarAjustes').addEventListener('click', function () {
@@ -3467,7 +3699,7 @@
       return { tipo: 'texto', xCm: o.xCm, yCm: o.yCm, wCm: o.wCm, hCm: o.hCm, texto: o.texto, fontCss: o.fontCss, color: o.color, estilo: o.estilo, altoCm: o.altoCm };
     });
     s.cruz = capIn(['anchoCruz', 'telaCruz', 'coloresCruz', 'telaColorCruz', 'hojaCruz']);
-    s.cruz.simbolos = mostrarSimbolosCruz; s.cruz.fondo = quitarFondoCruz; s.cruz.limpiar = limpiarCruz; s.cruz.bn = bnCruz; s.cruz.img = conFotos ? imgAJpeg(imgCruz) : null;
+    s.cruz.simbolos = mostrarSimbolosCruz; s.cruz.fondo = quitarFondoCruz; s.cruz.limpiar = limpiarCruz; s.cruz.bn = bnCruz; s.cruz.img = conFotos ? imgAJpeg(imgCruz) : null; s.cruz.recorte = recorteCruz;
     return s;
   }
   function guardarEstado() {
@@ -3479,9 +3711,13 @@
   function restaurarEstado() {
     var s; try { s = JSON.parse(localStorage.getItem('alma_estado') || 'null'); } catch (e) { s = null; }
     if (!s || s.v !== ESTADO_VER) return;
+    aplicarEstado(s, s.sinFotos ? 'Recuperé tu trabajo 🌸 (vuelve a subir tus fotos)' : 'Recuperé tu trabajo 🌸');
+  }
+  function aplicarEstado(s, msgExito) {
+    if (!s) return;
     restaurandoEstado = true;
     var pend = 1;
-    function unaMenos() { if (--pend <= 0) { restaurandoEstado = false; toast(s.sinFotos ? 'Recuperé tu trabajo 🌸 (vuelve a subir tus fotos)' : 'Recuperé tu trabajo 🌸'); guardarEstado(); } }
+    function unaMenos() { if (--pend <= 0) { restaurandoEstado = false; if (msgExito) toast(msgExito); guardarEstado(); } }
     function cargarFoto(url, asignar, refrescar) { if (!url) return; pend++; jpegAImg(url, function (im) { try { if (im) asignar(im); refrescar(); } catch (e) {} unaMenos(); }); }
     // RECT
     try { if (s.rect) { resIn(s.rect); if (s.rect.flip) flipRect = { x: !!s.rect.flip.x, y: !!s.rect.flip.y }; refrescarRect(); cargarFoto(s.rect.img, function (im) { imgRect = im; }, refrescarRect); } } catch (e) {}
@@ -3499,11 +3735,87 @@
     // PUNTO DE CRUZ
     try { if (s.cruz) { resIn(s.cruz); mostrarSimbolosCruz = !!s.cruz.simbolos; quitarFondoCruz = !!s.cruz.fondo; limpiarCruz = !!s.cruz.limpiar; bnCruz = !!s.cruz.bn;
       [['simbolosCruz', mostrarSimbolosCruz], ['fondoCruz', quitarFondoCruz], ['limpiarCruzBtn', limpiarCruz], ['bnCruzBtn', bnCruz]].forEach(function (p) { var b = $(p[0]); if (b) { b.setAttribute('aria-pressed', p[1] ? 'true' : 'false'); b.classList.toggle('activo', p[1]); } });
-      actualizarTamanoCruz(); cargarFoto(s.cruz.img, function (im) { imgCruz = im; patronManual = false; }, recomputeCruz); } } catch (e) {}
+      recorteCruz = (s.cruz.recorte && typeof s.cruz.recorte.w === 'number') ? s.cruz.recorte : null;
+      actualizarTamanoCruz(); cargarFoto(s.cruz.img, function (im) { imgCruz = im; patronManual = false; mostrarRecorteCruz(); }, recomputeCruz); } } catch (e) {}
     // Pestaña donde estaba
     try { if (s.tab) { var tb = document.querySelector('.tab-btn[data-panel="' + s.tab + '"]'); if (tb) tb.click(); } } catch (e) {}
     unaMenos();   // libera el guard; si no había fotos, termina aquí
   }
+
+  // ---- Proyectos con nombre (guardar y reabrir cualquier panel) ----
+  var proyectos = [];
+  function cargarProyectos() { try { var s = JSON.parse(localStorage.getItem('alma_proyectos') || '[]'); proyectos = Array.isArray(s) ? s : []; } catch (e) { proyectos = []; } }
+  function guardarProyectosLS() { try { localStorage.setItem('alma_proyectos', JSON.stringify(proyectos)); return true; } catch (e) { return false; } }
+  function miniaturaPanelActivo() {
+    var act = document.querySelector('.tab-btn.activa'), panel = act ? act.dataset.panel : ultimoPanelDiseno;
+    if (['panel-asistente', 'panel-galeria'].indexOf(panel) >= 0) panel = ultimoPanelDiseno;
+    var c = document.querySelector('#' + panel + ' canvas');
+    if (!c || !c.width) return { panel: panel, mini: null };
+    try {
+      var max = 150, e = Math.min(1, max / Math.max(c.width, c.height));
+      var t = document.createElement('canvas'); t.width = Math.max(1, Math.round(c.width * e)); t.height = Math.max(1, Math.round(c.height * e));
+      var x = t.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, t.width, t.height); x.drawImage(c, 0, 0, t.width, t.height);
+      return { panel: panel, mini: t.toDataURL('image/jpeg', 0.7) };
+    } catch (err) { return { panel: panel, mini: null }; }
+  }
+  function guardarProyecto(nombre) {
+    nombre = String(nombre || '').trim().slice(0, 60) || 'Mi proyecto';
+    var info = miniaturaPanelActivo();
+    var proy = { id: nuevoId(), nombre: nombre, fecha: Date.now(), panel: info.panel, miniatura: info.mini, estado: capturarEstado(true) };
+    proyectos.unshift(proy);
+    if (proyectos.length > 40) proyectos = proyectos.slice(0, 40);
+    if (!guardarProyectosLS()) { // sin espacio: guarda sin fotos
+      proy.estado = capturarEstado(false); proy.miniatura = null;
+      if (!guardarProyectosLS()) { proyectos.shift(); guardarProyectosLS(); toast('No hay espacio para más proyectos'); return; }
+    }
+    actualizarCuentaGaleria(); toast('Proyecto guardado 🌸');
+  }
+  function abrirProyecto(id) {
+    var p = null; for (var i = 0; i < proyectos.length; i++) if (proyectos[i].id === id) p = proyectos[i];
+    if (!p || !p.estado) return;
+    if (!confirm('¿Abrir «' + p.nombre + '»? Se reemplazará lo que tienes abierto ahora.')) return;
+    aplicarEstado(p.estado, 'Abrí «' + p.nombre + '» 🌸');
+  }
+  function renombrarProyecto(id) {
+    var p = null; for (var i = 0; i < proyectos.length; i++) if (proyectos[i].id === id) p = proyectos[i];
+    if (!p) return; var n = prompt('Nuevo nombre del proyecto:', p.nombre); if (n == null) return;
+    p.nombre = String(n).trim().slice(0, 60) || p.nombre; guardarProyectosLS(); renderProyectos();
+  }
+  function quitarProyecto(id) {
+    var p = null; for (var i = 0; i < proyectos.length; i++) if (proyectos[i].id === id) p = proyectos[i];
+    if (p && !confirm('¿Borrar el proyecto «' + p.nombre + '»?')) return;
+    proyectos = proyectos.filter(function (q) { return q.id !== id; });
+    guardarProyectosLS(); actualizarCuentaGaleria(); renderProyectos();
+  }
+  var NOMBRE_PANEL_CORTO = { 'panel-rect': 'Imagen', 'panel-circulo': 'Bastidor', 'panel-letras': 'Letras', 'panel-fototexto': 'Foto+texto', 'panel-libre': 'Diseño libre', 'panel-cruz': 'Punto de cruz' };
+  function renderProyectos() {
+    var grid = $('proyectosGrid'), sec = $('proyectosSec'); if (!grid) return;
+    if (!proyectos.length) { if (sec) sec.style.display = 'none'; grid.innerHTML = ''; return; }
+    if (sec) sec.style.display = 'block';
+    grid.innerHTML = '';
+    proyectos.forEach(function (p) {
+      var f = new Date(p.fecha);
+      var fecha = isFinite(f.getTime()) ? (f.getDate() + '/' + (f.getMonth() + 1)) : '';
+      var card = document.createElement('div'); card.className = 'gal-card';
+      card.innerHTML =
+        '<div class="gal-previa">' + (p.miniatura ? '<img src="' + p.miniatura + '" alt="" style="max-width:100%;height:auto;border-radius:8px;">' : '<span class="puntos">' + escaparHtml(NOMBRE_PANEL_CORTO[p.panel] || '') + '</span>') + '</div>' +
+        '<div class="gal-tit">' + escaparHtml(p.nombre) + '</div>' +
+        '<div class="gal-meta">' + escaparHtml(NOMBRE_PANEL_CORTO[p.panel] || '') + (fecha ? ' · ' + fecha : '') + '</div>' +
+        '<div class="gal-acc"><button type="button" class="proy-abrir boton-sec">📂 Abrir</button><button type="button" class="proy-nom boton-sec">✏️</button><button type="button" class="proy-del boton-sec gal-quitar">🗑️</button></div>';
+      grid.appendChild(card);
+      card.querySelector('.proy-abrir').addEventListener('click', function () { abrirProyecto(p.id); });
+      card.querySelector('.proy-nom').addEventListener('click', function () { renombrarProyecto(p.id); });
+      card.querySelector('.proy-del').addEventListener('click', function () { quitarProyecto(p.id); });
+    });
+  }
+  function pedirNombreProyecto() {
+    var info = miniaturaPanelActivo();
+    var sug = (NOMBRE_PANEL_CORTO[info.panel] || 'Mi proyecto');
+    var n = prompt('Ponle un nombre a tu proyecto para guardarlo y reabrirlo después:', sug);
+    if (n == null) return;
+    guardarProyecto(n);
+  }
+
   // Autoguardar tras cualquier cambio visible (debounce). Cada refrescarX lo dispara.
   document.addEventListener('input', tocarEstado, true);
   document.addEventListener('change', tocarEstado, true);
@@ -3534,7 +3846,7 @@
     });
   })();
   cargarConversa(); renderConversa(); actualizarEstadoAsistente();
-  cargarGaleria(); actualizarCuentaGaleria();
+  cargarProyectos(); cargarGaleria(); actualizarCuentaGaleria();
   personalizarVacioChat();
   restaurarEstado();   // recupera el trabajo en curso (fotos, textos, medidas, posiciones)
   // Bienvenida la primera vez
