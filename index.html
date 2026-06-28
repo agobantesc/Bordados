@@ -749,7 +749,7 @@
     <h2><span class="paso">4</span> Vista previa</h2>
     <div class="lienzo-wrap"><canvas id="previaFt" width="300" height="420"></canvas></div>
     <div class="pie" id="pieFt"></div>
-    <p class="pie" id="ftAyudaArrastre" style="display:none">👆 Arrastra el texto para moverlo sobre la foto</p>
+    <p class="pie" id="ftAyudaArrastre" style="display:none">👆 Arrastra el texto con el dedo: ponlo sobre la foto, arriba, abajo o al costado. ¿Se enredó? Toca «↺ Restablecer texto».</p>
     <div class="controles-previa">
       <button class="boton-sec" id="flipFtX" type="button">⇋ Espejo</button>
       <button class="boton-sec" id="flipFtY" type="button">⇅ Voltear</button>
@@ -1685,8 +1685,9 @@
 
   // ---------- MODO FOTO + TEXTO ----------
   var imgFt = null, flipFt = { x: false, y: false };
-  var ftTxtPos = null;                 // posición libre del texto sobre la foto (fracciones 0..1 del centro) o null = usar preset
+  var ftTxtPos = null;                 // posición LIBRE del texto (fracciones del centro respecto a la foto; puede salir de [0,1]) o null = usar preset
   var ftUltimoCentro = { fx: 0.5, fy: 0.5 };
+  var ftEscalaPrevia = 0;              // px por cm de la última vista previa (para que el arrastre siga al dedo)
   var lineasFt = [], lineasFtSeq = 0;
   function nuevaLineaFt(texto, alto, fuente) { return { id: ++lineasFtSeq, texto: texto || '', alto: alto || 2, fuente: fuente || cssDe(FUENTES[0]) }; }
   function crearLineaCardFt(l) {
@@ -1732,40 +1733,38 @@
       var aw = num('anchoFt'), ah = num('altoFt'); foto = dibujarRect(imgFt, aw, ah, dpi, flipFt); fotoWcm = aw; fotoHcm = ah;
     }
     // 2) Lienzo del texto (cada renglón con su tipografía y tamaño)
-    var posicion = $('posicionFt').value, sobre = posicion.indexOf('sobre') === 0;
+    var posicion = $('posicionFt').value, sobrePreset = posicion.indexOf('sobre') === 0;
+    var rt = construirTextoFt(dpi, true);   // sombra suave: ayuda sobre la foto y casi no se nota sobre fondo blanco
     var txt = null, txtWcm = 0, txtHcm = 0;
-    var rt = construirTextoFt(dpi, sobre);
     if (rt) { txt = rt.canvas; txtWcm = rt.wCm; txtHcm = rt.hCm; }
-    // 3) Composición
+    // 3) Composición LIBRE: el texto puede ir sobre la foto, arriba, abajo o al lado, donde se arrastre.
+    //    La plantilla crece para envolver foto + texto, así el texto nunca se recorta ni queda "atrapado".
     var gap = 0.5, padSobre = Math.max(0.5, fotoHcm * 0.06);
-    var totalWcm, totalHcm, fotoX, fotoY, txtX, txtY;
+    var totalWcm, totalHcm, fotoX = 0, fotoY = 0, txtX, txtY;
     if (!txt) { totalWcm = fotoWcm; totalHcm = fotoHcm; }
-    else if (sobre) {
-      // El texto va SOBRE la foto: la plantilla mide lo mismo que la foto y el
-      // texto se escala (si hace falta) para caber dentro con un margen.
-      totalWcm = fotoWcm; totalHcm = fotoHcm; fotoX = 0; fotoY = 0;
-      var maxW = Math.max(0.1, fotoWcm - padSobre * 2), maxH = Math.max(0.1, fotoHcm - padSobre * 2);
-      var esc = Math.min(1, maxW / txtWcm, maxH / txtHcm);
-      txtWcm *= esc; txtHcm *= esc;
+    else {
+      // El texto nunca más ancho que la foto (con margen). En un preset "sobre" también lo limitamos en alto.
+      var margenT = Math.max(0.3, fotoWcm * 0.04);
+      var maxW = Math.max(0.1, fotoWcm - margenT * 2), maxH = Math.max(0.1, fotoHcm - padSobre * 2);
+      var capH = !ftTxtPos && sobrePreset;
+      var escT = Math.min(1, maxW / txtWcm, capH ? (maxH / txtHcm) : 1e9);
+      txtWcm *= escT; txtHcm *= escT;
+      // Centro del texto (cx,cy) en el sistema de la foto: [0..fotoWcm] x [0..fotoHcm] (cy puede ser <0 o >alto)
       var cx, cy;
-      if (ftTxtPos) { cx = ftTxtPos.fx * fotoWcm; cy = ftTxtPos.fy * fotoHcm; }   // posición arrastrada
+      if (ftTxtPos) { cx = ftTxtPos.fx * fotoWcm; cy = ftTxtPos.fy * fotoHcm; }
       else {
         cx = fotoWcm / 2;
-        if (posicion === 'sobre-arriba') cy = padSobre + txtHcm / 2;
+        if (posicion === 'arriba') cy = -(gap + txtHcm / 2);
+        else if (posicion === 'abajo') cy = fotoHcm + gap + txtHcm / 2;
+        else if (posicion === 'sobre-arriba') cy = padSobre + txtHcm / 2;
         else if (posicion === 'sobre-abajo') cy = fotoHcm - padSobre - txtHcm / 2;
         else cy = fotoHcm / 2;
       }
-      // Mantener el texto dentro de la foto
-      var minX = txtWcm / 2, maxX = fotoWcm - txtWcm / 2; if (minX > maxX) { minX = maxX = fotoWcm / 2; }
-      var minY = txtHcm / 2, maxY = fotoHcm - txtHcm / 2; if (minY > maxY) { minY = maxY = fotoHcm / 2; }
-      cx = Math.min(maxX, Math.max(minX, cx)); cy = Math.min(maxY, Math.max(minY, cy));
-      txtX = cx - txtWcm / 2; txtY = cy - txtHcm / 2;
-      ftUltimoCentro = { fx: cx / fotoWcm, fy: cy / fotoHcm };
-    } else {
-      totalWcm = Math.max(fotoWcm, txtWcm); totalHcm = fotoHcm + txtHcm + gap;
-      fotoX = (totalWcm - fotoWcm) / 2; txtX = (totalWcm - txtWcm) / 2;
-      if (posicion === 'arriba') { txtY = 0; fotoY = txtHcm + gap; }
-      else { fotoY = 0; txtY = fotoHcm + gap; }
+      ftUltimoCentro = { fx: cx / fotoWcm, fy: cy / fotoHcm };   // se actualiza SIEMPRE (arrastrar arranca de aquí, sin saltos)
+      var tl = cx - txtWcm / 2, tr = cx + txtWcm / 2, tt = cy - txtHcm / 2, tb = cy + txtHcm / 2;
+      var minX = Math.min(0, tl), maxX = Math.max(fotoWcm, tr), minY = Math.min(0, tt), maxY = Math.max(fotoHcm, tb);
+      totalWcm = maxX - minX; totalHcm = maxY - minY;
+      fotoX = -minX; fotoY = -minY; txtX = tl - minX; txtY = tt - minY;
     }
     var c = document.createElement('canvas');
     c.width = Math.max(1, Math.round(px(totalWcm)));
@@ -1802,6 +1801,7 @@
     conFuentesListas(lineasValidasFt().map(function (l) { return l.fuente; }), function () {
       var r = componerFotoTexto(30);
       var pagina = elegirPagina($('hojaFt').value, r.wCm, r.hCm);
+      ftEscalaPrevia = Math.min(360 / pagina.w, 480 / pagina.h);   // px por cm del lienzo de previa (para el arrastre)
       dibujarPrevia($('previaFt'), r.canvas, r.wCm, r.hCm, pagina);
       $('pieFt').textContent = 'Diseño de ' + r.wCm.toFixed(1) + ' × ' + r.hCm.toFixed(1) + ' cm en hoja ' + $('hojaFt').value;
       avisarSiNoCabe('avisoFt', r.wCm, r.hCm, pagina);
@@ -1823,16 +1823,16 @@
     hacerArrastrable($('previaFt'), {
       puede: function () { return !!imgFt && lineasValidasFt().length > 0; },
       onInicio: function () {
-        if (!ftSobre()) { $('posicionFt').value = 'sobre-centro'; ftTxtPos = null; }   // pasar a "sobre la foto"
+        // Arrancar desde donde está el texto AHORA (sin saltar al centro), sea preset o ya arrastrado
         if (!ftTxtPos) ftTxtPos = { fx: ftUltimoCentro.fx, fy: ftUltimoCentro.fy };
         iniPos = { fx: ftTxtPos.fx, fy: ftTxtPos.fy };
       },
       onMover: function (dx, dy) {
         var foto = ftFotoDims(); if (!(foto.wCm > 0 && foto.hCm > 0)) return;
-        var pagina = elegirPagina($('hojaFt').value, foto.wCm, foto.hCm);
-        var escala = Math.min(360 / pagina.w, 480 / pagina.h);
-        ftTxtPos.fx = Math.min(1, Math.max(0, iniPos.fx + (dx / escala) / foto.wCm));
-        ftTxtPos.fy = Math.min(1, Math.max(0, iniPos.fy + (dy / escala) / foto.hCm));
+        var esc = ftEscalaPrevia; if (!esc) { var pg = elegirPagina($('hojaFt').value, foto.wCm, foto.hCm); esc = Math.min(360 / pg.w, 480 / pg.h); }
+        // Libre: el texto puede salir de la foto (arriba/abajo/al lado); límites amplios evitan lanzarlo lejos
+        ftTxtPos.fx = Math.min(2, Math.max(-1, iniPos.fx + (dx / esc) / foto.wCm));
+        ftTxtPos.fy = Math.min(2.5, Math.max(-1.5, iniPos.fy + (dy / esc) / foto.hCm));
         programar('ft', refrescarFt);
       }
     });
