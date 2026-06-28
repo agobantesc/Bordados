@@ -388,6 +388,14 @@
   .recorte-formas { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 14px; }
   .recorte-formas .boton-sec { padding: 7px 12px; font-size: .85rem; }
   .recorte-wrap { display: flex; justify-content: center; }
+  .logo-fila { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+  #logoVista { width: 54px; height: 54px; object-fit: contain; border-radius: 10px; border: 1px solid var(--borde); background: #fff; }
+  .kit-lista { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+  .kit-row { display: flex; gap: 6px; align-items: center; }
+  .kit-row input { flex: 1 1 auto; min-width: 0; }
+  .kit-row .kit-det { flex: 0 1 38%; }
+  .kit-row .kit-del { flex: 0 0 auto; padding: 6px 10px; }
+  #lienzoMockup, #lienzoKit { touch-action: none; max-width: 100%; height: auto; }
   #lienzoRecorteCruz { touch-action: none; max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 2px 10px rgba(60,40,50,.18); cursor: move; }
   small.ayuda-campo { display: block; margin-top: 4px; font-size: .76rem; color: var(--tinta-suave); line-height: 1.25; }
   .fila-zoom { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
@@ -570,6 +578,8 @@
   <button class="tab-btn" data-panel="panel-fototexto" aria-label="Foto y texto"><span class="ti" aria-hidden="true">🌸</span><span class="tl">Foto+texto</span></button>
   <button class="tab-btn" data-panel="panel-libre" aria-label="Diseño libre"><span class="ti" aria-hidden="true">🎨</span><span class="tl">Libre</span></button>
   <button class="tab-btn" data-panel="panel-cruz" aria-label="Punto de cruz"><span class="ti" aria-hidden="true">🧶</span><span class="tl">Punto cruz</span></button>
+  <button class="tab-btn" data-panel="panel-mockup" aria-label="Ver en producto (mockup)"><span class="ti" aria-hidden="true">👗</span><span class="tl">Mockup</span></button>
+  <button class="tab-btn" data-panel="panel-kits" aria-label="Kits de bordado"><span class="ti" aria-hidden="true">🎁</span><span class="tl">Kits</span></button>
   <button class="tab-btn" data-panel="panel-varios" aria-label="Varios en una hoja"><span class="ti" aria-hidden="true">🧩</span><span class="tl">Varios</span></button>
   <button class="tab-btn" data-panel="panel-asistente" aria-label="Asistente de bordado"><span class="ti" aria-hidden="true">🪡</span><span class="tl">Asistente</span></button>
   <button class="tab-btn" data-panel="panel-galeria" aria-label="Diseños favoritos"><span class="ti" aria-hidden="true">❤️</span><span class="tl">Favoritos</span></button>
@@ -938,6 +948,90 @@
   <button class="boton-sec boton-img" id="imgCruz" type="button" disabled>🖼️ Guardar imagen del patrón</button>
 </section>
 
+<!-- ============ MOCKUP / VER EN PRODUCTO ============ -->
+<section id="panel-mockup" class="panel">
+  <p class="intro">Muéstrale a tu clienta cómo se verá el bordado sobre su prenda <strong>antes</strong> de empezar. Sube la foto del producto, pon el diseño encima, acomódalo y mándale la imagen para que apruebe. 🌸</p>
+  <svg class="divisor" viewBox="0 0 150 22"><use href="#divisorBot"/></svg>
+
+  <div class="tarjeta">
+    <h2><span class="paso">1</span> Sube la prenda o producto</h2>
+    <label class="zona-subida" id="zonaMockupFondo" for="archivoMockupFondo"><span class="icono">👗</span><p>Toca para subir la foto (polera, cojín, tote…)</p></label>
+    <input type="file" id="archivoMockupFondo" accept="image/*">
+    <div class="info-img" id="infoMockupFondo"></div>
+  </div>
+
+  <div class="tarjeta">
+    <h2><span class="paso">2</span> Pon tu diseño encima</h2>
+    <div class="controles-previa" style="justify-content:flex-start;">
+      <button class="boton-sec" id="mockupUsarActual" type="button">✨ Usar mi diseño actual</button>
+      <label class="boton-sec" for="archivoMockupDis" style="cursor:pointer;">🖼️ Subir un diseño</label>
+      <input type="file" id="archivoMockupDis" accept="image/*" style="display:none;">
+    </div>
+    <p class="info-img" style="text-align:left;">«Usar mi diseño actual» toma lo último que dibujaste (Imagen, Letras, Foto+texto, Libre o Punto de cruz). Arrástralo en la vista para moverlo.</p>
+    <div class="fila-zoom" id="filaMockupEsc" style="display:none;"><label for="mockupEscala">🔍 Tamaño del diseño</label><input type="range" id="mockupEscala" min="8" max="130" step="1" value="40"></div>
+    <div class="controles-previa" id="filaMockupBtns" style="justify-content:flex-start; display:none;">
+      <button class="boton-sec" id="mockupFondoBlanco" type="button" aria-pressed="false" title="Hace transparente el fondo blanco del diseño">⬜ Quitar fondo blanco</button>
+      <button class="boton-sec" id="mockupGirar" type="button" title="Girar el diseño 90°">↻ Girar</button>
+      <button class="boton-sec" id="mockupQuitar" type="button">🗑️ Quitar diseño</button>
+    </div>
+  </div>
+
+  <div class="tarjeta vista-previa">
+    <h2><span class="paso">3</span> Vista previa</h2>
+    <div class="lienzo-wrap"><canvas id="lienzoMockup" width="600" height="600" role="img" aria-label="Vista del diseño sobre el producto"></canvas></div>
+    <div class="pie" id="pieMockup">Sube una foto del producto y pon tu diseño encima.</div>
+  </div>
+  <button class="boton-pdf" id="compartirMockup" disabled>📲 Compartir imagen para aprobación</button>
+  <button class="boton-sec boton-img" id="guardarMockup" type="button" disabled>🖼️ Guardar imagen</button>
+</section>
+
+<!-- ============ KITS DE BORDADO ============ -->
+<section id="panel-kits" class="panel">
+  <p class="intro">Arma un kit listo para vender o para acompañar un encargo: el diseño, los insumos necesarios y las instrucciones paso a paso, todo en un <strong>PDF profesional con tu logo</strong>. 🌸</p>
+  <svg class="divisor" viewBox="0 0 150 22"><use href="#divisorBot"/></svg>
+
+  <div class="tarjeta">
+    <h2><span class="paso">1</span> Origen del kit</h2>
+    <div class="controles-previa" style="justify-content:flex-start;">
+      <button class="boton-sec" id="kitDesdeCruz" type="button">🧶 Desde mi punto de cruz</button>
+      <button class="boton-sec" id="kitDesdeActual" type="button">✨ Desde mi diseño actual</button>
+    </div>
+    <p class="info-img" style="text-align:left;">También puedes generarlo desde «Mis proyectos» (botón 🎁 en cada uno). Desde punto de cruz se llena solo con los hilos DMC y las madejas.</p>
+  </div>
+
+  <div class="tarjeta">
+    <h2><span class="paso">2</span> Datos del kit</h2>
+    <div class="campo"><label for="kitTitulo">Nombre del kit</label><input type="text" id="kitTitulo" placeholder="Kit cojín de flores" maxlength="80"></div>
+    <div class="fila" style="margin-top:10px;">
+      <div class="campo"><label for="kitNivel">Dificultad</label><select id="kitNivel"><option value="">—</option><option>Fácil</option><option>Media</option><option>Avanzada</option></select></div>
+      <div class="campo"><label for="kitTiempo">Tiempo estimado</label><input type="text" id="kitTiempo" placeholder="3–4 horas" maxlength="40"></div>
+    </div>
+    <div class="campo" style="margin-top:10px;"><label for="kitTela">Tela y bastidor</label><input type="text" id="kitTela" placeholder="Aida 14 blanca · bastidor 20 cm" maxlength="120"></div>
+  </div>
+
+  <div class="tarjeta">
+    <h2><span class="paso">3</span> Insumos necesarios</h2>
+    <div id="kitInsumos" class="kit-lista"></div>
+    <button class="boton-sec" id="kitAddInsumo" type="button">＋ Agregar insumo</button>
+  </div>
+
+  <div class="tarjeta">
+    <h2><span class="paso">4</span> Instrucciones</h2>
+    <div id="kitPasos" class="kit-lista"></div>
+    <div class="controles-previa" style="justify-content:flex-start;">
+      <button class="boton-sec" id="kitAddPaso" type="button">＋ Agregar paso</button>
+      <button class="boton-sec" id="kitSugerir" type="button">✨ Sugerir pasos</button>
+    </div>
+  </div>
+
+  <div class="tarjeta vista-previa">
+    <h2><span class="paso">5</span> Diseño del kit</h2>
+    <div class="lienzo-wrap"><canvas id="lienzoKit" width="420" height="420" role="img" aria-label="Diseño del kit"></canvas></div>
+    <div class="pie" id="pieKit">Genera un kit desde un diseño para ver su portada.</div>
+  </div>
+  <button class="boton-pdf" id="kitPdf" disabled>📘 Generar PDF profesional del kit</button>
+</section>
+
 <!-- ============ MODO 5: ASISTENTE IA ============ -->
 <section id="panel-asistente" class="panel">
   <p class="intro">Alma, tu asistente de bordado: pídele ideas, que diseñe un “Te amo” para tu foto, combinaciones de hilos y colores, o que evalúe lo que tienes en pantalla. Recuerda lo que conversan en este dispositivo.</p>
@@ -1016,7 +1110,11 @@
     <div class="campo" style="margin-top:12px;"><label>Tema de color</label><div class="temas-fila" id="temasFila"></div></div>
 
     <h2 style="font-size:1.2rem; margin:18px 0 6px;">📄 Plantillas e impresión</h2>
-    <div class="campo"><label for="nombreNegocio">Nombre del negocio</label><input type="text" id="nombreNegocio" placeholder="Alma bordado" inputmode="text"><p class="ayuda">Aparece arriba en la app.</p></div>
+    <div class="campo"><label for="nombreNegocio">Nombre del negocio</label><input type="text" id="nombreNegocio" placeholder="Alma bordado" inputmode="text"><p class="ayuda">Aparece arriba en la app y en la portada de tus kits.</p></div>
+    <div class="campo" style="margin-top:10px;"><label for="contactoNegocio">Contacto (Instagram / WhatsApp)</label><input type="text" id="contactoNegocio" placeholder="@almabordado · +56 9 …" inputmode="text"><p class="ayuda">Se imprime en la portada de los kits para que te vuelvan a comprar.</p></div>
+    <div class="campo" style="margin-top:10px;"><label>Logo del negocio</label>
+      <div class="logo-fila"><img id="logoVista" alt="" style="display:none;"><label class="boton-sec" for="archivoLogo" style="cursor:pointer;">🖼️ Subir logo</label><button class="boton-sec" id="quitarLogo" type="button" style="display:none;">Quitar</button></div>
+      <input type="file" id="archivoLogo" accept="image/*" style="display:none;"><p class="ayuda">Aparece en la portada del PDF del kit. Cuadrado se ve mejor.</p></div>
     <label class="check-fila"><input type="checkbox" id="marcaEnPdf"><span>Incluir el nombre como pie en los PDF</span></label>
     <label class="check-fila"><input type="checkbox" id="reglaEnPdf"><span>Incluir regla de 10 cm para verificar el tamaño al imprimir</span></label>
     <div class="campo" style="margin-top:14px;"><label for="calidadPdf">Calidad de impresión</label>
@@ -1070,7 +1168,8 @@
   var MODELO_IA = 'claude-sonnet-4-6';
   var TEMAS = { trigo: 1, rosa: 1, salvia: 1, azul: 1, lavanda: 1 };   // acentos pastel elegibles
   var CONFIG = { nombre: 'Alma bordado', enPdf: false, regla: false, dpi: 300, apiKey: '', modelo: MODELO_IA,
-    miNombre: '', pareja: '', gustos: '', proyectos: '', notas: '', coloresFav: [], aidaDef: 14, hojaDef: 'A4', tema: 'trigo' };
+    miNombre: '', pareja: '', gustos: '', proyectos: '', notas: '', coloresFav: [], aidaDef: 14, hojaDef: 'A4', tema: 'trigo',
+    logo: '', contacto: '' };
   function cargarConfig() {
     try {
       var s = JSON.parse(localStorage.getItem('alma_config') || '{}');
@@ -1080,6 +1179,8 @@
       CONFIG.apiKey = (s.apiKey || '').toString();
       CONFIG.modelo = MODELO_IA;   // siempre el del código, ignora lo guardado
       ['miNombre', 'pareja', 'gustos', 'proyectos', 'notas'].forEach(function (k) { if (s[k] != null) CONFIG[k] = String(s[k]).slice(0, 400); });
+      if (s.contacto != null) CONFIG.contacto = String(s.contacto).slice(0, 200);
+      if (typeof s.logo === 'string' && s.logo.slice(0, 11) === 'data:image/') CONFIG.logo = s.logo;
       CONFIG.coloresFav = Array.isArray(s.coloresFav) ? s.coloresFav.filter(function (c) { return /^#[0-9a-fA-F]{3,8}$/.test(c); }).slice(0, 5) : [];
       CONFIG.aidaDef = [11, 14, 16, 18].indexOf(s.aidaDef) >= 0 ? s.aidaDef : 14;
       CONFIG.hojaDef = (s.hojaDef && HOJAS[s.hojaDef]) ? s.hojaDef : 'A4';
@@ -1100,6 +1201,8 @@
     return l.length ? ('PERFIL DE QUIEN BORDA (úsalo con naturalidad para personalizar nombres, motivos y valores por defecto; NO lo recites entero ni en cada mensaje):\n• ' + l.join('\n• ')) : '';
   }
   function aplicarMarca() { $('tituloMarca').textContent = CONFIG.nombre.trim() || 'Alma bordado'; }
+  var logoImg = null;
+  function cargarLogoImg() { if (!CONFIG.logo) { logoImg = null; return; } var im = new Image(); im.onload = function () { logoImg = im; }; im.onerror = function () { logoImg = null; }; im.src = CONFIG.logo; }
   function pieParaPdf() { return (CONFIG.enPdf && CONFIG.nombre.trim()) ? CONFIG.nombre.trim() : null; }
 
   // ---------- Programador de render (fluidez iPad) ----------
@@ -3546,6 +3649,8 @@
       if (['panel-letras', 'panel-fototexto', 'panel-libre', 'panel-varios'].indexOf(btn.dataset.panel) >= 0) inyectarFuentes();   // asegura tipografías al usarlas
       if (btn.dataset.panel === 'panel-asistente') actualizarEstadoAsistente();
       else if (btn.dataset.panel === 'panel-galeria') { renderProyectos(); renderGaleria(); }
+      else if (btn.dataset.panel === 'panel-mockup') dibujarMockup();
+      else if (btn.dataset.panel === 'panel-kits') aplicarKitAFormulario();
       else ultimoPanelDiseno = btn.dataset.panel;   // solo paneles con lienzo para "analizar"
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
@@ -3562,13 +3667,32 @@
       cont.appendChild(b);
     });
   }
+  var logoTmp = null;   // logo pendiente mientras el modal está abierto (null = sin cambios)
+  function pintarLogoVista(dataUrl) {
+    var img = $('logoVista'), q = $('quitarLogo');
+    if (dataUrl) { img.src = dataUrl; img.style.display = 'inline-block'; q.style.display = 'inline-block'; }
+    else { img.removeAttribute('src'); img.style.display = 'none'; q.style.display = 'none'; }
+  }
   function abrirAjustes() {
     $('nombreNegocio').value = CONFIG.nombre; $('marcaEnPdf').checked = CONFIG.enPdf; $('reglaEnPdf').checked = CONFIG.regla; $('calidadPdf').value = String(CONFIG.dpi); $('claveApi').value = CONFIG.apiKey;
     $('miNombre').value = CONFIG.miNombre; $('parejaNombre').value = CONFIG.pareja; $('gustosTaller').value = CONFIG.gustos;
+    $('contactoNegocio').value = CONFIG.contacto || '';
     $('aidaDefSel').value = String(CONFIG.aidaDef); $('hojaDefSel').value = CONFIG.hojaDef;
+    logoTmp = null; pintarLogoVista(CONFIG.logo || '');
     temaSel = CONFIG.tema || 'trigo'; pintarTemas('temasFila');
     $('modalAjustes').hidden = false; setTimeout(function () { $('miNombre').focus(); }, 30);
   }
+  $('archivoLogo').addEventListener('change', function () {
+    var f = this.files && this.files[0]; if (!f) return;
+    cargarImagen(f, function (img) {
+      var max = 400, e = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+      var w = Math.max(1, Math.round(img.naturalWidth * e)), h = Math.max(1, Math.round(img.naturalHeight * e));
+      var c = document.createElement('canvas'); c.width = w; c.height = h; c.getContext('2d').drawImage(img, 0, 0, w, h);
+      try { logoTmp = c.toDataURL('image/png'); pintarLogoVista(logoTmp); } catch (err) { toast('No se pudo leer el logo'); }
+      this.value = '';
+    }.bind(this), function () { toast('No se pudo leer el logo'); });
+  });
+  $('quitarLogo').addEventListener('click', function () { logoTmp = ''; pintarLogoVista(''); });
   function cerrarAjustes() { $('modalAjustes').hidden = true; aplicarTema(); }   // si canceló, vuelve al tema guardado
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('modalAjustes').hidden) cerrarAjustes(); });
   $('btnAjustes').addEventListener('click', abrirAjustes);
@@ -3582,7 +3706,8 @@
     CONFIG.modelo = MODELO_IA;
     CONFIG.miNombre = $('miNombre').value.toString().slice(0, 60); CONFIG.pareja = $('parejaNombre').value.toString().slice(0, 60); CONFIG.gustos = $('gustosTaller').value.toString().slice(0, 200);
     CONFIG.aidaDef = parseInt($('aidaDefSel').value, 10) || 14; CONFIG.hojaDef = HOJAS[$('hojaDefSel').value] ? $('hojaDefSel').value : 'A4'; CONFIG.tema = temaSel;
-    guardarConfig(); aplicarMarca(); aplicarTema(); aplicarSaludoHeader(); actualizarEstadoAsistente(); chipsAsistente(); personalizarVacioChat();
+    CONFIG.contacto = $('contactoNegocio').value.toString().slice(0, 200); if (logoTmp != null) CONFIG.logo = logoTmp;
+    guardarConfig(); cargarLogoImg(); aplicarMarca(); aplicarTema(); aplicarSaludoHeader(); actualizarEstadoAsistente(); chipsAsistente(); personalizarVacioChat();
     aplicarDefaultsTaller(); tocarEstado();   // aplica y persiste la tela/hoja por defecto en los paneles
     cerrarAjustes(); toast('Ajustes guardados  ✓');
   });
@@ -3801,9 +3926,10 @@
         '<div class="gal-previa">' + (p.miniatura ? '<img src="' + p.miniatura + '" alt="" style="max-width:100%;height:auto;border-radius:8px;">' : '<span class="puntos">' + escaparHtml(NOMBRE_PANEL_CORTO[p.panel] || '') + '</span>') + '</div>' +
         '<div class="gal-tit">' + escaparHtml(p.nombre) + '</div>' +
         '<div class="gal-meta">' + escaparHtml(NOMBRE_PANEL_CORTO[p.panel] || '') + (fecha ? ' · ' + fecha : '') + '</div>' +
-        '<div class="gal-acc"><button type="button" class="proy-abrir boton-sec">📂 Abrir</button><button type="button" class="proy-nom boton-sec">✏️</button><button type="button" class="proy-del boton-sec gal-quitar">🗑️</button></div>';
+        '<div class="gal-acc"><button type="button" class="proy-abrir boton-sec">📂 Abrir</button><button type="button" class="proy-kit boton-sec" title="Armar un kit con este proyecto">🎁 Kit</button><button type="button" class="proy-nom boton-sec">✏️</button><button type="button" class="proy-del boton-sec gal-quitar">🗑️</button></div>';
       grid.appendChild(card);
       card.querySelector('.proy-abrir').addEventListener('click', function () { abrirProyecto(p.id); });
+      card.querySelector('.proy-kit').addEventListener('click', function () { kitDesdeProyecto(p.id); });
       card.querySelector('.proy-nom').addEventListener('click', function () { renombrarProyecto(p.id); });
       card.querySelector('.proy-del').addEventListener('click', function () { quitarProyecto(p.id); });
     });
@@ -3816,12 +3942,324 @@
     guardarProyecto(n);
   }
 
+  // ===================== MOCKUP / VER EN PRODUCTO =====================
+  // Toma una foto de la prenda y superpone el diseño para que la clienta apruebe antes de bordar.
+  function panelDisenoActivo() {
+    var act = document.querySelector('.tab-btn.activa'), panel = act ? act.dataset.panel : ultimoPanelDiseno;
+    if (['panel-asistente', 'panel-galeria', 'panel-mockup', 'panel-kits'].indexOf(panel) >= 0) panel = ultimoPanelDiseno;
+    return panel || 'panel-rect';
+  }
+  function snapshotDiseno(maxPx) {
+    var panel = panelDisenoActivo(), c = panel && document.querySelector('#' + panel + ' canvas');
+    if (!c || !c.width) return null;
+    var max = maxPx || 1200, e = Math.min(1, max / Math.max(c.width, c.height));
+    var t = document.createElement('canvas'); t.width = Math.max(1, Math.round(c.width * e)); t.height = Math.max(1, Math.round(c.height * e));
+    try { t.getContext('2d').drawImage(c, 0, 0, t.width, t.height); return { panel: panel, url: t.toDataURL('image/png') }; } catch (e2) { return null; }
+  }
+  var mkFondo = null, mkDisOrig = null, mkDis = null, mkPos = { x: 0.5, y: 0.5 }, mkEsc = 0.4, mkRot = 0, mkBlanco = false, mkW = 600, mkH = 400;
+  function prepararMockupDis() {
+    if (!mkDisOrig) { mkDis = null; return; }
+    var iw = mkDisOrig.naturalWidth || mkDisOrig.width, ih = mkDisOrig.naturalHeight || mkDisOrig.height;
+    var e = Math.min(1, 900 / Math.max(iw, ih)), w = Math.max(1, Math.round(iw * e)), h = Math.max(1, Math.round(ih * e));
+    var c = document.createElement('canvas'); c.width = w; c.height = h;
+    var x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(mkDisOrig, 0, 0, w, h);
+    if (mkBlanco) { try { var d = x.getImageData(0, 0, w, h), a = d.data; for (var i = 0; i < a.length; i += 4) { if (a[i] > 236 && a[i + 1] > 236 && a[i + 2] > 236) a[i + 3] = 0; } x.putImageData(d, 0, 0); } catch (e2) {} }
+    mkDis = c;
+  }
+  function fondoCajaWH(maxBox) {
+    var iw = mkFondo.naturalWidth || mkFondo.width, ih = mkFondo.naturalHeight || mkFondo.height;
+    var e = Math.min(maxBox / iw, maxBox / ih); return { W: Math.max(1, Math.round(iw * e)), H: Math.max(1, Math.round(ih * e)) };
+  }
+  function pintarMockupEn(x, W, H) {
+    x.clearRect(0, 0, W, H);
+    if (mkFondo) x.drawImage(mkFondo, 0, 0, W, H);
+    if (mkDis) {
+      var base = Math.min(W, H) * mkEsc, da = mkDis.width / mkDis.height, dw, dh;
+      if (da >= 1) { dw = base; dh = base / da; } else { dh = base; dw = base * da; }
+      x.save(); x.translate(mkPos.x * W, mkPos.y * H); x.rotate(mkRot * Math.PI / 2);
+      x.shadowColor = 'rgba(0,0,0,0.25)'; x.shadowBlur = Math.round(base * 0.04); x.shadowOffsetY = Math.round(base * 0.02);
+      x.drawImage(mkDis, -dw / 2, -dh / 2, dw, dh); x.restore();
+    }
+  }
+  function dibujarMockup() {
+    var cv = $('lienzoMockup'); if (!cv) return; var x = cv.getContext('2d');
+    if (!mkFondo) {
+      cv.width = 600; cv.height = 380; x.fillStyle = '#f3ede2'; x.fillRect(0, 0, 600, 380);
+      x.fillStyle = '#b3a892'; x.font = '18px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
+      x.fillText('Sube la foto del producto 👗', 300, 190); x.textAlign = 'left'; x.textBaseline = 'top';
+      $('pieMockup').textContent = 'Sube una foto del producto y pon tu diseño encima.';
+      $('compartirMockup').disabled = true; $('guardarMockup').disabled = true;
+      $('filaMockupEsc').style.display = 'none'; $('filaMockupBtns').style.display = 'none'; return;
+    }
+    var box = fondoCajaWH(640); cv.width = box.W; cv.height = box.H; mkW = box.W; mkH = box.H;
+    pintarMockupEn(x, box.W, box.H);
+    var hay = !!mkDis;
+    $('pieMockup').textContent = hay ? 'Arrastra el diseño para moverlo · ajusta el tamaño abajo' : 'Ahora pon tu diseño con los botones de arriba.';
+    $('compartirMockup').disabled = !hay; $('guardarMockup').disabled = !hay;
+    $('filaMockupEsc').style.display = hay ? 'flex' : 'none'; $('filaMockupBtns').style.display = hay ? 'flex' : 'none';
+  }
+  function componerMockup(maxPx) {
+    var box = fondoCajaWH(maxPx || 1400), c = document.createElement('canvas'); c.width = box.W; c.height = box.H;
+    var x = c.getContext('2d'); pintarMockupEn(x, box.W, box.H);
+    var nom = (CONFIG.nombre || '').trim();
+    if (nom) { var fs = Math.max(12, Math.round(box.W * 0.028)), pad = Math.round(box.W * 0.02); x.font = '600 ' + fs + 'px sans-serif'; x.textAlign = 'right'; x.textBaseline = 'bottom'; x.shadowColor = 'rgba(0,0,0,0.45)'; x.shadowBlur = 4; x.fillStyle = 'rgba(255,255,255,0.95)'; x.fillText(nom, box.W - pad, box.H - pad); x.shadowBlur = 0; }
+    return c;
+  }
+  function mostrarMkControles() { $('filaMockupEsc').style.display = 'flex'; $('filaMockupBtns').style.display = 'flex'; }
+  (function () {
+    if (!$('lienzoMockup')) return;
+    conectarSubida('zonaMockupFondo', 'archivoMockupFondo', 'infoMockupFondo', function (img) { mkFondo = img; dibujarMockup(); });
+    $('archivoMockupDis').addEventListener('change', function () {
+      var f = this.files && this.files[0]; if (!f) return; var self = this;
+      cargarImagen(f, function (img) { mkDisOrig = img; mkPos = { x: 0.5, y: 0.5 }; mkRot = 0; prepararMockupDis(); mostrarMkControles(); dibujarMockup(); self.value = ''; }, function () { toast('No se pudo leer el diseño'); });
+    });
+    $('mockupUsarActual').addEventListener('click', function () {
+      var snap = snapshotDiseno(1000);
+      if (!snap) { toast('Primero dibuja algo en un panel de diseño'); return; }
+      var im = new Image(); im.onload = function () { mkDisOrig = im; mkPos = { x: 0.5, y: 0.5 }; mkRot = 0; prepararMockupDis(); mostrarMkControles(); dibujarMockup(); }; im.src = snap.url;
+    });
+    $('mockupEscala').addEventListener('input', function () { mkEsc = (parseInt(this.value, 10) || 40) / 100; dibujarMockup(); });
+    $('mockupGirar').addEventListener('click', function () { mkRot = (mkRot + 1) % 4; dibujarMockup(); });
+    $('mockupFondoBlanco').addEventListener('click', function () { mkBlanco = !mkBlanco; this.setAttribute('aria-pressed', mkBlanco ? 'true' : 'false'); this.classList.toggle('activo', mkBlanco); prepararMockupDis(); dibujarMockup(); });
+    $('mockupQuitar').addEventListener('click', function () { mkDisOrig = null; mkDis = null; dibujarMockup(); });
+    hacerArrastrable($('lienzoMockup'), {
+      puede: function () { return !!(mkFondo && mkDis); },
+      onInicio: function () { mkPos.__ix = mkPos.x; mkPos.__iy = mkPos.y; },
+      onMover: function (dx, dy) { mkPos.x = Math.min(1, Math.max(0, (mkPos.__ix != null ? mkPos.__ix : 0.5) + dx / (mkW || 1))); mkPos.y = Math.min(1, Math.max(0, (mkPos.__iy != null ? mkPos.__iy : 0.5) + dy / (mkH || 1))); dibujarMockup(); },
+      onFin: function () { mkPos.__ix = mkPos.__iy = null; }
+    });
+    $('compartirMockup').addEventListener('click', function () {
+      var c = componerMockup(1400);
+      if (c.toBlob) c.toBlob(function (blob) {
+        if (!blob) { toast('No se pudo generar la imagen'); return; }
+        try {
+          var file = new File([blob], 'mockup_bordado.png', { type: 'image/png' });
+          if (navigator.canShare && navigator.canShare({ files: [file] })) { navigator.share({ files: [file], title: 'Diseño para aprobar', text: '¿Te gusta así? 🌸' }).catch(function () {}); return; }
+        } catch (e) {}
+        descargar(blob, 'mockup_bordado.png'); toast('Imagen guardada — compártela por WhatsApp 🌸');
+      }, 'image/png'); else { descargarPngData(c, 'mockup_bordado.png'); }
+    });
+    $('guardarMockup').addEventListener('click', function () { descargarPng(componerMockup(1400), 'mockup_bordado.png'); toast('Imagen lista  ✓'); });
+  })();
+
+  // ===================== KITS DE BORDADO =====================
+  function nuevoKit() { return { titulo: '', nivel: '', tiempo: '', tela: '', tipo: 'libre', disenoImg: null, insumos: [], pasos: [], cruz: null }; }
+  var kit = nuevoKit();
+  function telaNombreCruz(t) { return ({ blanca: 'blanca', crema: 'crema/ecru', negra: 'negra' })[t] || 'blanca'; }
+  function chartColorCanvas(m, maxPx) {
+    var cell = Math.max(1, Math.floor((maxPx || 760) / Math.max(m.cols, m.rows)));
+    var cv = document.createElement('canvas'); cv.width = m.cols * cell; cv.height = m.rows * cell;
+    var x = cv.getContext('2d'); x.fillStyle = (TELAS_CRUZ[m.tela] || TELAS_CRUZ.blanca).fondoVacio; x.fillRect(0, 0, cv.width, cv.height);
+    for (var r = 0; r < m.rows; r++) for (var c = 0; c < m.cols; c++) { var idx = m.cells[r * m.cols + c]; if (idx < 0) continue; x.fillStyle = m.palette[idx].hex; x.fillRect(c * cell, r * cell, cell, cell); }
+    x.strokeStyle = '#cdbfa6'; x.lineWidth = 1; x.strokeRect(0.5, 0.5, cv.width - 1, cv.height - 1);
+    return cv;
+  }
+  function insumosDeCruz(m) {
+    var lista = m.palette.map(function (p) { return { item: 'Hilo DMC ' + p.code + ' (' + p.name + ')', detalle: '~' + p.madejas + ' madeja' + (p.madejas > 1 ? 's' : '') }; });
+    lista.push({ item: 'Tela Aida ' + m.aida + ' ct ' + telaNombreCruz(m.tela), detalle: 'aprox. ' + Math.ceil(m.wCm + 8) + ' × ' + Math.ceil(m.hCm + 8) + ' cm' });
+    lista.push({ item: 'Bastidor', detalle: 'según el tamaño (≈ ' + Math.ceil(Math.max(m.wCm, m.hCm) + 4) + ' cm)' });
+    lista.push({ item: 'Aguja de tapicería (punta roma)', detalle: 'nº 24' });
+    lista.push({ item: 'Tijeras de bordado', detalle: '' });
+    return lista;
+  }
+  function pasosCruzDefault() {
+    return [
+      { titulo: 'Prepara la tela', detalle: 'Busca el centro doblando la tela en cuatro y márcalo con un hilván suave. Monta la tela en el bastidor, bien tensa.' },
+      { titulo: 'Empieza por el centro', detalle: 'El patrón se borda desde el centro hacia afuera. Usa 2 hebras del hilo DMC.' },
+      { titulo: 'Sigue el gráfico', detalle: 'Cada cuadrito del gráfico es una puntada de cruz (X). Cada símbolo/color corresponde a un hilo de la lista.' },
+      { titulo: 'Mantén las cruces parejas', detalle: 'Haz siempre la cruz en el mismo sentido (primero todas las / y luego las \\) para que se vea prolijo.' },
+      { titulo: 'Remata y plancha', detalle: 'Al terminar cada color, remata por detrás pasando el hilo bajo unas puntadas. Plancha por el revés sobre una toalla.' }
+    ];
+  }
+  function pasosLibreDefault() {
+    return [
+      { titulo: 'Pasa el diseño a la tela', detalle: 'Calca el diseño con papel transfer, lápiz hidrosoluble o a contraluz sobre la tela.' },
+      { titulo: 'Monta el bastidor', detalle: 'Pon la tela en el bastidor bien tensa para que las puntadas queden parejas.' },
+      { titulo: 'Borda los contornos', detalle: 'Empieza por las líneas con punto atrás o punto de tallo, usando 2 hebras.' },
+      { titulo: 'Rellena las áreas', detalle: 'Rellena con punto satín, punto largo y corto o nudos franceses según el diseño.' },
+      { titulo: 'Termina y limpia', detalle: 'Remata por detrás, borra las marcas del diseño y plancha por el revés.' }
+    ];
+  }
+  function insumosLibreDefault() {
+    return [
+      { item: 'Tela para bordar', detalle: 'algodón o lino' },
+      { item: 'Hilos de bordar (madejas DMC)', detalle: 'según los colores del diseño' },
+      { item: 'Bastidor', detalle: '' },
+      { item: 'Aguja de bordado', detalle: '' },
+      { item: 'Tijeras y lápiz de marcar', detalle: '' }
+    ];
+  }
+  function kitRow(tipo, a, b, idx) {
+    var row = document.createElement('div'); row.className = 'kit-row';
+    var i1 = document.createElement('input'); i1.type = 'text'; i1.value = a || ''; i1.placeholder = tipo === 'ins' ? 'Insumo' : 'Paso';
+    var i2 = document.createElement('input'); i2.type = 'text'; i2.className = 'kit-det'; i2.value = b || ''; i2.placeholder = tipo === 'ins' ? 'Detalle' : 'Cómo';
+    var del = document.createElement('button'); del.type = 'button'; del.className = 'boton-sec kit-del'; del.textContent = '🗑️';
+    del.addEventListener('click', function () { (tipo === 'ins' ? kit.insumos : kit.pasos).splice(idx, 1); (tipo === 'ins' ? renderKitInsumos : renderKitPasos)(); guardarKit(); });
+    function sinc() { var arr = tipo === 'ins' ? kit.insumos : kit.pasos, o = arr[idx]; if (!o) return; if (tipo === 'ins') { o.item = i1.value; o.detalle = i2.value; } else { o.titulo = i1.value; o.detalle = i2.value; } guardarKit(); }
+    i1.addEventListener('input', sinc); i2.addEventListener('input', sinc);
+    row.appendChild(i1); row.appendChild(i2); row.appendChild(del); return row;
+  }
+  function renderKitInsumos() { var g = $('kitInsumos'); if (!g) return; g.innerHTML = ''; kit.insumos.forEach(function (o, i) { g.appendChild(kitRow('ins', o.item, o.detalle, i)); }); }
+  function renderKitPasos() { var g = $('kitPasos'); if (!g) return; g.innerHTML = ''; kit.pasos.forEach(function (o, i) { g.appendChild(kitRow('paso', o.titulo, o.detalle, i)); }); }
+  function pintarKitPreview() {
+    var cv = $('lienzoKit'); if (!cv) return; var x = cv.getContext('2d');
+    if (!kit.disenoImg) { cv.width = 420; cv.height = 300; x.fillStyle = '#f3ede2'; x.fillRect(0, 0, 420, 300); x.fillStyle = '#b3a892'; x.font = '16px sans-serif'; x.textAlign = 'center'; x.fillText('Genera un kit desde un diseño', 210, 150); x.textAlign = 'left'; $('pieKit').textContent = 'Genera un kit desde un diseño para ver su portada.'; $('kitPdf').disabled = true; return; }
+    var im = new Image(); im.onload = function () {
+      var max = 460, e = Math.min(1, max / Math.max(im.width, im.height)); cv.width = Math.max(1, Math.round(im.width * e)); cv.height = Math.max(1, Math.round(im.height * e));
+      x.fillStyle = '#fff'; x.fillRect(0, 0, cv.width, cv.height); x.drawImage(im, 0, 0, cv.width, cv.height);
+    }; im.src = kit.disenoImg;
+    $('pieKit').textContent = (kit.tipo === 'cruz' ? 'Patrón de punto de cruz' : 'Diseño del kit') + ' · listo para el PDF';
+    $('kitPdf').disabled = false;
+  }
+  function aplicarKitAFormulario() {
+    $('kitTitulo').value = kit.titulo || ''; $('kitNivel').value = kit.nivel || ''; $('kitTiempo').value = kit.tiempo || ''; $('kitTela').value = kit.tela || '';
+    renderKitInsumos(); renderKitPasos(); pintarKitPreview();
+  }
+  function leerFormularioAKit() {
+    kit.titulo = $('kitTitulo').value.toString().slice(0, 80); kit.nivel = $('kitNivel').value; kit.tiempo = $('kitTiempo').value.toString().slice(0, 40); kit.tela = $('kitTela').value.toString().slice(0, 120);
+  }
+  function irAKits() { var t = document.querySelector('.tab-btn[data-panel="panel-kits"]'); if (t) t.click(); }
+  function kitDesdeCruz() {
+    if (!modeloCruz) { toast('Primero crea o sube un patrón en Punto de cruz'); var tc = document.querySelector('.tab-btn[data-panel="panel-cruz"]'); if (tc) tc.click(); return; }
+    var m = modeloCruz; kit = nuevoKit(); kit.tipo = 'cruz'; kit.cruz = m;
+    kit.titulo = 'Kit punto de cruz';
+    kit.nivel = m.palette.length > 16 ? 'Avanzada' : (m.palette.length > 8 ? 'Media' : 'Fácil');
+    var hrs = Math.max(1, Math.round((m.totalPuntos || m.cols * m.rows) / 700)); kit.tiempo = '~' + hrs + (hrs > 1 ? ' horas' : ' hora');
+    kit.tela = 'Aida ' + m.aida + ' ct ' + telaNombreCruz(m.tela) + ' · ' + m.wCm.toFixed(0) + ' × ' + m.hCm.toFixed(0) + ' cm';
+    kit.insumos = insumosDeCruz(m); kit.pasos = pasosCruzDefault();
+    try { kit.disenoImg = chartColorCanvas(m, 760).toDataURL('image/jpeg', 0.85); } catch (e) { kit.disenoImg = null; }
+    aplicarKitAFormulario(); guardarKit(); irAKits(); toast('Kit armado desde tu punto de cruz 🌸');
+  }
+  function kitDesdeActual() {
+    if (panelDisenoActivo() === 'panel-cruz' && modeloCruz) { kitDesdeCruz(); return; }
+    var snap = snapshotDiseno(1100);
+    if (!snap) { toast('Primero dibuja algo en un panel de diseño'); return; }
+    kit = nuevoKit(); kit.tipo = 'libre'; kit.disenoImg = snap.url;
+    kit.titulo = 'Kit ' + ((NOMBRE_PANEL_CORTO[snap.panel] || 'bordado').toLowerCase());
+    kit.insumos = insumosLibreDefault(); kit.pasos = pasosLibreDefault();
+    aplicarKitAFormulario(); guardarKit(); irAKits(); toast('Kit armado desde tu diseño 🌸');
+  }
+  function kitDesdeProyecto(id) {
+    var p = null; for (var i = 0; i < proyectos.length; i++) if (proyectos[i].id === id) p = proyectos[i];
+    if (!p || !p.estado) return;
+    if (!confirm('Para armar el kit voy a abrir «' + p.nombre + '». Se reemplazará lo que tienes abierto ahora. ¿Seguir?')) return;
+    aplicarEstado(p.estado, 'Abrí «' + p.nombre + '» para el kit 🌸');
+    setTimeout(function () { kitDesdeActual(); if (kit.titulo) { kit.titulo = 'Kit ' + p.nombre; $('kitTitulo').value = kit.titulo; guardarKit(); } }, 800);
+  }
+  function guardarKit() {
+    var lite = { titulo: kit.titulo, nivel: kit.nivel, tiempo: kit.tiempo, tela: kit.tela, tipo: kit.tipo, disenoImg: kit.disenoImg, insumos: kit.insumos, pasos: kit.pasos };
+    try { localStorage.setItem('alma_kit', JSON.stringify(lite)); } catch (e) {}
+  }
+  function cargarKit() {
+    try { var s = JSON.parse(localStorage.getItem('alma_kit') || 'null'); if (s && typeof s === 'object') { kit = nuevoKit(); kit.titulo = s.titulo || ''; kit.nivel = s.nivel || ''; kit.tiempo = s.tiempo || ''; kit.tela = s.tela || ''; kit.tipo = s.tipo === 'cruz' ? 'cruz' : 'libre'; kit.disenoImg = (typeof s.disenoImg === 'string' && s.disenoImg.slice(0, 11) === 'data:image/') ? s.disenoImg : null; kit.insumos = Array.isArray(s.insumos) ? s.insumos.slice(0, 60) : []; kit.pasos = Array.isArray(s.pasos) ? s.pasos.slice(0, 40) : []; } } catch (e) {}
+  }
+  (function () {
+    if (!$('kitInsumos')) return;
+    ['kitTitulo', 'kitNivel', 'kitTiempo', 'kitTela'].forEach(function (id) { $(id).addEventListener('input', function () { leerFormularioAKit(); guardarKit(); }); $(id).addEventListener('change', function () { leerFormularioAKit(); guardarKit(); }); });
+    $('kitAddInsumo').addEventListener('click', function () { kit.insumos.push({ item: '', detalle: '' }); renderKitInsumos(); var ins = $('kitInsumos').lastChild; if (ins) ins.querySelector('input').focus(); guardarKit(); });
+    $('kitAddPaso').addEventListener('click', function () { kit.pasos.push({ titulo: '', detalle: '' }); renderKitPasos(); var ps = $('kitPasos').lastChild; if (ps) ps.querySelector('input').focus(); guardarKit(); });
+    $('kitSugerir').addEventListener('click', function () { kit.pasos = kit.tipo === 'cruz' ? pasosCruzDefault() : pasosLibreDefault(); renderKitPasos(); guardarKit(); toast('Pasos sugeridos 🌸'); });
+    $('kitDesdeCruz').addEventListener('click', kitDesdeCruz);
+    $('kitDesdeActual').addEventListener('click', kitDesdeActual);
+    $('kitPdf').addEventListener('click', function () { leerFormularioAKit(); toast('Generando PDF…'); setTimeout(function () { try { generarKitPdf(function () { toast('PDF listo  ✓'); }); } catch (e) { toast('Hubo un problema al generar el PDF'); } }, 50); });
+  })();
+
+  // ---- PDF profesional del kit ----
+  function lienzoPortadaKit() {
+    var dpi = 150, W = Math.round(HOJAS.A4.w / 2.54 * dpi), H = Math.round(HOJAS.A4.h / 2.54 * dpi);
+    var cv = document.createElement('canvas'); cv.width = W; cv.height = H; var x = cv.getContext('2d');
+    x.fillStyle = '#fff'; x.fillRect(0, 0, W, H);
+    var acc = '#a98a5f'; x.strokeStyle = acc; x.lineWidth = Math.round(dpi * 0.06); x.strokeRect(x.lineWidth, x.lineWidth, W - 2 * x.lineWidth, H - 2 * x.lineWidth);
+    var M = Math.round(dpi * 1.1), y = M; x.textAlign = 'center';
+    if (logoImg && logoImg.complete && logoImg.naturalWidth) { var lh = Math.round(dpi * 1.2), lw = lh * (logoImg.naturalWidth / logoImg.naturalHeight); if (lw > W - 2 * M) { lw = W - 2 * M; lh = lw * (logoImg.naturalHeight / logoImg.naturalWidth); } x.drawImage(logoImg, W / 2 - lw / 2, y, lw, lh); y += lh + Math.round(dpi * 0.25); }
+    x.fillStyle = '#6f6151'; x.font = 'bold ' + Math.round(dpi * 0.34) + 'px Georgia, serif'; x.fillText((CONFIG.nombre || 'Alma bordado').trim(), W / 2, y); y += Math.round(dpi * 0.5);
+    x.strokeStyle = acc; x.lineWidth = 2; x.beginPath(); x.moveTo(W / 2 - dpi, y); x.lineTo(W / 2 + dpi, y); x.stroke(); y += Math.round(dpi * 0.3);
+    x.fillStyle = acc; x.font = '600 ' + Math.round(dpi * 0.16) + 'px sans-serif'; x.fillText('K I T   D E   B O R D A D O', W / 2, y); y += Math.round(dpi * 0.42);
+    x.fillStyle = '#3a342c'; x.font = 'bold ' + Math.round(dpi * 0.26) + 'px Georgia, serif'; y = textoEnvueltoC(x, kit.titulo || 'Kit de bordado', W / 2, y, W - 2 * M, Math.round(dpi * 0.34)) + Math.round(dpi * 0.2);
+    if (kit.disenoImg) { var im = portadaImgCache; if (im && im.complete && im.naturalWidth) { var maxW = W - 2 * M, maxH = Math.round(dpi * 4.2), e = Math.min(maxW / im.naturalWidth, maxH / im.naturalHeight), dw = im.naturalWidth * e, dh = im.naturalHeight * e; x.save(); x.shadowColor = 'rgba(0,0,0,0.18)'; x.shadowBlur = 10; x.shadowOffsetY = 5; x.fillStyle = '#fff'; x.fillRect(W / 2 - dw / 2 - 6, y - 6, dw + 12, dh + 12); x.drawImage(im, W / 2 - dw / 2, y, dw, dh); x.restore(); y += dh + Math.round(dpi * 0.4); } }
+    x.fillStyle = '#6f665a'; x.font = Math.round(dpi * 0.15) + 'px sans-serif';
+    var meta = [kit.nivel ? 'Dificultad: ' + kit.nivel : '', kit.tiempo ? 'Tiempo: ' + kit.tiempo : ''].filter(Boolean).join('   ·   ');
+    if (meta) { x.fillText(meta, W / 2, y); y += Math.round(dpi * 0.26); }
+    if (kit.tela) y = textoEnvueltoC(x, kit.tela, W / 2, y, W - 2 * M, Math.round(dpi * 0.24));
+    var by = H - M; x.fillStyle = acc; x.font = '600 ' + Math.round(dpi * 0.14) + 'px sans-serif';
+    if (CONFIG.contacto && CONFIG.contacto.trim()) { x.fillText(CONFIG.contacto.trim(), W / 2, by); by -= Math.round(dpi * 0.24); }
+    x.fillStyle = '#9a8f7d'; x.font = 'italic ' + Math.round(dpi * 0.13) + 'px Georgia, serif'; x.fillText('Hecho con cariño 🌸', W / 2, by);
+    x.textAlign = 'left'; return cv;
+  }
+  var portadaImgCache = null;
+  function textoEnvueltoC(x, texto, cx, py, maxW, lineH) {
+    var pal = String(texto).split(/\s+/), ln = ''; var prev = x.textAlign; x.textAlign = 'center';
+    for (var i = 0; i < pal.length; i++) { var t = ln ? ln + ' ' + pal[i] : pal[i]; if (x.measureText(t).width > maxW && ln) { x.fillText(ln, cx, py); py += lineH; ln = pal[i]; } else ln = t; }
+    if (ln) { x.fillText(ln, cx, py); py += lineH; }
+    x.textAlign = prev; return py;
+  }
+  function kitPaginasTexto(titulo, dibujarCuerpo) {
+    var dpi = 150, W = Math.round(HOJAS.A4.w / 2.54 * dpi), pageH = Math.round(HOJAS.A4.h / 2.54 * dpi), M = Math.round(1.3 / 2.54 * dpi);
+    var sc = document.createElement('canvas'); sc.width = W; sc.height = pageH * 8; var x = sc.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, sc.width, sc.height); x.textBaseline = 'top';
+    var maxW = W - 2 * M, y = M; x.fillStyle = '#6f6151'; x.font = 'bold ' + Math.round(dpi * 0.26) + 'px sans-serif'; y = textoEnvuelto(x, titulo, M, y, maxW, Math.round(dpi * 0.34)) + Math.round(dpi * 0.12);
+    x.strokeStyle = '#d8cbb2'; x.lineWidth = 2; x.beginPath(); x.moveTo(M, y); x.lineTo(W - M, y); x.stroke(); y += Math.round(dpi * 0.2);
+    y = dibujarCuerpo(x, M, y, maxW, dpi);
+    var totalH = Math.min(sc.height, y + M), pgs = [];
+    for (var oy = 0; oy < totalH; oy += pageH) {
+      var pc = document.createElement('canvas'); pc.width = W; pc.height = pageH; var p = pc.getContext('2d'); p.fillStyle = '#fff'; p.fillRect(0, 0, W, pageH);
+      p.drawImage(sc, 0, oy, W, Math.min(pageH, totalH - oy), 0, 0, W, Math.min(pageH, totalH - oy));
+      pgs.push({ wCm: HOJAS.A4.w, hCm: HOJAS.A4.h, pie: pieParaPdf(), regla: false, imagenes: [{ jpeg: jpegDeCanvas(pc, 0.9), wpx: pc.width, hpx: pc.height, xCm: 0, yCm: 0, wCm: HOJAS.A4.w, hCm: HOJAS.A4.h }] });
+    }
+    return pgs;
+  }
+  function pgFullCanvas(cv) { return { wCm: HOJAS.A4.w, hCm: HOJAS.A4.h, pie: pieParaPdf(), regla: false, imagenes: [{ jpeg: jpegDeCanvas(cv, 0.9), wpx: cv.width, hpx: cv.height, xCm: 0, yCm: 0, wCm: HOJAS.A4.w, hCm: HOJAS.A4.h }] }; }
+  function kitPaginasGraficoCruz(m) {
+    var hoja = HOJAS.A4, margen = 1.0, printCellCm = 0.5, dpi = 200, cellPx = Math.round(printCellCm / 2.54 * dpi);
+    var usableW = hoja.w - margen * 2, usableH = hoja.h - margen * 2 - 0.5;
+    var colsPP = Math.max(10, Math.floor(usableW / printCellCm) - 2), rowsPP = Math.max(10, Math.floor(usableH / printCellCm) - 2), solape = 2, pgs = [];
+    for (var r0 = 0; r0 < m.rows; r0 += rowsPP) for (var c0 = 0; c0 < m.cols; c0 += colsPP) {
+      var c1 = Math.min(m.cols, c0 + colsPP + solape), r1 = Math.min(m.rows, r0 + rowsPP + solape);
+      var cv = dibujarRegionCruz(m, c0, r0, c1, r1, cellPx, true, true, false);
+      var wCm = cv.width / cellPx * printCellCm, hCm = cv.height / cellPx * printCellCm;
+      pgs.push({ wCm: hoja.w, hCm: hoja.h, pie: pieParaPdf(), regla: false, imagenes: [{ jpeg: jpegDeCanvas(cv, 0.97), wpx: cv.width, hpx: cv.height, xCm: (hoja.w - wCm) / 2, yCm: margen, wCm: wCm, hCm: hCm }] });
+    }
+    return pgs;
+  }
+  function generarKitPdf(done) {
+    leerFormularioAKit();
+    if (!kit.disenoImg && !kit.cruz) { toast('Primero genera un kit desde un diseño'); if (done) done(); return; }
+    // Precarga la imagen del diseño (decodificada) antes de construir el PDF
+    if (kit.disenoImg) { var pim = new Image(); pim.onload = function () { portadaImgCache = pim; armarKitPdf(done); }; pim.onerror = function () { portadaImgCache = null; armarKitPdf(done); }; pim.src = kit.disenoImg; }
+    else armarKitPdf(done);
+  }
+  function armarKitPdf(done) {
+    var paginas = [];
+    paginas.push(pgFullCanvas(lienzoPortadaKit()));
+    if (kit.insumos.length) paginas = paginas.concat(kitPaginasTexto('🧶 Insumos del kit', function (x, M, y, maxW, dpi) {
+      x.font = Math.round(dpi * 0.145) + 'px sans-serif';
+      kit.insumos.forEach(function (o) { if (!o.item) return; x.fillStyle = '#3a342c'; y = textoEnvuelto(x, '•  ' + o.item + (o.detalle ? '  —  ' + o.detalle : ''), M, y, maxW, Math.round(dpi * 0.22)); y += Math.round(dpi * 0.04); });
+      return y;
+    }));
+    if (kit.pasos.length) paginas = paginas.concat(kitPaginasTexto('📋 Cómo bordarlo, paso a paso', function (x, M, y, maxW, dpi) {
+      kit.pasos.forEach(function (o, i) { if (!o.titulo && !o.detalle) return; x.fillStyle = '#3a342c'; x.font = 'bold ' + Math.round(dpi * 0.15) + 'px sans-serif'; y = textoEnvuelto(x, (i + 1) + '.  ' + (o.titulo || ''), M, y, maxW, Math.round(dpi * 0.23)); if (o.detalle) { x.fillStyle = '#6f665a'; x.font = Math.round(dpi * 0.135) + 'px sans-serif'; y = textoEnvuelto(x, o.detalle, M + Math.round(dpi * 0.2), y, maxW - Math.round(dpi * 0.2), Math.round(dpi * 0.2)); } y += Math.round(dpi * 0.12); });
+      return y;
+    }));
+    // El diseño / patrón
+    if (kit.cruz) { paginas.push(pgFullCanvas(dibujarPortadaCruz(kit.cruz, HOJAS.A4, 150))); paginas = paginas.concat(kitPaginasGraficoCruz(kit.cruz)); }
+    else if (kit.disenoImg) {
+      var im = portadaImgCache;
+      // página del diseño centrado (a partir de la imagen ya cargada o recién creada)
+      var dcv = document.createElement('canvas'), dd = 150, DW = Math.round(HOJAS.A4.w / 2.54 * dd), DH = Math.round(HOJAS.A4.h / 2.54 * dd);
+      dcv.width = DW; dcv.height = DH; var dx = dcv.getContext('2d'); dx.fillStyle = '#fff'; dx.fillRect(0, 0, DW, DH);
+      dx.fillStyle = '#6f6151'; dx.font = 'bold ' + Math.round(dd * 0.24) + 'px sans-serif'; dx.textAlign = 'center'; dx.fillText('🎨 El diseño', DW / 2, Math.round(dd * 1.0));
+      if (im && im.complete && im.naturalWidth) { var mw = DW - 2 * Math.round(dd * 1.2), mh = DH - Math.round(dd * 3), e = Math.min(mw / im.naturalWidth, mh / im.naturalHeight), w2 = im.naturalWidth * e, h2 = im.naturalHeight * e; dx.drawImage(im, DW / 2 - w2 / 2, Math.round(dd * 2.0), w2, h2); }
+      dx.textAlign = 'left'; paginas.push(pgFullCanvas(dcv));
+    }
+    descargar(construirPdf(paginas), 'kit_bordado.pdf');
+    if (done) done();
+  }
+
   // Autoguardar tras cualquier cambio visible (debounce). Cada refrescarX lo dispara.
   document.addEventListener('input', tocarEstado, true);
   document.addEventListener('change', tocarEstado, true);
 
   // ---------- Inicio ----------
-  cargarConfig(); aplicarMarca(); aplicarTema(); aplicarSaludoHeader(); aplicarDefaultsTaller();
+  cargarConfig(); aplicarMarca(); aplicarTema(); aplicarSaludoHeader(); aplicarDefaultsTaller(); cargarLogoImg();
   refrescarRect();
   refrescarCirc();
   anadirLinea('Alma', 6, "'Great Vibes', cursive"); anadirLinea('bordado', 3.4, "'Cormorant Garamond', serif");
@@ -3846,7 +4284,7 @@
     });
   })();
   cargarConversa(); renderConversa(); actualizarEstadoAsistente();
-  cargarProyectos(); cargarGaleria(); actualizarCuentaGaleria();
+  cargarProyectos(); cargarGaleria(); actualizarCuentaGaleria(); cargarKit();
   personalizarVacioChat();
   restaurarEstado();   // recupera el trabajo en curso (fotos, textos, medidas, posiciones)
   // Bienvenida la primera vez
