@@ -40,7 +40,19 @@
     --sombra-sutil: 0 2px 6px rgba(111,97,81,0.06);
     --radio: 16px;
     --radio-sm: 11px;
+    /* Acento (color principal de botones/pestaña activa/burbujas). Personalizable por tema. */
+    --acento-a: #7c6b57;
+    --acento-b: #6f6151;
+    --acento-grad: linear-gradient(135deg, var(--acento-a), var(--acento-b));
   }
+  /* Temas pastel elegibles (Mi taller) — cambian el acento y el realce */
+  html[data-tema="rosa"]    { --acento-a:#c07b96; --acento-b:#a14f72; --trigo-osc:#cf9bb0; --titulo:#a14f72; }
+  html[data-tema="salvia"]  { --acento-a:#7f9d77; --acento-b:#5f7f57; --trigo-osc:#9bb38f; --titulo:#5f7f57; }
+  html[data-tema="azul"]    { --acento-a:#5f8aa8; --acento-b:#3f6f8e; --trigo-osc:#8fb0c4; --titulo:#3f6f8e; }
+  html[data-tema="lavanda"] { --acento-a:#9080b8; --acento-b:#6e5fa0; --trigo-osc:#b3a6cf; --titulo:#6e5fa0; }
+  /* Accesibilidad: foco visible y respeto a "reducir movimiento" */
+  :where(button, .tab-btn, .chip, .swatch, a, select, textarea, [role="tab"], [role="button"]):focus-visible { outline: 3px solid var(--trigo-osc); outline-offset: 2px; border-radius: 8px; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; } }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   html { -webkit-text-size-adjust: 100%; }
   body {
@@ -103,7 +115,7 @@
   .tab-btn .tl { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
   .tab-btn:active { background: var(--papel-2); transform: scale(.96); }
   .tab-btn.activa {
-    background: linear-gradient(135deg, #7c6b57, #6f6151);
+    background: var(--acento-grad);
     color: #fff; box-shadow: 0 4px 12px rgba(111,97,81,0.28);
   }
   /* Tablet angosta / móvil: el menú se reparte en filas parejas, sin scroll */
@@ -217,7 +229,7 @@
   .boton-pdf {
     display: block; width: 100%; padding: 17px; font-size: 1.12rem; font-family: inherit; font-weight: 700;
     color: #fff; border: none; border-radius: 14px; cursor: pointer;
-    background: linear-gradient(135deg, #7c6b57, #6f6151); box-shadow: 0 6px 16px rgba(111,97,81,0.30);
+    background: var(--acento-grad); box-shadow: 0 6px 16px rgba(111,97,81,0.30);
     transition: transform .12s, opacity .12s; letter-spacing: .2px;
   }
   .boton-pdf:disabled { opacity: .4; cursor: default; box-shadow: none; }
@@ -225,7 +237,7 @@
   .boton-img { display: block; width: 100%; margin-top: 10px; padding: 13px; }
   .boton-primario {
     padding: 13px 18px; font-size: 1rem; font-family: inherit; font-weight: 700; color: #fff; border: none;
-    border-radius: 12px; cursor: pointer; background: linear-gradient(135deg, #7c6b57, #6f6151);
+    border-radius: 12px; cursor: pointer; background: var(--acento-grad);
   }
   .boton-sec {
     padding: 10px 15px; font-size: .9rem; font-family: inherit; font-weight: 600; color: var(--marron);
@@ -295,6 +307,12 @@
   .modal-acciones { display: flex; gap: 10px; margin-top: 20px; }
   .modal-acciones .boton-sec { flex: 1; text-align: center; padding: 13px; }
   .modal-acciones .boton-primario { flex: 1; }
+  .temas-fila { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
+  .tema-chip { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--borde-fuerte); cursor: pointer; padding: 0; box-shadow: var(--sombra-sutil); transition: transform .12s; }
+  .tema-chip:active { transform: scale(.92); }
+  .tema-chip.activa { box-shadow: 0 0 0 2px var(--superficie), 0 0 0 4px var(--trigo-osc); }
+  .bienvenida-lista { list-style: none; margin: 12px 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+  .bienvenida-lista li { font-size: .96rem; color: var(--tinta); line-height: 1.35; }
 
   .toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom)); transform: translateX(-50%) translateY(12px); z-index: 60; background: var(--marron-osc); color: #fff; padding: 13px 20px; border-radius: 12px; font-size: .95rem; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.3); opacity: 0; transition: opacity .25s, transform .25s; pointer-events: none; max-width: 90vw; text-align: center; }
   .toast.ver { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -304,7 +322,7 @@
   .aviso-clave .boton-sec { margin-top: 12px; }
   .chat-msgs { display: flex; flex-direction: column; gap: 10px; max-height: 52vh; overflow-y: auto; padding: 2px; }
   .burbuja { max-width: 90%; padding: 11px 14px; border-radius: 15px; font-size: .95rem; line-height: 1.46; word-wrap: break-word; }
-  .burbuja.mia { align-self: flex-end; background: linear-gradient(135deg, #7c6b57, #6f6151); color: #fff; border-bottom-right-radius: 5px; }
+  .burbuja.mia { align-self: flex-end; background: var(--acento-grad); color: #fff; border-bottom-right-radius: 5px; }
   .burbuja.ia { align-self: flex-start; background: var(--papel-2); border: 1px solid var(--borde); color: var(--tinta); border-bottom-left-radius: 5px; }
   .burbuja.ia strong { color: var(--titulo); }
   .burbuja em { opacity: .8; }
@@ -314,7 +332,7 @@
   .chat-entrada textarea { flex: 1; min-height: 50px; }
   .chat-adjuntar { flex-shrink: 0; height: 50px; width: 48px; font-size: 1.25rem; border: 1px solid var(--borde-fuerte); border-radius: 12px; background: #f3ecdd; color: var(--marron); cursor: pointer; }
   .chat-adjuntar:disabled { opacity: .5; }
-  .chat-enviar { flex-shrink: 0; height: 50px; width: 54px; font-size: 1.3rem; border: none; border-radius: 12px; color: #fff; background: linear-gradient(135deg, #7c6b57, #6f6151); cursor: pointer; }
+  .chat-enviar { flex-shrink: 0; height: 50px; width: 54px; font-size: 1.3rem; border: none; border-radius: 12px; color: #fff; background: var(--acento-grad); cursor: pointer; }
   .chat-enviar:disabled { opacity: .5; }
   .adjunto-chat { display: flex; align-items: center; gap: 8px; margin-top: 10px; padding: 6px 10px; background: var(--papel-2); border: 1px solid var(--borde); border-radius: 10px; font-size: .85rem; color: var(--tinta-suave); }
   .adjunto-chat img { width: 38px; height: 38px; object-fit: cover; border-radius: 7px; }
@@ -326,7 +344,7 @@
   .prop-lineas { list-style: none; margin: 0 0 9px; padding: 0; display: flex; flex-direction: column; gap: 4px; font-size: .9rem; }
   .prop-meta { display: flex; align-items: center; gap: 8px; font-size: .82rem; color: var(--tinta-suave); margin-bottom: 11px; text-transform: capitalize; }
   .prop-sw { width: 17px; height: 17px; border-radius: 50%; border: 1px solid rgba(0,0,0,.15); flex-shrink: 0; }
-  .btn-aplicar { width: 100%; padding: 11px; font-size: .95rem; font-weight: 600; border: none; border-radius: 10px; color: #fff; background: linear-gradient(135deg, #7c6b57, #6f6151); cursor: pointer; }
+  .btn-aplicar { width: 100%; padding: 11px; font-size: .95rem; font-weight: 600; border: none; border-radius: 10px; color: #fff; background: var(--acento-grad); cursor: pointer; }
   /* Tarjeta de diseño generado por la IA */
   .diseno { margin-top: 8px; background: #fbf6ec; border: 1px solid #e0cda3; border-radius: 12px; padding: 12px 13px; }
   .diseno-previa { margin: 10px 0; text-align: center; min-height: 60px; display: flex; align-items: center; justify-content: center; }
@@ -370,7 +388,7 @@
   .lienzo-scroll { max-height: 70vh; overflow: auto; -webkit-overflow-scrolling: touch; }
   .aviso-actualizar { position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 60; max-width: 460px; margin: 0 auto;
     display: flex; align-items: center; gap: 12px; justify-content: space-between;
-    background: linear-gradient(135deg, #7c6b57, #6f6151); color: #fff; padding: 12px 14px; border-radius: 14px; box-shadow: 0 8px 24px rgba(0,0,0,.25); font-size: .92rem; }
+    background: var(--acento-grad); color: #fff; padding: 12px 14px; border-radius: 14px; box-shadow: 0 8px 24px rgba(0,0,0,.25); font-size: .92rem; }
   .aviso-actualizar button { flex-shrink: 0; background: #fff; color: #6f6151; border: none; border-radius: 10px; padding: 8px 14px; font-weight: 700; font-family: inherit; cursor: pointer; }
 
   .deco-bg { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
@@ -958,6 +976,20 @@
   <div class="modal-caja" role="dialog" aria-modal="true" aria-labelledby="tituloAjustes">
     <h2 id="tituloAjustes">Ajustes</h2>
     <p class="sub">Personaliza la app y tus plantillas.</p>
+
+    <h2 style="font-size:1.2rem; margin:2px 0 8px;">🌸 Mi taller</h2>
+    <div class="fila">
+      <div class="campo"><label for="miNombre">Tu nombre</label><input type="text" id="miNombre" placeholder="Tu nombre" inputmode="text" autocomplete="off"></div>
+      <div class="campo"><label for="parejaNombre">Tu pareja</label><input type="text" id="parejaNombre" placeholder="(opcional)" inputmode="text" autocomplete="off"></div>
+    </div>
+    <div class="campo" style="margin-top:10px;"><label for="gustosTaller">Lo que te gusta bordar</label><input type="text" id="gustosTaller" placeholder="flores, el mar, frases lindas…" inputmode="text" autocomplete="off"><p class="ayuda">Alma lo usa para personalizar sus ideas y saludarte por tu nombre.</p></div>
+    <div class="fila" style="margin-top:10px;">
+      <div class="campo"><label for="aidaDefSel">Tela Aida por defecto</label><select id="aidaDefSel"><option value="11">11 ct</option><option value="14">14 ct</option><option value="16">16 ct</option><option value="18">18 ct</option></select></div>
+      <div class="campo"><label for="hojaDefSel">Hoja por defecto</label><select id="hojaDefSel"><option value="A4">A4</option><option value="Carta">Carta</option><option value="A3">A3</option></select></div>
+    </div>
+    <div class="campo" style="margin-top:12px;"><label>Tema de color</label><div class="temas-fila" id="temasFila"></div></div>
+
+    <h2 style="font-size:1.2rem; margin:18px 0 6px;">📄 Plantillas e impresión</h2>
     <div class="campo"><label for="nombreNegocio">Nombre del negocio</label><input type="text" id="nombreNegocio" placeholder="Alma bordado" inputmode="text"><p class="ayuda">Aparece arriba en la app.</p></div>
     <label class="check-fila"><input type="checkbox" id="marcaEnPdf"><span>Incluir el nombre como pie en los PDF</span></label>
     <label class="check-fila"><input type="checkbox" id="reglaEnPdf"><span>Incluir regla de 10 cm para verificar el tamaño al imprimir</span></label>
@@ -975,7 +1007,23 @@
   </div>
 </div>
 
-<div class="toast" id="toast" hidden></div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<div class="modal" id="modalBienvenida" hidden>
+  <div class="modal-caja" role="dialog" aria-modal="true" aria-labelledby="tituloBienvenida">
+    <svg viewBox="0 0 240 175" aria-hidden="true" style="width:140px; height:auto; display:block; margin:0 auto 4px; opacity:.9;"><use href="#ramoAlma"/></svg>
+    <h2 id="tituloBienvenida" style="font-family:'Cormorant Garamond',Georgia,serif; font-size:1.7rem; text-align:center;">Te damos la bienvenida 🌸</h2>
+    <p class="sub" style="text-align:center;">Tu taller para crear plantillas de bordado a tamaño real.</p>
+    <ul class="bienvenida-lista">
+      <li>📐 Imprime cualquier imagen o texto al <strong>tamaño exacto</strong>, lista para calcar.</li>
+      <li>🧶 Convierte fotos en <strong>patrones de punto de cruz</strong> con sus hilos DMC.</li>
+      <li>🪡 Pídele ideas y diseños a <strong>Alma</strong>, tu asistente.</li>
+      <li>❤️ Guarda tus <strong>favoritos</strong> para volver cuando quieras.</li>
+    </ul>
+    <div class="campo" style="margin-top:4px;"><label>Elige tu color (lo cambias cuando quieras)</label><div class="temas-fila" id="temasFilaBienv"></div></div>
+    <div class="modal-acciones"><button class="boton-primario" id="empezarBienvenida" type="button">Empezar ✨</button></div>
+  </div>
+</div>
 
 <script>
 (function () {
@@ -994,7 +1042,9 @@
   // El modelo de la IA lo controla solo el código (no se puede cambiar desde la app).
   // Para cambiarlo en el futuro, edita esta línea: claude-sonnet-4-6 | claude-opus-4-8 | claude-haiku-4-5
   var MODELO_IA = 'claude-sonnet-4-6';
-  var CONFIG = { nombre: 'Alma bordado', enPdf: false, regla: false, dpi: 300, apiKey: '', modelo: MODELO_IA };
+  var TEMAS = { trigo: 1, rosa: 1, salvia: 1, azul: 1, lavanda: 1 };   // acentos pastel elegibles
+  var CONFIG = { nombre: 'Alma bordado', enPdf: false, regla: false, dpi: 300, apiKey: '', modelo: MODELO_IA,
+    miNombre: '', pareja: '', gustos: '', proyectos: '', notas: '', coloresFav: [], aidaDef: 14, hojaDef: 'A4', tema: 'trigo' };
   function cargarConfig() {
     try {
       var s = JSON.parse(localStorage.getItem('alma_config') || '{}');
@@ -1003,9 +1053,26 @@
       CONFIG.dpi = [150, 300, 600].indexOf(s.dpi) >= 0 ? s.dpi : 300;
       CONFIG.apiKey = (s.apiKey || '').toString();
       CONFIG.modelo = MODELO_IA;   // siempre el del código, ignora lo guardado
+      ['miNombre', 'pareja', 'gustos', 'proyectos', 'notas'].forEach(function (k) { if (s[k] != null) CONFIG[k] = String(s[k]).slice(0, 400); });
+      CONFIG.coloresFav = Array.isArray(s.coloresFav) ? s.coloresFav.filter(function (c) { return /^#[0-9a-fA-F]{3,8}$/.test(c); }).slice(0, 5) : [];
+      CONFIG.aidaDef = [11, 14, 16, 18].indexOf(s.aidaDef) >= 0 ? s.aidaDef : 14;
+      CONFIG.hojaDef = (s.hojaDef && HOJAS[s.hojaDef]) ? s.hojaDef : 'A4';
+      CONFIG.tema = TEMAS[s.tema] ? s.tema : 'trigo';
     } catch (e) {}
   }
   function guardarConfig() { try { localStorage.setItem('alma_config', JSON.stringify(CONFIG)); } catch (e) {} }
+  function aplicarTema() { try { document.documentElement.setAttribute('data-tema', CONFIG.tema || 'trigo'); } catch (e) {} }
+  // Bloque de contexto que se inyecta al system de Alma para que personalice
+  function bloquePerfil() {
+    var l = [];
+    if (CONFIG.miNombre) l.push('Se llama ' + CONFIG.miNombre + '.');
+    if (CONFIG.pareja) l.push('Su pareja se llama ' + CONFIG.pareja + '.');
+    if (CONFIG.gustos) l.push('Le gustan: ' + CONFIG.gustos + '.');
+    if (CONFIG.proyectos) l.push('Proyectos en curso o de interés: ' + CONFIG.proyectos + '.');
+    if (CONFIG.aidaDef) l.push('Tela preferida: Aida ' + CONFIG.aidaDef + '.');
+    if (CONFIG.notas) l.push('Notas: ' + CONFIG.notas);
+    return l.length ? ('PERFIL DE QUIEN BORDA (úsalo con naturalidad para personalizar nombres, motivos y valores por defecto; NO lo recites entero ni en cada mensaje):\n• ' + l.join('\n• ')) : '';
+  }
   function aplicarMarca() { $('tituloMarca').textContent = CONFIG.nombre.trim() || 'Alma bordado'; }
   function pieParaPdf() { return (CONFIG.enPdf && CONFIG.nombre.trim()) ? CONFIG.nombre.trim() : null; }
 
@@ -1158,12 +1225,18 @@
   function cssDe(f) { return "'" + f.fam + "', " + fbk(f.cat); }
 
   // Inyectar el <link> con todas las familias (lazy: el archivo de fuente se baja al usarse)
-  (function cargarLinkFuentes() {
+  // Carga del CSS de ~46 tipografías DIFERIDA: no bloquea el primer pintado.
+  // Se inyecta al quedar el navegador ocioso; al llegar, repinta los paneles de texto.
+  var _fuentesInyectadas = false;
+  function inyectarFuentes() {
+    if (_fuentesInyectadas) return; _fuentesInyectadas = true;
     var fams = FUENTES.map(function (f) { return 'family=' + f.fam.replace(/ /g, '+') + (f.w ? (':wght@' + f.w) : ''); });
-    var href = 'https://fonts.googleapis.com/css2?' + fams.join('&') + '&display=swap';
-    var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href;
+    var l = document.createElement('link'); l.rel = 'stylesheet';
+    l.href = 'https://fonts.googleapis.com/css2?' + fams.join('&') + '&display=swap';
+    l.addEventListener('load', function () { [refrescarLetras, refrescarFt, dibujarLibre, refrescarComp].forEach(function (fn) { try { fn(); } catch (e) {} }); });
     document.head.appendChild(l);
-  })();
+  }
+  if (window.requestIdleCallback) requestIdleCallback(inyectarFuentes, { timeout: 2500 }); else setTimeout(inyectarFuentes, 1200);
 
   var GRUPOS = [
     ['script', 'Script / caligrafía'], ['caligrafia', 'Caligrafía fina'], ['monograma', 'Monograma'],
@@ -2198,7 +2271,7 @@
     var rows = Math.max(1, Math.round(cols * ih / iw));
     if (cols * rows > 60000) { var k = Math.sqrt(60000 / (cols * rows)); cols = Math.max(20, Math.round(cols * k)); rows = Math.max(1, Math.round(cols * ih / iw)); }
     var oc = document.createElement('canvas'); oc.width = cols; oc.height = rows;
-    var ox = oc.getContext('2d'); ox.imageSmoothingEnabled = true; ox.imageSmoothingQuality = 'high';
+    var ox = oc.getContext('2d', { willReadFrequently: true }); ox.imageSmoothingEnabled = true; ox.imageSmoothingQuality = 'high';
     ox.drawImage(img, 0, 0, cols, rows);
     var data; try { data = ox.getImageData(0, 0, cols, rows).data; } catch (e) { return null; }
     var N = cols * rows, cells = new Int16Array(N), muestras = [], i, r, g, b, a, lum;
@@ -2524,7 +2597,7 @@
   var NOMBRE_PANEL = { 'panel-rect': 'imagen a medida', 'panel-circulo': 'bastidor circular', 'panel-letras': 'letras y palabras', 'panel-fototexto': 'foto + texto', 'panel-libre': 'diseño libre', 'panel-cruz': 'patrón de punto de cruz', 'panel-varios': 'varios diseños en una hoja' };
   // Memoria de la conversación (solo en este dispositivo; sin imágenes, para no llenar el almacenamiento)
   var conversa = [];
-  var MAX_CONTEXTO = 10;   // cuántos turnos recientes recibe la IA como contexto
+  var MAX_CONTEXTO = 16;   // cuántos turnos recientes recibe la IA como contexto
   var MAX_GUARDA = 80;     // cuántos turnos se guardan y se muestran
   var SYS_ASIST = [
     'Eres Alma, la asistente de bordado de la app "Alma bordado". Eres cálida, cercana y alentadora, como una amiga bordadora con años de oficio que se alegra de acompañar cada proyecto. Hablas SIEMPRE en español, con ternura y entusiasmo genuino, pero sin exagerar ni sonar artificial; usa un emoji ocasional con gusto (🌸🧵✨) y, cuando venga al caso, algún diminutivo cariñoso natural.',
@@ -2537,7 +2610,10 @@
     'Si te SUBEN una FOTO en el chat, mírala con detalle y cariño: puedes aconsejar sobre ese diseño/tela/puntadas, o —si lo piden— proponer un diseño que la combine con texto (crear_propuesta tipo "foto_texto") o un marco/orla con motivos alrededor (crear_diseno). Si te comparten una vista previa de la app, evalúala: qué está lindo, qué mejorarías, hilos y puntadas.',
     'Eres EXPERTA en PUNTO DE CRUZ. Telas de conteo: Aida 11 ct (puntos grandes, ideal para empezar y para niñas), 14 ct (la más común), 16 ct y 18 ct (puntos finos y con más detalle); también está el lino/evenweave, que se borda tomando 2 hilos de la tela. El conteo (ct) es cuántos puntos entran por pulgada (2,54 cm): a mayor ct, más pequeño y detallado el bordado. Tamaño real = puntos ÷ ct × 2,54 cm. Hilo DMC: la madeja (skein) trae ~8 m con 6 hebras separables; para el punto de cruz se usan 2 hebras en Aida 14/16, 3 hebras en Aida 11 y 1 hebra en Aida 18 o lino fino; el pespunte casi siempre va con 1 hebra. Una madeja rinde muchísimo (cientos de puntos), así que para motivos chicos suele bastar una por color. Puntadas: punto de cruz completo (una X, el cuerpo del dibujo); medio punto (una sola diagonal, para sombras suaves); tres cuartos de punto (¾, para curvas y diagonales); pespunte/backstitch (línea fina de contorno y detalles, 1 hebra, color oscuro); nudo francés (puntitos en relieve: ojos, centros de flor). Para empezar sin nudo deja una colita atrás y atrápala con las primeras puntadas; para terminar pasa la hebra bajo 3-4 puntadas del revés. Borda todas las cruces en la MISMA dirección para un acabado parejo, con tensión pareja para que la tela no se frunza, y usa un aro/bastidor. Empieza por el CENTRO de la tela (dóblala en cuatro para hallarlo). Un gráfico de punto de cruz es una cuadrícula donde cada celda = un punto, cada símbolo/color = un hilo DMC según la leyenda, las líneas gruesas marcan cada 10 puntos, y conviene dejar 5-8 cm de tela de margen a cada lado para montar en el aro.',
     'Tienes una TERCERA herramienta, crear_patron_cruz, para crear PATRONES de punto de cruz (gráficos contables) de motivos chicos (≤40×40): corazones, anclas, ballenitas, flores, estrellas, casitas, iniciales/letras. Píntalo celda por celda: elige una clave de un solo carácter por color (ej C, R, A), declara CADA clave en "paleta" con su DMC y su nombre en español, y escribe "filas" donde cada cadena mide EXACTAMENTE "ancho" caracteres, usando "." para el vacío (tela sin bordar). Verifica tú misma que todas las filas tengan el mismo largo y que toda clave usada esté en la paleta. Usa pocos colores (2-8) y simetría cuando aplique. Prefiere códigos DMC comunes y conocidos (ej blanco B5200, negro 310, rojo 321, rosa 899, azul mar 3842, azul cielo 519, verde 702, amarillo 743, naranja 721, café 801, gris 318). Tras crearlo, explica con cariño la tela Aida y las hebras (2 en Aida 14) y dile que puede pedir cambios o tocar "Abrir en Punto de cruz" para verlo grande, elegir el color de la tela y exportarlo a PDF. NUNCA pegues la grilla en el chat: ya va en la herramienta.',
-    'Para ELEGIR herramienta de punto de cruz: si piden un PATRÓN/gráfico de punto de cruz contable (con cuadrícula y símbolos) usa crear_patron_cruz. Si piden CONVERTIR una FOTO suya a punto de cruz, NO uses herramienta: explícale con cariño que vaya a la pestaña "Punto de cruz", suba su foto y ajuste el ancho/tela/colores (la app lo convierte y calza a hilos DMC, con su leyenda de madejas). Reserva crear_diseno para dibujos a calcar (no punto de cruz) y crear_propuesta para texto editable.'
+    'Para ELEGIR herramienta de punto de cruz: si piden un PATRÓN/gráfico de punto de cruz contable (con cuadrícula y símbolos) usa crear_patron_cruz. Si piden CONVERTIR una FOTO suya a punto de cruz, NO uses herramienta: explícale con cariño que vaya a la pestaña "Punto de cruz", suba su foto y ajuste el ancho/tela/colores (la app lo convierte y calza a hilos DMC, con su leyenda de madejas). Reserva crear_diseno para dibujos a calcar (no punto de cruz) y crear_propuesta para texto editable.',
+    'Tienes coordinar_hilos para armar una PALETA de hilos DMC por tema o motivo (ej. "fondo de mar", "rosas de jardín", "marinero", "otoño"). Devuelve 4 a 8 colores que de verdad armonicen, cada uno con su código DMC real y conocido, nombre en español, un hex aproximado para la muestra y para qué parte sirve. Úsala cuando pidan una combinación de colores/hilos (no un diseño dibujado). Si conoces sus gustos por el perfil, inclínate hacia ellos.',
+    'Tienes recordar para guardar en memoria, entre sesiones, algo útil sobre quien borda: su nombre o el de su pareja, sus gustos, proyectos en curso, o una nota. Úsala con discreción y solo cuando comparta algo que valga la pena recordar (ej. "mi novio se llama Diego", "me encantan las flores y el mar", "estoy con el mantel de la abuela"). Confírmalo con cariño en una frase y sigue la conversación con naturalidad. No la uses para cosas pasajeras.',
+    'Si tienes un PERFIL de quien borda, personaliza con cariño: usa su nombre y el de su pareja cuando venga al caso, propón motivos y colores afines a sus gustos, y toma su tela favorita como valor por defecto (sin imponerla). No menciones el perfil como si leyeras una ficha; intégralo como lo haría una amiga que la conoce.'
   ].join('\n\n');
 
   // Familias permitidas (sincronizadas con el selector de fuentes)
@@ -2634,6 +2710,43 @@
         }
       },
       required: ['titulo', 'ancho', 'alto', 'paleta', 'filas']
+    }
+  }, {
+    name: 'coordinar_hilos',
+    description: 'Propón una PALETA de hilos DMC coordinada para un tema o motivo (ej. "fondo de mar", "rosas de jardín", "marinero", "otoño", "bautizo en pastel"). Devuelve 4 a 8 colores que armonicen, cada uno con su código DMC, nombre en español, hex aproximado y para qué parte sirve. Úsala cuando pidan una combinación de colores/hilos, no un diseño dibujado.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        titulo: { type: 'string', description: 'Nombre cálido de la paleta, ej. "Fondo de mar al atardecer"' },
+        descripcion: { type: 'string', description: 'Por qué combinan y una idea de cómo usarlos. Breve y cálida.' },
+        hilos: {
+          type: 'array', description: '4 a 8 hilos en orden de protagonismo',
+          items: {
+            type: 'object',
+            properties: {
+              dmc: { type: 'string', description: 'Código DMC real, ej "3842"' },
+              nombre: { type: 'string', description: 'Nombre del color en español' },
+              hex: { type: 'string', description: 'Hex aproximado para la muestra, ej "#2e6f8e"' },
+              uso: { type: 'string', description: 'Para qué parte, ej "olas profundas"' }
+            },
+            required: ['dmc', 'nombre', 'hex']
+          }
+        }
+      },
+      required: ['titulo', 'hilos']
+    }
+  }, {
+    name: 'recordar',
+    description: 'Guarda en la memoria persistente un dato útil sobre quien borda para personalizar el futuro: su nombre o el de su pareja, sus gustos, un proyecto en curso, o una nota. Úsala con discreción cuando comparta algo que valga la pena recordar entre sesiones. No para cosas pasajeras.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        campo: { type: 'string', enum: ['nombre', 'pareja', 'gustos', 'proyectos', 'notas'], description: 'Qué campo del perfil actualizar' },
+        valor: { type: 'string', description: 'El valor a recordar, en español y conciso' },
+        modo: { type: 'string', enum: ['reemplazar', 'agregar'], description: 'reemplazar = sustituye; agregar = añade a lo que ya hay (para listas como gustos o proyectos)' },
+        confirmacion: { type: 'string', description: 'Frase cálida y breve para mostrarle, ej. "¡Anotado! Me acordaré de que a Diego le encantan las ballenitas 🐳"' }
+      },
+      required: ['campo', 'valor', 'confirmacion']
     }
   }];
 
@@ -2772,6 +2885,43 @@
     if (ab) ab.addEventListener('click', function () { abrirPatronEnCruz(m); toast('Patrón abierto en Punto de cruz ✓'); });
     if (bc) bc.addEventListener('click', function () { $('chatInput').value = 'Sobre el patrón "' + m.titulo + '": '; $('chatInput').focus(); });
   }
+  // --- Paleta de hilos DMC (coordinar_hilos) ---
+  function lumHex(hex) { var m = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(String(hex || '')); if (!m) return 0.5; return (0.299 * parseInt(m[1], 16) + 0.587 * parseInt(m[2], 16) + 0.114 * parseInt(m[3], 16)) / 255; }
+  function normalizarPaleta(input) {
+    var hilos = (Array.isArray(input.hilos) ? input.hilos : []).slice(0, 8).map(function (h) {
+      var code = String((h && h.dmc) || '').trim(), d = dmcPorCodigo(code);
+      var hex = (h && /^#[0-9a-fA-F]{3,8}$/.test(String(h.hex))) ? h.hex : (d ? d.hex : '#6f6151');
+      return { dmc: code || (d ? d.code : ''), nombre: String((h && h.nombre) || (d ? d.name : '') || '').slice(0, 40), hex: hex, uso: String((h && h.uso) || '').slice(0, 60) };
+    }).filter(function (h) { return h.dmc || h.nombre; });
+    if (!hilos.length) throw new Error('paleta-vacia');
+    return { titulo: String(input.titulo || 'Paleta de hilos').slice(0, 80), descripcion: String(input.descripcion || '').slice(0, 400), hilos: hilos };
+  }
+  function renderPaletaCard(pal) {
+    var li = pal.hilos.map(function (h) {
+      var tc = lumHex(h.hex) > 0.55 ? '#1c1c1c' : '#fff';
+      return '<li><span class="cruz-sw" style="background:' + colorSeguro(h.hex) + '; color:' + tc + '"></span> DMC ' + escaparHtml(h.dmc) + ' · ' + escaparHtml(h.nombre) + (h.uso ? ' — ' + escaparHtml(h.uso) : '') + '</li>';
+    }).join('');
+    return '<div class="diseno"><div class="prop-tit">🎨 ' + escaparHtml(pal.titulo) + '</div>' +
+      (pal.descripcion ? '<div class="prop-desc">' + fmtMd(pal.descripcion) + '</div>' : '') +
+      '<ul class="hilos">' + li + '</ul>' +
+      '<div class="diseno-acc"><button type="button" class="btn-pal-copiar boton-sec">📋 Copiar lista</button></div></div>';
+  }
+  function pintarPaleta(burbuja, textos, pal) {
+    burbuja.innerHTML = (textos ? fmtMd(textos) + '<br>' : '') + renderPaletaCard(pal);
+    var b = burbuja.querySelector('.btn-pal-copiar');
+    if (b) b.addEventListener('click', function () {
+      var txt = pal.titulo + '\n' + pal.hilos.map(function (h) { return 'DMC ' + h.dmc + ' · ' + h.nombre + (h.uso ? ' (' + h.uso + ')' : ''); }).join('\n');
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(function () { toast('Lista copiada ✓'); }, function () { toast('No se pudo copiar'); });
+      else toast('No se pudo copiar aquí');
+    });
+  }
+  function aplicarRecordar(input) {
+    var map = { nombre: 'miNombre', pareja: 'pareja', gustos: 'gustos', proyectos: 'proyectos', notas: 'notas' };
+    var k = map[input && input.campo], valor = String((input && input.valor) || '').slice(0, 300);
+    if (!k || !valor) return;
+    if (input.modo === 'agregar' && CONFIG[k]) CONFIG[k] = (CONFIG[k] + '; ' + valor).slice(0, 400); else CONFIG[k] = valor;
+    guardarConfig();
+  }
   function exportarDiseno(dis, tipo) {
     if (!dis.svg) { toast('Pídeme que lo cree de nuevo'); return; }
     toast('Generando…');
@@ -2880,8 +3030,9 @@
     return arr.map(function (e) {
       if (e.rol === 'user') return { role: 'user', content: e.texto + (e.conImagen ? '\n[Adjunté una foto.]' : '') };
       if (e.prop) return { role: 'assistant', content: (e.texto ? e.texto + ' ' : '') + 'Le propuse el diseño "' + (e.prop.titulo || '') + '": ' + (e.prop.descripcion || '') };
-      if (e.diseno) return { role: 'assistant', content: (e.texto ? e.texto + ' ' : '') + 'Creé el diseño "' + (e.diseno.titulo || '') + '" (' + (e.diseno.forma === 'circulo' ? 'círculo ' + e.diseno.wCm + ' cm' : e.diseno.wCm + '×' + e.diseno.hCm + ' cm') + '): ' + (e.diseno.descripcion || '') };
-      if (e.patron) return { role: 'assistant', content: (e.texto ? e.texto + ' ' : '') + 'Creé el patrón de punto de cruz "' + (e.patron.titulo || '') + '" (' + e.patron.cols + '×' + e.patron.rows + ' puntos, ' + (e.patron.palette ? e.patron.palette.length : 0) + ' colores): ' + (e.patron.descripcion || '') };
+      if (e.diseno) { var dmcd = (e.diseno.colores || []).map(function (c) { return c.dmc; }).filter(Boolean).slice(0, 8).join(', '); return { role: 'assistant', content: (e.texto ? e.texto + ' ' : '') + 'Creé el diseño "' + (e.diseno.titulo || '') + '" (' + (e.diseno.forma === 'circulo' ? 'círculo ' + e.diseno.wCm + ' cm' : e.diseno.wCm + '×' + e.diseno.hCm + ' cm') + (dmcd ? '; hilos DMC ' + dmcd : '') + '): ' + (e.diseno.descripcion || '') }; }
+      if (e.patron) { var dmcp = (e.patron.palette || []).map(function (c) { return c.code; }).filter(Boolean).slice(0, 8).join(', '); return { role: 'assistant', content: (e.texto ? e.texto + ' ' : '') + 'Creé el patrón de punto de cruz "' + (e.patron.titulo || '') + '" (' + e.patron.cols + '×' + e.patron.rows + ' puntos' + (dmcp ? '; hilos DMC ' + dmcp : '') + '): ' + (e.patron.descripcion || '') }; }
+      if (e.paleta) { var dmcl = (e.paleta.hilos || []).map(function (h) { return h.dmc; }).filter(Boolean).join(', '); return { role: 'assistant', content: (e.texto ? e.texto + ' ' : '') + 'Le sugerí la paleta "' + (e.paleta.titulo || '') + '" (DMC ' + dmcl + ').' }; }
       return { role: 'assistant', content: (e.texto && e.texto.trim()) ? e.texto : '…' };
     });
   }
@@ -2900,6 +3051,7 @@
       else if (e.prop) pintarIA(agregarBurbuja('ia', ''), e.texto, e.prop);
       else if (e.diseno) pintarDiseno(agregarBurbuja('ia', ''), e.texto, e.diseno);
       else if (e.patron) pintarPatron(agregarBurbuja('ia', ''), e.texto, e.patron);
+      else if (e.paleta) pintarPaleta(agregarBurbuja('ia', ''), e.texto, e.paleta);
       else agregarBurbuja('ia', fmtMd(e.texto || ''));
     });
   }
@@ -3018,7 +3170,7 @@
     fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-api-key': CONFIG.apiKey.trim(), 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-      body: JSON.stringify({ model: CONFIG.modelo || MODELO_IA, max_tokens: 4000, system: SYS_ASIST, tools: HERRAMIENTAS, messages: msgs })
+      body: JSON.stringify({ model: CONFIG.modelo || MODELO_IA, max_tokens: 4000, system: SYS_ASIST + (bloquePerfil() ? ('\n\n' + bloquePerfil()) : ''), tools: HERRAMIENTAS, messages: msgs })
     }).then(function (r) {
       if (!r.ok) return r.text().then(function () { throw new Error('HTTP ' + r.status + (r.status === 401 ? ' · revisa tu clave API en Ajustes' : '')); });
       return r.json();
@@ -3028,7 +3180,19 @@
       var tu = bloques.filter(function (b) { return b.type === 'tool_use' && b.name === 'crear_propuesta'; })[0];
       var td = bloques.filter(function (b) { return b.type === 'tool_use' && b.name === 'crear_diseno'; })[0];
       var tp = bloques.filter(function (b) { return b.type === 'tool_use' && b.name === 'crear_patron_cruz'; })[0];
+      var tc = bloques.filter(function (b) { return b.type === 'tool_use' && b.name === 'coordinar_hilos'; })[0];
+      var tm = bloques.filter(function (b) { return b.type === 'tool_use' && b.name === 'recordar'; })[0];
       if (tu) { conversa.push({ rol: 'ia', texto: textos, prop: tu.input }); pintarIA(pensando, textos, tu.input); }
+      else if (tc) {
+        try { var pal = normalizarPaleta(tc.input); conversa.push({ rol: 'ia', texto: textos, paleta: pal }); pintarPaleta(pensando, textos, pal); }
+        catch (err) { conversa.push({ rol: 'ia', texto: textos }); pensando.innerHTML = fmtMd(textos || 'Te armo una paleta, dame un tema concreto 🌸'); }
+      }
+      else if (tm) {
+        try { aplicarRecordar(tm.input); } catch (e3) {}
+        var conf = (tm.input && tm.input.confirmacion) ? tm.input.confirmacion : 'Lo recordaré 🌸';
+        conversa.push({ rol: 'ia', texto: textos }); pensando.innerHTML = (textos ? fmtMd(textos) + '<br>' : '') + '<div class="prop-meta">💾 ' + escaparHtml(conf) + '</div>';
+        chipsAsistente(); personalizarVacioChat(); aplicarSaludoHeader();
+      }
       else if (tp) {
         try {
           var pat = patronCruzAModelo(tp.input);
@@ -3124,18 +3288,21 @@
     $('chatVacio').style.display = 'block';
   });
   $('irAjustesIA').addEventListener('click', abrirAjustes);
-  (function () {
-    var sugerencias = ['🧵 Hazme un patrón de punto de cruz de un corazón', '🐳 Diseña un bastidor de 5 cm "Te Amo Diego" con ballenitas y mar', '🪡 ¿Cuántas hebras uso en Aida 14?', '✨ Una propuesta para un nombre', 'Evalúa mi diseño actual'];
-    var cont = $('chipsAsist');
-    sugerencias.forEach(function (s) {
+  function chipsAsistente() {
+    var cont = $('chipsAsist'); if (!cont) return; cont.innerHTML = '';
+    var base = ['🧵 Hazme un patrón de punto de cruz de un corazón', '🎨 Una paleta de hilos para un fondo de mar', '🐳 Diseña un bastidor de 5 cm "Te Amo Diego" con ballenitas', '🪡 ¿Cuántas hebras uso en Aida ' + (CONFIG.aidaDef || 14) + '?', 'Evalúa mi diseño actual'];
+    var perso = [];
+    if (CONFIG.gustos) { var g = CONFIG.gustos.split(/[,;]/)[0].trim(); if (g) perso.push('🎨 Una paleta de hilos para ' + g); }
+    if (CONFIG.pareja) perso.push('❤️ Un diseño que diga “' + CONFIG.pareja + '”');
+    perso.concat(base).slice(0, 5).forEach(function (s) {
       var b = document.createElement('button'); b.className = 'chip'; b.type = 'button'; b.textContent = s;
-      b.addEventListener('click', function () {
-        if (s === 'Evalúa mi diseño actual') { $('btnAnalizar').click(); return; }
-        enviarAsistente(s, null);
-      });
+      b.addEventListener('click', function () { if (s === 'Evalúa mi diseño actual') { $('btnAnalizar').click(); return; } enviarAsistente(s, null); });
       cont.appendChild(b);
     });
-  })();
+  }
+  // Saludo del estado vacío personalizado
+  function personalizarVacioChat() { var p = $('chatVacio') && $('chatVacio').querySelector('p'); if (p) p.innerHTML = CONFIG.miNombre ? ('🌸 ¡Hola, <strong>' + escaparHtml(CONFIG.miNombre) + '</strong>! Soy <strong>Alma</strong>. Cuéntame qué quieres bordar y lo pensamos juntas.') : ('🌸 ¡Hola! Soy <strong>Alma</strong>. Cuéntame qué quieres bordar y lo pensamos juntas.'); }
+  chipsAsistente();
 
   // ---------- Pestañas y ajustes ----------
   document.querySelectorAll('.tab-btn').forEach(function (btn) {
@@ -3145,25 +3312,55 @@
       document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('activa'); b.setAttribute('aria-selected', 'false'); });
       document.querySelectorAll('.panel').forEach(function (p) { p.classList.remove('activa'); });
       btn.classList.add('activa'); btn.setAttribute('aria-selected', 'true'); $(btn.dataset.panel).classList.add('activa');
+      if (['panel-letras', 'panel-fototexto', 'panel-libre', 'panel-varios'].indexOf(btn.dataset.panel) >= 0) inyectarFuentes();   // asegura tipografías al usarlas
       if (btn.dataset.panel === 'panel-asistente') actualizarEstadoAsistente();
       else if (btn.dataset.panel === 'panel-galeria') renderGaleria();
       else ultimoPanelDiseno = btn.dataset.panel;   // solo paneles con lienzo para "analizar"
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   });
-  function abrirAjustes() { $('nombreNegocio').value = CONFIG.nombre; $('marcaEnPdf').checked = CONFIG.enPdf; $('reglaEnPdf').checked = CONFIG.regla; $('calidadPdf').value = String(CONFIG.dpi); $('claveApi').value = CONFIG.apiKey; $('modalAjustes').hidden = false; setTimeout(function () { $('nombreNegocio').focus(); }, 30); }
-  function cerrarAjustes() { $('modalAjustes').hidden = true; }
+  // Fila de chips de tema (acentos pastel); aplica el tema en vivo al tocar
+  var temaSel = 'trigo';
+  function colorTema(t) { var m = { trigo: '#6f6151', rosa: '#a14f72', salvia: '#5f7f57', azul: '#3f6f8e', lavanda: '#6e5fa0' }; return m[t] || '#6f6151'; }
+  function pintarTemas(contId, onPick) {
+    var cont = $(contId); if (!cont) return; cont.innerHTML = '';
+    ['trigo', 'rosa', 'salvia', 'azul', 'lavanda'].forEach(function (t) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'tema-chip' + (t === temaSel ? ' activa' : '');
+      b.style.background = colorTema(t); b.setAttribute('aria-label', 'Tema ' + t); b.dataset.tema = t;
+      b.addEventListener('click', function () { temaSel = t; CONFIG.tema = t; aplicarTema(); document.querySelectorAll('.tema-chip').forEach(function (c) { c.classList.toggle('activa', c.dataset.tema === t); }); if (onPick) onPick(t); });
+      cont.appendChild(b);
+    });
+  }
+  function abrirAjustes() {
+    $('nombreNegocio').value = CONFIG.nombre; $('marcaEnPdf').checked = CONFIG.enPdf; $('reglaEnPdf').checked = CONFIG.regla; $('calidadPdf').value = String(CONFIG.dpi); $('claveApi').value = CONFIG.apiKey;
+    $('miNombre').value = CONFIG.miNombre; $('parejaNombre').value = CONFIG.pareja; $('gustosTaller').value = CONFIG.gustos;
+    $('aidaDefSel').value = String(CONFIG.aidaDef); $('hojaDefSel').value = CONFIG.hojaDef;
+    temaSel = CONFIG.tema || 'trigo'; pintarTemas('temasFila');
+    $('modalAjustes').hidden = false; setTimeout(function () { $('miNombre').focus(); }, 30);
+  }
+  function cerrarAjustes() { $('modalAjustes').hidden = true; aplicarTema(); }   // si canceló, vuelve al tema guardado
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('modalAjustes').hidden) cerrarAjustes(); });
   $('btnAjustes').addEventListener('click', abrirAjustes);
-  $('cerrarAjustes').addEventListener('click', cerrarAjustes);
+  $('cerrarAjustes').addEventListener('click', function () { temaSel = CONFIG.tema || 'trigo'; cerrarAjustes(); });
   $('modalAjustes').addEventListener('click', function (e) { if (e.target === this) cerrarAjustes(); });
   $('guardarAjustes').addEventListener('click', function () {
     CONFIG.nombre = $('nombreNegocio').value.toString(); CONFIG.enPdf = $('marcaEnPdf').checked; CONFIG.regla = $('reglaEnPdf').checked;
     CONFIG.dpi = parseInt($('calidadPdf').value, 10) || 300;
     CONFIG.apiKey = $('claveApi').value.toString();
     CONFIG.modelo = MODELO_IA;
-    guardarConfig(); aplicarMarca(); actualizarEstadoAsistente(); cerrarAjustes(); toast('Ajustes guardados  ✓');
+    CONFIG.miNombre = $('miNombre').value.toString().slice(0, 60); CONFIG.pareja = $('parejaNombre').value.toString().slice(0, 60); CONFIG.gustos = $('gustosTaller').value.toString().slice(0, 200);
+    CONFIG.aidaDef = parseInt($('aidaDefSel').value, 10) || 14; CONFIG.hojaDef = HOJAS[$('hojaDefSel').value] ? $('hojaDefSel').value : 'A4'; CONFIG.tema = temaSel;
+    guardarConfig(); aplicarMarca(); aplicarTema(); aplicarSaludoHeader(); actualizarEstadoAsistente(); chipsAsistente(); personalizarVacioChat();
+    aplicarDefaultsTaller(); tocarEstado();   // aplica y persiste la tela/hoja por defecto en los paneles
+    cerrarAjustes(); toast('Ajustes guardados  ✓');
   });
+  // Saludo cálido en el subtítulo del header si hay nombre
+  function aplicarSaludoHeader() { var lema = document.querySelector('.appbar .lema'); if (lema) lema.textContent = CONFIG.miNombre ? ('Hola, ' + CONFIG.miNombre + ' 🌸') : 'Plantillas a tamaño real, listas para bordar'; }
+  // Valores por defecto del taller en los paneles (solo si no hubo trabajo restaurado)
+  function aplicarDefaultsTaller() {
+    ['hojaRect', 'hojaCirc', 'hojaLetras', 'hojaFt', 'hojaLibre', 'hojaCruz'].forEach(function (id) { if ($(id) && HOJAS[CONFIG.hojaDef]) $(id).value = CONFIG.hojaDef; });
+    if ($('telaCruz')) $('telaCruz').value = String(CONFIG.aidaDef);
+  }
 
   // ---------- Paleta pastel de colores (acceso rápido) ----------
   var PALETA = ['#6f6151', '#5c4f41', '#2e2a25', '#b89a6a', '#cbb088', '#d8c4a0', '#a9745a', '#c98b8b', '#e7c9c9', '#cdd5da', '#9aa9b2', '#bcc6b4', '#94a18a', '#8a7d9b', '#ffffff'];
@@ -3312,7 +3509,7 @@
   document.addEventListener('change', tocarEstado, true);
 
   // ---------- Inicio ----------
-  cargarConfig(); aplicarMarca();
+  cargarConfig(); aplicarMarca(); aplicarTema(); aplicarSaludoHeader(); aplicarDefaultsTaller();
   refrescarRect();
   refrescarCirc();
   anadirLinea('Alma', 6, "'Great Vibes', cursive"); anadirLinea('bordado', 3.4, "'Cormorant Garamond', serif");
@@ -3338,7 +3535,19 @@
   })();
   cargarConversa(); renderConversa(); actualizarEstadoAsistente();
   cargarGaleria(); actualizarCuentaGaleria();
+  personalizarVacioChat();
   restaurarEstado();   // recupera el trabajo en curso (fotos, textos, medidas, posiciones)
+  // Bienvenida la primera vez
+  (function () {
+    if (localStorage.getItem('alma_visto')) return;
+    temaSel = CONFIG.tema || 'trigo'; pintarTemas('temasFilaBienv');
+    $('modalBienvenida').hidden = false;
+    $('empezarBienvenida').addEventListener('click', function () {
+      CONFIG.tema = temaSel; guardarConfig(); aplicarTema();
+      try { localStorage.setItem('alma_visto', '1'); } catch (e) {}
+      $('modalBienvenida').hidden = true;
+    });
+  })();
 
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
     navigator.serviceWorker.register('swbordados.js').then(function (reg) {
