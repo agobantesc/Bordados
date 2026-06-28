@@ -1476,6 +1476,7 @@
   // ---------- MODO 1 ----------
   llenarPresetRect($('presetRect'));
   function refrescarRect() {
+    tocarEstado();
     var anchoCm = num('anchoRect'), altoCm = num('altoRect');
     var listo = imgRect && anchoCm > 0 && altoCm > 0;
     $('pdfRect').disabled = !listo;
@@ -1517,6 +1518,7 @@
   llenarPresetCirc($('presetCirc'));
   function modoCirculo() { return document.querySelector('input[name="modoCirc"]:checked').value; }
   function refrescarCirc() {
+    tocarEstado();
     var diametroCm = num('diametroCirc'), radioCm = diametroCm / 2, modo = modoCirculo(), anchoCentroCm = num('anchoCentro');
     $('diamCirc').textContent = diametroCm > 0 ? 'Radio del bastidor: ' + radioCm.toFixed(2).replace(/\.?0+$/, '') + ' cm' : '';
     $('filaCentro').style.display = (modo === 'centro') ? 'flex' : 'none';
@@ -1779,6 +1781,7 @@
     return { canvas: c, wCm: totalWcm, hCm: totalHcm };
   }
   function refrescarFt() {
+    tocarEstado();
     var forma = formaFt();
     $('ftMedidasRect').style.display = forma === 'rect' ? 'flex' : 'none';
     $('ftMedidasCirc').style.display = forma === 'circulo' ? 'flex' : 'none';
@@ -1978,6 +1981,7 @@
     });
   }
   function dibujarLibre() {
+    tocarEstado();
     var cv = $('previaLibre'); if (!cv) return;
     var d = libreDim(), esc = libreEscala(), W = Math.round(d.w * esc), H = Math.round(d.h * esc);
     cv.width = W; cv.height = H;
@@ -1986,7 +1990,7 @@
     x.strokeStyle = '#e0cda3'; x.lineWidth = 1; x.strokeRect(0.5, 0.5, W - 1, H - 1);
     libreObjs.forEach(function (o) {
       var ox = (o.xCm - o.wCm / 2) * esc, oy = (o.yCm - o.hCm / 2) * esc, ow = o.wCm * esc, oh = o.hCm * esc;
-      if (o.tipo === 'img') { x.save(); if (o.flip) { x.translate(ox + ow, oy); x.scale(-1, 1); x.drawImage(o.img, 0, 0, ow, oh); } else x.drawImage(o.img, ox, oy, ow, oh); x.restore(); }
+      if (o.tipo === 'img') { if (!o.img) return; x.save(); if (o.flip) { x.translate(ox + ow, oy); x.scale(-1, 1); x.drawImage(o.img, 0, 0, ow, oh); } else x.drawImage(o.img, ox, oy, ow, oh); x.restore(); }
       else if (o._cv) x.drawImage(o._cv, ox, oy, ow, oh);
     });
     var s = libreSel ? libreObj(libreSel) : null;
@@ -2022,7 +2026,7 @@
     var esc = dpi / 2.54;
     libreObjs.forEach(function (o) {
       var ox = (o.xCm - o.wCm / 2) * esc, oy = (o.yCm - o.hCm / 2) * esc, ow = o.wCm * esc, oh = o.hCm * esc;
-      if (o.tipo === 'img') { x.save(); if (o.flip) { x.translate(ox + ow, oy); x.scale(-1, 1); x.drawImage(o.img, 0, 0, ow, oh); } else x.drawImage(o.img, ox, oy, ow, oh); x.restore(); }
+      if (o.tipo === 'img') { if (!o.img) return; x.save(); if (o.flip) { x.translate(ox + ow, oy); x.scale(-1, 1); x.drawImage(o.img, 0, 0, ow, oh); } else x.drawImage(o.img, ox, oy, ow, oh); x.restore(); }
       else { var r = dibujarTexto(o.texto || ' ', { fontCss: o.fontCss, altoLineaCm: o.altoCm, estilo: o.estilo, grosor: 0.4, align: 'centro', colorRelleno: o.color, colorContorno: o.color, transparente: true }, dpi); x.drawImage(r.canvas, ox, oy, ow, oh); }
     });
     return cv;
@@ -2312,6 +2316,7 @@
   }
 
   function dibujarPreviaCruz() {
+    tocarEstado();
     var m = modeloCruz, cv = $('previaCruz'); if (!cv) return;
     var x = cv.getContext('2d');
     if (!m) { cv.width = 320; cv.height = 180; x.clearRect(0, 0, cv.width, cv.height); return; }
@@ -3226,6 +3231,86 @@
     generarImagen(function () { conFuentesFt(function () { descargarPng(renderFtHiRes().canvas, 'foto_texto_bordado.png'); }); });
   });
 
+  // ====================================================================
+  //  Autoguardado del trabajo (localStorage): no perder fotos, textos,
+  //  medidas ni posiciones al recargar o si iOS descarta la pestaña.
+  // ====================================================================
+  var ESTADO_VER = 2, restaurandoEstado = false;
+  function imgAJpeg(img) {
+    if (!img) return null;
+    if (img.__jpeg) return img.__jpeg;
+    try {
+      var iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height, max = 1280;
+      var e = Math.min(1, max / Math.max(iw, ih)), w = Math.max(1, Math.round(iw * e)), h = Math.max(1, Math.round(ih * e));
+      var c = document.createElement('canvas'); c.width = w; c.height = h; c.getContext('2d').drawImage(img, 0, 0, w, h);
+      img.__jpeg = c.toDataURL('image/jpeg', 0.82); return img.__jpeg;
+    } catch (e2) { return null; }
+  }
+  function jpegAImg(url, cb) { if (!url) { cb(null); return; } var im = new Image(); im.onload = function () { im.__jpeg = url; cb(im); }; im.onerror = function () { cb(null); }; im.src = url; }
+  function capIn(ids) { var o = {}; ids.forEach(function (id) { var el = $(id); if (!el) return; o[id] = (el.type === 'checkbox') ? el.checked : el.value; }); return o; }
+  function resIn(o) { if (!o) return; for (var id in o) { var el = $(id); if (!el) continue; if (el.type === 'checkbox') el.checked = !!o[id]; else el.value = o[id]; } }
+  function radioVal(name) { var r = document.querySelector('input[name="' + name + '"]:checked'); return r ? r.value : null; }
+  function setRadio(name, v) { var r = v != null && document.querySelector('input[name="' + name + '"][value="' + v + '"]'); if (r) r.checked = true; }
+  function capturarEstado(conFotos) {
+    var act = document.querySelector('.tab-btn.activa');
+    var s = { v: ESTADO_VER, sinFotos: !conFotos, tab: act ? act.dataset.panel : 'panel-rect' };
+    s.rect = capIn(['anchoRect', 'altoRect', 'hojaRect', 'presetRect', 'proporcionRect']);
+    s.rect.flip = { x: flipRect.x, y: flipRect.y }; s.rect.img = conFotos ? imgAJpeg(imgRect) : null;
+    s.circ = capIn(['diametroCirc', 'hojaCirc', 'anchoCentro', 'presetCirc', 'guiaCirc', 'zoomCirc']);
+    s.circ.modo = radioVal('modoCirc'); s.circ.despl = { x: desplCirc.x, y: desplCirc.y }; s.circ.zoom = zoomCirc; s.circ.flip = { x: flipCirc.x, y: flipCirc.y }; s.circ.img = conFotos ? imgAJpeg(imgCirc) : null;
+    s.letras = capIn(['estiloLetras', 'colorRelleno', 'colorContorno', 'grosorLetras', 'espaciadoLetras', 'alinearLetras', 'interlineaLetras', 'degradadoLetras', 'colorRelleno2', 'dirDegradado', 'sombraLetras', 'espejoLetras', 'hojaLetras']);
+    s.letras.lineas = lineasLetras.map(function (l) { return { texto: l.texto, alto: l.alto, fuente: l.fuente, caso: l.caso }; });
+    s.ft = capIn(['anchoFt', 'altoFt', 'diametroFt', 'hojaFt', 'posicionFt', 'estiloFt', 'colorFt']);
+    s.ft.forma = radioVal('formaFt'); s.ft.flip = { x: flipFt.x, y: flipFt.y }; s.ft.txtpos = ftTxtPos ? { fx: ftTxtPos.fx, fy: ftTxtPos.fy } : null;
+    s.ft.lineas = lineasFt.map(function (l) { return { texto: l.texto, alto: l.alto, fuente: l.fuente }; });
+    s.ft.img = conFotos ? imgAJpeg(imgFt) : null;
+    s.libre = capIn(['anchoLibre', 'altoLibre', 'hojaLibre']);
+    s.libre.objs = libreObjs.map(function (o) {
+      if (o.tipo === 'img') return { tipo: 'img', xCm: o.xCm, yCm: o.yCm, wCm: o.wCm, hCm: o.hCm, flip: o.flip, prop: o.prop, img: conFotos ? imgAJpeg(o.img) : null };
+      return { tipo: 'texto', xCm: o.xCm, yCm: o.yCm, wCm: o.wCm, hCm: o.hCm, texto: o.texto, fontCss: o.fontCss, color: o.color, estilo: o.estilo, altoCm: o.altoCm };
+    });
+    s.cruz = capIn(['anchoCruz', 'telaCruz', 'coloresCruz', 'telaColorCruz', 'hojaCruz']);
+    s.cruz.simbolos = mostrarSimbolosCruz; s.cruz.fondo = quitarFondoCruz; s.cruz.limpiar = limpiarCruz; s.cruz.bn = bnCruz; s.cruz.img = conFotos ? imgAJpeg(imgCruz) : null;
+    return s;
+  }
+  function guardarEstado() {
+    if (restaurandoEstado) return;
+    try { localStorage.setItem('alma_estado', JSON.stringify(capturarEstado(true))); return; } catch (e) {}
+    try { localStorage.setItem('alma_estado', JSON.stringify(capturarEstado(false))); } catch (e2) {}   // sin espacio: ajustes sin fotos
+  }
+  function tocarEstado() { if (!restaurandoEstado) programarRetardo('estado', guardarEstado, 700); }
+  function restaurarEstado() {
+    var s; try { s = JSON.parse(localStorage.getItem('alma_estado') || 'null'); } catch (e) { s = null; }
+    if (!s || s.v !== ESTADO_VER) return;
+    restaurandoEstado = true;
+    var pend = 1;
+    function unaMenos() { if (--pend <= 0) { restaurandoEstado = false; toast(s.sinFotos ? 'Recuperé tu trabajo 🌸 (vuelve a subir tus fotos)' : 'Recuperé tu trabajo 🌸'); guardarEstado(); } }
+    function cargarFoto(url, asignar, refrescar) { if (!url) return; pend++; jpegAImg(url, function (im) { try { if (im) asignar(im); refrescar(); } catch (e) {} unaMenos(); }); }
+    // RECT
+    try { if (s.rect) { resIn(s.rect); if (s.rect.flip) flipRect = { x: !!s.rect.flip.x, y: !!s.rect.flip.y }; refrescarRect(); cargarFoto(s.rect.img, function (im) { imgRect = im; }, refrescarRect); } } catch (e) {}
+    // CIRCULO
+    try { if (s.circ) { resIn(s.circ); setRadio('modoCirc', s.circ.modo); if (s.circ.despl) desplCirc = { x: +s.circ.despl.x || 0, y: +s.circ.despl.y || 0 }; if (s.circ.zoom) zoomCirc = +s.circ.zoom || 1; if (s.circ.flip) flipCirc = { x: !!s.circ.flip.x, y: !!s.circ.flip.y }; refrescarCirc(); cargarFoto(s.circ.img, function (im) { imgCirc = im; }, refrescarCirc); } } catch (e) {}
+    // LETRAS
+    try { if (s.letras) { resIn(s.letras); lineasLetras = []; $('listaLineas').innerHTML = ''; var ll = (s.letras.lineas && s.letras.lineas.length) ? s.letras.lineas : [{ texto: '', alto: 4 }]; ll.forEach(function (l) { anadirLinea(l.texto, l.alto, l.fuente, l.caso); }); refrescarLetras(); } } catch (e) {}
+    // FOTO + TEXTO
+    try { if (s.ft) { resIn(s.ft); setRadio('formaFt', s.ft.forma); if (s.ft.flip) flipFt = { x: !!s.ft.flip.x, y: !!s.ft.flip.y }; ftTxtPos = s.ft.txtpos ? { fx: +s.ft.txtpos.fx, fy: +s.ft.txtpos.fy } : null; lineasFt = []; $('listaLineasFt').innerHTML = ''; var lf = (s.ft.lineas && s.ft.lineas.length) ? s.ft.lineas : [{ texto: 'Te amo', alto: 2.4 }]; lf.forEach(function (l) { anadirLineaFt(l.texto, l.alto, l.fuente); }); refrescarFt(); cargarFoto(s.ft.img, function (im) { imgFt = im; }, refrescarFt); } } catch (e) {}
+    // DISEÑO LIBRE
+    try { if (s.libre) { resIn(s.libre); libreObjs = []; libreSel = null; (s.libre.objs || []).forEach(function (d) {
+      if (d.tipo === 'img') { var o = { tipo: 'img', id: ++libreSeq, img: null, xCm: d.xCm, yCm: d.yCm, wCm: d.wCm, hCm: d.hCm, flip: !!d.flip, prop: d.prop || 1 }; libreObjs.push(o); cargarFoto(d.img, function (im) { o.img = im; }, dibujarLibre); }
+      else { var t = { tipo: 'texto', id: ++libreSeq, texto: d.texto, fontCss: d.fontCss, color: d.color, estilo: d.estilo, altoCm: d.altoCm, xCm: d.xCm, yCm: d.yCm, wCm: d.wCm, hCm: d.hCm }; try { libreRenderTexto(t); } catch (e3) {} libreObjs.push(t); } });
+      dibujarLibre(); libreActivarBotones(); } } catch (e) {}
+    // PUNTO DE CRUZ
+    try { if (s.cruz) { resIn(s.cruz); mostrarSimbolosCruz = !!s.cruz.simbolos; quitarFondoCruz = !!s.cruz.fondo; limpiarCruz = !!s.cruz.limpiar; bnCruz = !!s.cruz.bn;
+      [['simbolosCruz', mostrarSimbolosCruz], ['fondoCruz', quitarFondoCruz], ['limpiarCruzBtn', limpiarCruz], ['bnCruzBtn', bnCruz]].forEach(function (p) { var b = $(p[0]); if (b) { b.setAttribute('aria-pressed', p[1] ? 'true' : 'false'); b.classList.toggle('activo', p[1]); } });
+      actualizarTamanoCruz(); cargarFoto(s.cruz.img, function (im) { imgCruz = im; patronManual = false; }, recomputeCruz); } } catch (e) {}
+    // Pestaña donde estaba
+    try { if (s.tab) { var tb = document.querySelector('.tab-btn[data-panel="' + s.tab + '"]'); if (tb) tb.click(); } } catch (e) {}
+    unaMenos();   // libera el guard; si no había fotos, termina aquí
+  }
+  // Autoguardar tras cualquier cambio visible (debounce). Cada refrescarX lo dispara.
+  document.addEventListener('input', tocarEstado, true);
+  document.addEventListener('change', tocarEstado, true);
+
   // ---------- Inicio ----------
   cargarConfig(); aplicarMarca();
   refrescarRect();
@@ -3253,6 +3338,7 @@
   })();
   cargarConversa(); renderConversa(); actualizarEstadoAsistente();
   cargarGaleria(); actualizarCuentaGaleria();
+  restaurarEstado();   // recupera el trabajo en curso (fotos, textos, medidas, posiciones)
 
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
     navigator.serviceWorker.register('swbordados.js').then(function (reg) {
