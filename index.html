@@ -240,9 +240,22 @@
       linear-gradient(45deg, #efe9dc 25%, transparent 25%, transparent 75%, #efe9dc 75%) 0 0 / 18px 18px,
       linear-gradient(45deg, #efe9dc 25%, #f5f0e6 25%, #f5f0e6 75%, #efe9dc 75%) 9px 9px / 18px 18px;
   }
-  .vista-previa canvas { max-width: 100%; border-radius: 6px; background: #fff; box-shadow: 0 6px 18px rgba(0,0,0,0.12); vertical-align: middle; }
+  .vista-previa canvas { max-width: 100%; border-radius: 6px; background: #fff; box-shadow: 0 8px 24px rgba(60,45,35,0.16); vertical-align: middle; }
   .vista-previa .pie { font-size: .85rem; color: var(--tinta-suave); margin-top: 10px; }
   .controles-previa { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 12px; }
+
+  /* ---------- iPad horizontal / escritorio: editor profesional a dos columnas ----------
+     Controles a la izquierda; la vista previa queda FIJA a la derecha mientras se ajusta. */
+  .col-izq, .col-der { min-width: 0; }
+  @media (min-width: 1000px) {
+    .panel-cols.activa { display: grid; grid-template-columns: minmax(0, 45fr) minmax(0, 55fr); gap: 0 22px; align-items: start; }
+    .panel-cols > .intro, .panel-cols > .divisor { grid-column: 1 / -1; }
+    .panel-cols > .col-der { position: sticky; top: 172px; }
+  }
+  @media (hover: hover) {
+    .boton-sec:not(:disabled):not(.activo):hover { background: #ece2cd; border-color: var(--trigo-osc); }
+    .boton-pdf:not(:disabled):hover { transform: translateY(-1px); box-shadow: 0 9px 22px rgba(111,97,81,0.36); }
+  }
 
   /* ---------- Botones ---------- */
   .boton-pdf {
@@ -1010,12 +1023,22 @@
     </div>
   </div>
 
+  <div class="tarjeta">
+    <h2><span class="paso">💼</span> Datos de la propuesta <small style="font-weight:400; color:var(--tinta-suave);">(para el PDF formal)</small></h2>
+    <div class="fila">
+      <div class="campo"><label for="propCliente">Nombre de la clienta o cliente</label><input type="text" id="propCliente" placeholder="Camila Pérez" maxlength="80"></div>
+      <div class="campo"><label for="propValor">Valor (opcional)</label><input type="text" id="propValor" placeholder="$25.000" maxlength="40"></div>
+    </div>
+    <div class="campo" style="margin-top:10px;"><label for="propDetalle">Descripción del trabajo</label><input type="text" id="propDetalle" placeholder="Bordado a mano de ramo de flores en polera de lino, hilos DMC" maxlength="200"></div>
+  </div>
+
   <div class="tarjeta vista-previa">
     <h2><span class="paso">3</span> Vista previa</h2>
     <div class="lienzo-wrap"><canvas id="lienzoMockup" width="600" height="600" role="img" aria-label="Vista del diseño sobre el producto"></canvas></div>
     <div class="pie" id="pieMockup">Sube una foto del producto y pon tu diseño encima.</div>
   </div>
   <button class="boton-pdf" id="compartirMockup" disabled>📲 Compartir imagen para aprobación</button>
+  <button class="boton-pdf" id="propuestaMockup" disabled style="margin-top:10px;">📄 Generar propuesta formal (PDF)</button>
   <button class="boton-sec boton-img" id="guardarMockup" type="button" disabled>🖼️ Guardar imagen</button>
 </section>
 
@@ -2860,7 +2883,9 @@
     'Tienes recordar para guardar en memoria, entre sesiones, algo útil sobre quien borda: su nombre o el de su pareja, sus gustos, proyectos en curso, o una nota. Úsala con discreción y solo cuando comparta algo que valga la pena recordar (ej. "mi novio se llama Diego", "me encantan las flores y el mar", "estoy con el mantel de la abuela"). Confírmalo con cariño en una frase y sigue la conversación con naturalidad. No la uses para cosas pasajeras.',
     'Si tienes un PERFIL de quien borda, personaliza con cariño: usa su nombre y el de su pareja cuando venga al caso, propón motivos y colores afines a sus gustos, y toma su tela favorita como valor por defecto (sin imponerla). No menciones el perfil como si leyeras una ficha; intégralo como lo haría una amiga que la conoce.',
     'Tienes planificar_proyecto para convertir una idea ("quiero bordar un mantel con flores para mi mamá", "cómo hago un cojín") en un PLAN claro: materiales (incluye telas, hilos DMC, bastidor, agujas), pasos en orden con la puntada sugerida y un consejo, dificultad y tiempo ESTIMADO realista (ni muy optimista). Ajusta los materiales a su tela y nivel si los conoces por el perfil. Úsala cuando pidan una guía o "qué necesito/cómo hago", no un dibujo.',
-    'Tienes ajustar_modulo para configurar tú misma los controles de una pestaña cuando lo pidan en palabras (sobre todo Punto de cruz: tela Aida, ancho en puntos, cantidad de colores, color de tela). Úsala solo para ajustar parámetros que existen; confirma con una frase cálida lo que dejaste puesto. No inventes pestañas ni controles. Para crear contenido usa las herramientas de crear.'
+    'Tienes ajustar_modulo para configurar tú misma los controles de una pestaña cuando lo pidan en palabras (sobre todo Punto de cruz: tela Aida, ancho en puntos, cantidad de colores, color de tela). Úsala solo para ajustar parámetros que existen; confirma con una frase cálida lo que dejaste puesto. No inventes pestañas ni controles. Para crear contenido usa las herramientas de crear.',
+    'ERES EJECUTORA, no solo consejera: cuando te pidan VARIAS ideas o diseños ("hazme 3 opciones de...", "dame ideas distintas para..."), llama crear_diseno VARIAS VECES en la misma respuesta (una por diseño, máximo 4), cada una con su SVG completo y distinto. No describas ideas sin dibujarlas: dibújalas.',
+    'Cada diseño que creas se guarda AUTOMÁTICAMENTE en la pestaña Favoritos (galería), y ella puede tocar "Usar en Libre" para llevarlo al editor libre y seguir trabajándolo, o "Abrir en Punto de cruz" si es un patrón. Cuando entregues diseños, menciona brevemente que ya quedaron guardados en Favoritos.'
   ].join('\n\n');
 
   // Familias permitidas (sincronizadas con el selector de fuentes)
@@ -3119,7 +3144,7 @@
       '<div class="prop-meta">📐 ' + escaparHtml(medidas) + (dis.dificultad ? ' · ' + escaparHtml(String(dis.dificultad)) : '') + '</div>' +
       (hilos ? '<div class="hilos-tit">🧵 Hilos sugeridos</div><ul class="hilos">' + hilos + '</ul>' : '') +
       '<div class="diseno-acc">' +
-        (sinSvg ? '' : '<button type="button" class="btn-dis-fav boton-sec">❤️ Guardar</button><button type="button" class="btn-dis-pdf boton-sec">📄 PDF</button><button type="button" class="btn-dis-png boton-sec">🖼️ Imagen</button>') +
+        (sinSvg ? '' : '<button type="button" class="btn-dis-fav boton-sec">❤️ Guardar</button><button type="button" class="btn-dis-libre boton-sec">🎨 Usar en Libre</button><button type="button" class="btn-dis-pdf boton-sec">📄 PDF</button><button type="button" class="btn-dis-png boton-sec">🖼️ Imagen</button>') +
         '<button type="button" class="btn-dis-cambios boton-sec">✏️ Pedir cambios</button>' +
       '</div>' +
     '</div>';
@@ -3136,9 +3161,10 @@
       });
     }
     var b1 = burbuja.querySelector('.btn-dis-pdf'), b2 = burbuja.querySelector('.btn-dis-png'), b3 = burbuja.querySelector('.btn-dis-cambios');
-    var bf = burbuja.querySelector('.btn-dis-fav');
+    var bf = burbuja.querySelector('.btn-dis-fav'), bl = burbuja.querySelector('.btn-dis-libre');
     if (b1) b1.addEventListener('click', function () { exportarDiseno(dis, 'pdf'); });
     if (b2) b2.addEventListener('click', function () { exportarDiseno(dis, 'png'); });
+    if (bl) bl.addEventListener('click', function () { enviarDisenoALibre(dis); });
     if (b3) b3.addEventListener('click', function () { $('chatInput').value = 'Sobre el diseño "' + dis.titulo + '": '; $('chatInput').focus(); });
     if (bf) {
       var marcar = function () { if (enGaleria(dis)) { bf.textContent = '❤️ Guardado'; bf.classList.add('guardado'); } else { bf.textContent = '❤️ Guardar'; bf.classList.remove('guardado'); } };
@@ -3293,6 +3319,23 @@
     });
   }
 
+  // Ejecuta un diseño de Alma dentro del editor libre: lo dibuja y lo suelta como objeto editable
+  function enviarDisenoALibre(dis) {
+    if (!dis.svg) { toast('Pídeme que lo cree de nuevo'); return; }
+    toast('Abriendo en el editor…');
+    renderDisenoCanvas(dis.svg, dis.forma, dis.wCm, dis.hCm, 150, false, function (canvas) {
+      if (!canvas) { toast('No se pudo abrir el diseño'); return; }
+      var im = new Image();
+      im.onload = function () {
+        var tab = document.querySelector('.tab-btn[data-panel="panel-libre"]'); if (tab) tab.click();
+        libreAddFoto(im); tocarEstado();
+        toast('«' + (dis.titulo || 'Diseño') + '» está en el editor libre 🎨');
+      };
+      im.onerror = function () { toast('No se pudo abrir el diseño'); };
+      try { im.src = canvas.toDataURL('image/png'); } catch (e) { toast('No se pudo abrir el diseño'); }
+    });
+  }
+
   // ---- Galería de favoritos (localStorage) ----
   var galeria = [];
   var MAX_GALERIA = 60;
@@ -3333,6 +3376,7 @@
         '<div class="gal-tit">' + escaparHtml(dis.titulo || 'Diseño') + '</div>' +
         '<div class="gal-meta">📐 ' + escaparHtml(medidas) + (dis.dificultad ? ' · ' + escaparHtml(String(dis.dificultad)) : '') + '</div>' +
         '<div class="gal-acc">' +
+          '<button type="button" class="gal-libre boton-sec">🎨 Usar en Libre</button>' +
           '<button type="button" class="gal-pdf boton-sec">📄 PDF</button>' +
           '<button type="button" class="gal-png boton-sec">🖼️ Imagen</button>' +
           '<button type="button" class="gal-quitar boton-sec">🗑️</button>' +
@@ -3344,6 +3388,7 @@
         if (!canvas) { cont.innerHTML = '⚠️'; return; }
         cont.innerHTML = ''; canvas.style.maxWidth = '100%'; canvas.style.height = 'auto'; cont.appendChild(canvas);
       });
+      card.querySelector('.gal-libre').addEventListener('click', function () { enviarDisenoALibre(dis); });
       card.querySelector('.gal-pdf').addEventListener('click', function () { exportarDiseno(dis, 'pdf'); });
       card.querySelector('.gal-png').addEventListener('click', function () { exportarDiseno(dis, 'png'); });
       card.querySelector('.gal-quitar').addEventListener('click', function () {
@@ -3382,7 +3427,7 @@
   function mensajesApi() {
     var arr = conversa.slice(-MAX_CONTEXTO);
     while (arr.length && arr[0].rol !== 'user') arr.shift();   // la API exige empezar por el usuario
-    return arr.map(function (e) {
+    var mapeados = arr.map(function (e) {
       if (e.rol === 'user') return { role: 'user', content: e.texto + (e.conImagen ? '\n[Adjunté una foto.]' : '') };
       if (e.prop) return { role: 'assistant', content: (e.texto ? e.texto + ' ' : '') + 'Le propuse el diseño "' + (e.prop.titulo || '') + '": ' + (e.prop.descripcion || '') };
       if (e.diseno) { var dmcd = (e.diseno.colores || []).map(function (c) { return c.dmc; }).filter(Boolean).slice(0, 8).join(', '); return { role: 'assistant', content: (e.texto ? e.texto + ' ' : '') + 'Creé el diseño "' + (e.diseno.titulo || '') + '" (' + (e.diseno.forma === 'circulo' ? 'círculo ' + e.diseno.wCm + ' cm' : e.diseno.wCm + '×' + e.diseno.hCm + ' cm') + (dmcd ? '; hilos DMC ' + dmcd : '') + '): ' + (e.diseno.descripcion || '') }; }
@@ -3391,6 +3436,15 @@
       if (e.plan) return { role: 'assistant', content: (e.texto ? e.texto + ' ' : '') + 'Le armé el plan "' + (e.plan.titulo || '') + '" (' + (e.plan.pasos ? e.plan.pasos.length : 0) + ' pasos' + (e.plan.tiempo ? ', ' + e.plan.tiempo : '') + ').' };
       return { role: 'assistant', content: (e.texto && e.texto.trim()) ? e.texto : '…' };
     });
+    // La API exige roles alternados: fusiona mensajes consecutivos del mismo rol
+    // (pasa cuando Alma creó varios diseños en una misma respuesta)
+    var out = [];
+    mapeados.forEach(function (m) {
+      var prev = out[out.length - 1];
+      if (prev && prev.role === m.role && typeof prev.content === 'string' && typeof m.content === 'string') prev.content += '\n' + m.content;
+      else out.push(m);
+    });
+    return out;
   }
   function pintarIA(burbuja, textos, prop) {
     burbuja.innerHTML = (textos ? fmtMd(textos) + '<br>' : '') + renderPropuesta(prop);
@@ -3504,6 +3558,63 @@
     $('chatMsgs').scrollTop = $('chatMsgs').scrollHeight; return d;
   }
   var enviando = false;
+  // Ejecuta una herramienta de Alma y pinta su resultado en la burbuja indicada.
+  // Devuelve 'fav' si guardó un diseño en Favoritos (para avisar una sola vez).
+  function procesarBloqueIA(nombre, input, burbuja, textos, stopReason) {
+    if (nombre === 'crear_propuesta') { conversa.push({ rol: 'ia', texto: textos, prop: input }); pintarIA(burbuja, textos, input); return ''; }
+    if (nombre === 'planificar_proyecto') {
+      try { var pl = normalizarPlan(input); conversa.push({ rol: 'ia', texto: textos, plan: pl }); pintarPlan(burbuja, textos, pl); }
+      catch (err) { conversa.push({ rol: 'ia', texto: textos }); burbuja.innerHTML = fmtMd(textos || 'Cuéntame qué quieres bordar y te armo el plan 🌸'); }
+      return '';
+    }
+    if (nombre === 'ajustar_modulo') {
+      var ok = false; try { ok = aplicarAjusteModulo(input); } catch (e4) {}
+      var confa = (input && input.confirmacion) ? input.confirmacion : (ok ? 'Listo, te lo dejé puesto 🧵' : 'No pude ajustar eso, ¿me lo dices de otra forma? 🌸');
+      conversa.push({ rol: 'ia', texto: textos }); burbuja.innerHTML = (textos ? fmtMd(textos) + '<br>' : '') + '<div class="prop-meta">🛠️ ' + escaparHtml(confa) + '</div>';
+      return '';
+    }
+    if (nombre === 'coordinar_hilos') {
+      try { var pal = normalizarPaleta(input); conversa.push({ rol: 'ia', texto: textos, paleta: pal }); pintarPaleta(burbuja, textos, pal); }
+      catch (err) { conversa.push({ rol: 'ia', texto: textos }); burbuja.innerHTML = fmtMd(textos || 'Te armo una paleta, dame un tema concreto 🌸'); }
+      return '';
+    }
+    if (nombre === 'recordar') {
+      try { aplicarRecordar(input); } catch (e3) {}
+      var conf = (input && input.confirmacion) ? input.confirmacion : 'Lo recordaré 🌸';
+      conversa.push({ rol: 'ia', texto: textos }); burbuja.innerHTML = (textos ? fmtMd(textos) + '<br>' : '') + '<div class="prop-meta">💾 ' + escaparHtml(conf) + '</div>';
+      chipsAsistente(); personalizarVacioChat(); aplicarSaludoHeader();
+      return '';
+    }
+    if (nombre === 'crear_patron_cruz') {
+      try {
+        var pat = patronCruzAModelo(input);
+        conversa.push({ rol: 'ia', texto: textos, patron: pat }); pintarPatron(burbuja, textos, pat);
+      } catch (err) {
+        var colp = stopReason === 'max_tokens' ? 'El patrón salió muy grande y se cortó. Pídeme uno más chiquito. 🌸' : 'Ese patrón no me quedó bien. ¿Lo intento de nuevo, más simple? 🌸';
+        conversa.push({ rol: 'ia', texto: (textos ? textos + ' ' : '') + '(no se pudo crear el patrón)' });
+        burbuja.innerHTML = (textos ? fmtMd(textos) + '<br>' : '') + '⚠️ ' + colp;
+      }
+      return '';
+    }
+    if (nombre === 'crear_diseno') {
+      try {
+        var dis = normalizarDiseno(input);
+        // Alma "ejecuta y guarda": cada diseño queda de inmediato en Favoritos
+        var yaEstaba = enGaleria(dis), guardado = false;
+        if (!yaEstaba) { try { guardado = agregarAGaleria(dis); } catch (e5) {} }
+        conversa.push({ rol: 'ia', texto: textos, diseno: dis }); pintarDiseno(burbuja, textos, dis);
+        return guardado ? 'fav' : '';
+      } catch (err) {
+        var cola = stopReason === 'max_tokens' ? 'El diseño salió muy grande y se cortó. Pídeme una versión más simple. 🌸' : 'No pude dibujar ese diseño. Pídeme que lo intente de nuevo o más sencillo. 🌸';
+        conversa.push({ rol: 'ia', texto: (textos ? textos + ' ' : '') + '(no se pudo dibujar el diseño)' });
+        burbuja.innerHTML = (textos ? fmtMd(textos) + '<br>' : '') + '⚠️ ' + cola;
+      }
+      return '';
+    }
+    conversa.push({ rol: 'ia', texto: textos });
+    burbuja.innerHTML = fmtMd(textos || '(sin respuesta)');
+    return '';
+  }
   function enviarAsistente(texto, imagenDataUrl) {
     if (!tieneClave()) { actualizarEstadoAsistente(); return; }
     if (enviando) { toast('Espera la respuesta anterior…'); return; }
@@ -3527,61 +3638,26 @@
     fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-api-key': CONFIG.apiKey.trim(), 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-      body: JSON.stringify({ model: CONFIG.modelo || MODELO_IA, max_tokens: 4000, system: SYS_ASIST + (bloquePerfil() ? ('\n\n' + bloquePerfil()) : ''), tools: HERRAMIENTAS, messages: msgs })
+      body: JSON.stringify({ model: CONFIG.modelo || MODELO_IA, max_tokens: 12000, system: SYS_ASIST + (bloquePerfil() ? ('\n\n' + bloquePerfil()) : ''), tools: HERRAMIENTAS, messages: msgs })
     }).then(function (r) {
       if (!r.ok) return r.text().then(function () { throw new Error('HTTP ' + r.status + (r.status === 401 ? ' · revisa tu clave API en Ajustes' : '')); });
       return r.json();
     }).then(function (d) {
       var bloques = d.content || [];
       var textos = bloques.filter(function (b) { return b.type === 'text'; }).map(function (b) { return b.text; }).join('\n').trim();
-      var tu = bloques.filter(function (b) { return b.type === 'tool_use' && b.name === 'crear_propuesta'; })[0];
-      var td = bloques.filter(function (b) { return b.type === 'tool_use' && b.name === 'crear_diseno'; })[0];
-      var tp = bloques.filter(function (b) { return b.type === 'tool_use' && b.name === 'crear_patron_cruz'; })[0];
-      var tc = bloques.filter(function (b) { return b.type === 'tool_use' && b.name === 'coordinar_hilos'; })[0];
-      var tm = bloques.filter(function (b) { return b.type === 'tool_use' && b.name === 'recordar'; })[0];
-      var tpl = bloques.filter(function (b) { return b.type === 'tool_use' && b.name === 'planificar_proyecto'; })[0];
-      var taj = bloques.filter(function (b) { return b.type === 'tool_use' && b.name === 'ajustar_modulo'; })[0];
-      if (tu) { conversa.push({ rol: 'ia', texto: textos, prop: tu.input }); pintarIA(pensando, textos, tu.input); }
-      else if (tpl) {
-        try { var pl = normalizarPlan(tpl.input); conversa.push({ rol: 'ia', texto: textos, plan: pl }); pintarPlan(pensando, textos, pl); }
-        catch (err) { conversa.push({ rol: 'ia', texto: textos }); pensando.innerHTML = fmtMd(textos || 'Cuéntame qué quieres bordar y te armo el plan 🌸'); }
+      // Alma puede ejecutar VARIAS herramientas en una misma respuesta (p. ej. 3 diseños distintos):
+      // cada tool_use se procesa en orden y se pinta en su propia burbuja.
+      var herramientas = bloques.filter(function (b) { return b.type === 'tool_use'; });
+      if (!herramientas.length) { conversa.push({ rol: 'ia', texto: textos }); pensando.innerHTML = fmtMd(textos || '(sin respuesta)'); }
+      else {
+        var favsAuto = 0;
+        herramientas.forEach(function (tb, i) {
+          var burbuja = (i === 0) ? pensando : agregarBurbuja('ia', '');
+          var res = procesarBloqueIA(tb.name, tb.input, burbuja, i === 0 ? textos : '', d.stop_reason);
+          if (res === 'fav') favsAuto++;
+        });
+        if (favsAuto) toast(favsAuto === 1 ? 'Diseño guardado en Favoritos ❤️' : favsAuto + ' diseños guardados en Favoritos ❤️');
       }
-      else if (taj) {
-        var ok = false; try { ok = aplicarAjusteModulo(taj.input); } catch (e4) {}
-        var confa = (taj.input && taj.input.confirmacion) ? taj.input.confirmacion : (ok ? 'Listo, te lo dejé puesto 🧵' : 'No pude ajustar eso, ¿me lo dices de otra forma? 🌸');
-        conversa.push({ rol: 'ia', texto: textos }); pensando.innerHTML = (textos ? fmtMd(textos) + '<br>' : '') + '<div class="prop-meta">🛠️ ' + escaparHtml(confa) + '</div>';
-      }
-      else if (tc) {
-        try { var pal = normalizarPaleta(tc.input); conversa.push({ rol: 'ia', texto: textos, paleta: pal }); pintarPaleta(pensando, textos, pal); }
-        catch (err) { conversa.push({ rol: 'ia', texto: textos }); pensando.innerHTML = fmtMd(textos || 'Te armo una paleta, dame un tema concreto 🌸'); }
-      }
-      else if (tm) {
-        try { aplicarRecordar(tm.input); } catch (e3) {}
-        var conf = (tm.input && tm.input.confirmacion) ? tm.input.confirmacion : 'Lo recordaré 🌸';
-        conversa.push({ rol: 'ia', texto: textos }); pensando.innerHTML = (textos ? fmtMd(textos) + '<br>' : '') + '<div class="prop-meta">💾 ' + escaparHtml(conf) + '</div>';
-        chipsAsistente(); personalizarVacioChat(); aplicarSaludoHeader();
-      }
-      else if (tp) {
-        try {
-          var pat = patronCruzAModelo(tp.input);
-          conversa.push({ rol: 'ia', texto: textos, patron: pat }); pintarPatron(pensando, textos, pat);
-        } catch (err) {
-          var colp = d.stop_reason === 'max_tokens' ? 'El patrón salió muy grande y se cortó. Pídeme uno más chiquito. 🌸' : 'Ese patrón no me quedó bien. ¿Lo intento de nuevo, más simple? 🌸';
-          conversa.push({ rol: 'ia', texto: (textos ? textos + ' ' : '') + '(no se pudo crear el patrón)' });
-          pensando.innerHTML = (textos ? fmtMd(textos) + '<br>' : '') + '⚠️ ' + colp;
-        }
-      }
-      else if (td) {
-        try {
-          var dis = normalizarDiseno(td.input);
-          conversa.push({ rol: 'ia', texto: textos, diseno: dis }); pintarDiseno(pensando, textos, dis);
-        } catch (err) {
-          var cola = d.stop_reason === 'max_tokens' ? 'El diseño salió muy grande y se cortó. Pídeme una versión más simple. 🌸' : 'No pude dibujar ese diseño. Pídeme que lo intente de nuevo o más sencillo. 🌸';
-          conversa.push({ rol: 'ia', texto: (textos ? textos + ' ' : '') + '(no se pudo dibujar el diseño)' });
-          pensando.innerHTML = (textos ? fmtMd(textos) + '<br>' : '') + '⚠️ ' + cola;
-        }
-      }
-      else { conversa.push({ rol: 'ia', texto: textos }); pensando.innerHTML = fmtMd(textos || '(sin respuesta)'); }
       guardarConversa();
     }).catch(function (e) {
       pensando.innerHTML = '⚠️ ' + escaparHtml(e.message || 'No se pudo conectar');
@@ -4022,14 +4098,14 @@
       x.fillStyle = '#b3a892'; x.font = '18px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
       x.fillText('Sube la foto del producto 👗', 300, 190); x.textAlign = 'left'; x.textBaseline = 'top';
       $('pieMockup').textContent = 'Sube una foto del producto y pon tu diseño encima.';
-      $('compartirMockup').disabled = true; $('guardarMockup').disabled = true;
+      $('compartirMockup').disabled = true; $('guardarMockup').disabled = true; if ($('propuestaMockup')) $('propuestaMockup').disabled = true;
       $('filaMockupEsc').style.display = 'none'; $('filaMockupBtns').style.display = 'none'; return;
     }
     var box = fondoCajaWH(640); cv.width = box.W; cv.height = box.H; mkW = box.W; mkH = box.H;
     pintarMockupEn(x, box.W, box.H);
     var hay = !!mkDis;
     $('pieMockup').textContent = hay ? 'Arrastra el diseño para moverlo · ajusta el tamaño abajo' : 'Ahora pon tu diseño con los botones de arriba.';
-    $('compartirMockup').disabled = !hay; $('guardarMockup').disabled = !hay;
+    $('compartirMockup').disabled = !hay; $('guardarMockup').disabled = !hay; if ($('propuestaMockup')) $('propuestaMockup').disabled = !hay;
     $('filaMockupEsc').style.display = hay ? 'flex' : 'none'; $('filaMockupBtns').style.display = hay ? 'flex' : 'none';
   }
   function componerMockup(maxPx) {
@@ -4074,7 +4150,58 @@
       }, 'image/png'); else { descargarPngData(c, 'mockup_bordado.png'); }
     });
     $('guardarMockup').addEventListener('click', function () { descargarPng(componerMockup(1400), 'mockup_bordado.png'); toast('Imagen lista  ✓'); });
+    // Datos de la propuesta: se recuerdan en este dispositivo
+    try { var pg = JSON.parse(localStorage.getItem('alma_propuesta') || '{}'); $('propCliente').value = pg.cliente || ''; $('propDetalle').value = pg.detalle || ''; $('propValor').value = pg.valor || ''; } catch (e) {}
+    ['propCliente', 'propDetalle', 'propValor'].forEach(function (id) {
+      $(id).addEventListener('input', function () {
+        try { localStorage.setItem('alma_propuesta', JSON.stringify({ cliente: $('propCliente').value, detalle: $('propDetalle').value, valor: $('propValor').value })); } catch (e) {}
+      });
+    });
+    $('propuestaMockup').addEventListener('click', function () { generarPdf(generarPropuestaPdf); });
   })();
+
+  // Propuesta formal para la clienta: una página empresarial con la marca del negocio
+  function generarPropuestaPdf() {
+    if (!mkFondo || !mkDis) { toast('Arma primero el mockup (producto + diseño)'); return; }
+    var dpi = 150, W = Math.round(HOJAS.A4.w / 2.54 * dpi), H = Math.round(HOJAS.A4.h / 2.54 * dpi);
+    var cv = document.createElement('canvas'); cv.width = W; cv.height = H; var x = cv.getContext('2d');
+    x.fillStyle = '#fff'; x.fillRect(0, 0, W, H);
+    var acc = KIT_C.acento, lwO = Math.round(dpi * 0.055);
+    x.strokeStyle = acc; x.lineWidth = lwO; x.strokeRect(lwO, lwO, W - 2 * lwO, H - 2 * lwO);
+    var s2 = lwO + Math.round(dpi * 0.08); x.lineWidth = 2; x.strokeRect(s2, s2, W - 2 * s2, H - 2 * s2);
+    var fr = Math.round(dpi * 0.17), fo = s2 + Math.round(dpi * 0.3);
+    florKit(x, fo, fo, fr); florKit(x, W - fo, fo, fr); florKit(x, fo, H - fo, fr); florKit(x, W - fo, H - fo, fr);
+    var M = Math.round(dpi * 1.0), y = M; x.textAlign = 'center';
+    if (logoImg && logoImg.complete && logoImg.naturalWidth) { var lh = Math.round(dpi * 0.85), lw = lh * (logoImg.naturalWidth / logoImg.naturalHeight); if (lw > W - 2 * M) { lw = W - 2 * M; lh = lw * (logoImg.naturalHeight / logoImg.naturalWidth); } x.drawImage(logoImg, W / 2 - lw / 2, y, lw, lh); y += lh + Math.round(dpi * 0.16); }
+    x.fillStyle = KIT_C.titulo; x.font = 'bold ' + Math.round(dpi * 0.3) + 'px Georgia, serif'; x.fillText((CONFIG.nombre || 'Alma bordado').trim(), W / 2, y); y += Math.round(dpi * 0.38);
+    x.strokeStyle = acc; x.lineWidth = 2; x.beginPath(); x.moveTo(W / 2 - dpi, y); x.lineTo(W / 2 + dpi, y); x.stroke();
+    florKit(x, W / 2, y, Math.round(dpi * 0.1)); y += Math.round(dpi * 0.26);
+    x.fillStyle = acc; x.font = '600 ' + Math.round(dpi * 0.15) + 'px sans-serif'; x.fillText('P R O P U E S T A   D E   B O R D A D O', W / 2, y); y += Math.round(dpi * 0.3);
+    var cliente = ($('propCliente').value || '').trim(), detalle = ($('propDetalle').value || '').trim(), valor = ($('propValor').value || '').trim();
+    var fecha = ''; try { fecha = new Date().toLocaleDateString('es-CL', { day: 'numeric', month: 'long', year: 'numeric' }); } catch (e) { fecha = new Date().toLocaleDateString(); }
+    x.fillStyle = KIT_C.suave; x.font = Math.round(dpi * 0.13) + 'px sans-serif';
+    x.fillText((cliente ? 'Preparada para ' + cliente + '  ·  ' : '') + fecha, W / 2, y); y += Math.round(dpi * 0.34);
+    // El mockup, enmarcado
+    var mock = componerMockup(1200);
+    var maxW = W - 2 * M, maxH = Math.round(dpi * 4.6), e = Math.min(maxW / mock.width, maxH / mock.height);
+    var dw = mock.width * e, dh = mock.height * e;
+    x.save(); x.shadowColor = 'rgba(0,0,0,0.2)'; x.shadowBlur = 12; x.shadowOffsetY = 6;
+    x.fillStyle = '#fff'; x.fillRect(W / 2 - dw / 2 - 8, y - 8, dw + 16, dh + 16);
+    x.drawImage(mock, W / 2 - dw / 2, y, dw, dh); x.restore();
+    y += dh + Math.round(dpi * 0.34);
+    if (detalle) { x.fillStyle = KIT_C.tinta; x.font = Math.round(dpi * 0.15) + 'px Georgia, serif'; y = textoEnvueltoC(x, detalle, W / 2, y, W - 2 * M - dpi, Math.round(dpi * 0.23)) + Math.round(dpi * 0.12); }
+    if (valor) {
+      x.fillStyle = KIT_C.titulo; x.font = 'bold ' + Math.round(dpi * 0.2) + 'px Georgia, serif';
+      x.fillText('Valor del trabajo: ' + valor, W / 2, y); y += Math.round(dpi * 0.3);
+    }
+    x.fillStyle = KIT_C.suave; x.font = 'italic ' + Math.round(dpi * 0.12) + 'px Georgia, serif';
+    x.fillText('El tamaño, los colores y la ubicación se pueden ajustar antes de bordar.', W / 2, y);
+    var by = H - M + Math.round(dpi * 0.1); x.fillStyle = acc; x.font = '600 ' + Math.round(dpi * 0.14) + 'px sans-serif';
+    if (CONFIG.contacto && CONFIG.contacto.trim()) { x.fillText(CONFIG.contacto.trim(), W / 2, by); by -= Math.round(dpi * 0.24); }
+    x.fillStyle = '#9a8f7d'; x.font = 'italic ' + Math.round(dpi * 0.13) + 'px Georgia, serif'; x.fillText('Hecho a mano, con cariño 🌸', W / 2, by);
+    x.textAlign = 'left';
+    descargar(construirPdf([pgFullCanvas(cv)]), 'propuesta_bordado.pdf');
+  }
 
   // ===================== KITS DE BORDADO =====================
   function nuevoKit() { return { titulo: '', nivel: '', tiempo: '', tela: '', tipo: 'libre', disenoImg: null, insumos: [], pasos: [], cruz: null }; }
@@ -4520,6 +4647,19 @@
   document.addEventListener('change', tocarEstado, true);
 
   // ---------- Inicio ----------
+  // Editor a dos columnas (iPad horizontal / escritorio): agrupa controles a la izquierda
+  // y vista previa + botones de exportar a la derecha. Los ids y listeners no cambian.
+  document.querySelectorAll('section.panel').forEach(function (p) {
+    if (p.id === 'panel-asistente' || p.id === 'panel-galeria') return;   // chat y galería van a lo ancho
+    var izq = document.createElement('div'); izq.className = 'col-izq';
+    var der = document.createElement('div'); der.className = 'col-der';
+    Array.prototype.slice.call(p.children).forEach(function (el) {
+      if (el.classList.contains('intro') || el.classList.contains('divisor')) return;
+      if (el.classList.contains('vista-previa') || el.classList.contains('boton-pdf') || el.classList.contains('boton-img')) der.appendChild(el);
+      else izq.appendChild(el);
+    });
+    p.appendChild(izq); p.appendChild(der); p.classList.add('panel-cols');
+  });
   cargarConfig(); aplicarMarca(); aplicarTema(); aplicarSaludoHeader(); aplicarDefaultsTaller(); cargarLogoImg();
   refrescarRect();
   refrescarCirc();
