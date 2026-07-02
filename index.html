@@ -267,6 +267,22 @@
   .boton-pdf:disabled { opacity: .4; cursor: default; box-shadow: none; }
   .boton-pdf:not(:disabled):active { transform: translateY(1px); opacity: .92; }
   .boton-img { display: block; width: 100%; margin-top: 10px; padding: 13px; }
+  /* Botón "Crear kit": presente en todos los módulos de diseño (el kit es el producto estrella) */
+  .boton-kit { background: #fbf3e4; border: 1.5px dashed var(--trigo-osc); color: var(--marron-osc); font-weight: 700; }
+  .boton-kit:not(:disabled):active { background: #f3e7cd; }
+  @media (hover: hover) { .boton-kit:not(:disabled):hover { background: #f6ecd6; border-style: solid; } }
+  /* Badge de versión junto a la marca */
+  .fila-marca { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+  .ver-badge {
+    flex-shrink: 0; font-size: .62rem; font-weight: 800; letter-spacing: .06em;
+    color: #fff; background: var(--acento-grad); border-radius: 999px; padding: 3px 8px 2px;
+    transform: translateY(-2px);
+  }
+  /* Índice del manual (panel Kits) */
+  .kit-indice { list-style: none; margin: 10px 0 0; padding: 12px 14px; background: #faf5ea; border: 1px solid #e6d8b8; border-radius: 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 6px 14px; font-size: .87rem; color: var(--tinta); }
+  .kit-indice li { display: flex; align-items: baseline; gap: 7px; min-width: 0; }
+  .kit-indice li::before { content: "✿"; color: var(--trigo-osc); font-size: .8rem; flex-shrink: 0; }
+  .kit-indice-tit { font-size: .8rem; font-weight: 700; color: var(--titulo); letter-spacing: .04em; text-transform: uppercase; margin-top: 12px; }
   .boton-primario {
     padding: 13px 18px; font-size: 1rem; font-family: inherit; font-weight: 700; color: #fff; border: none;
     border-radius: 12px; cursor: pointer; background: var(--acento-grad);
@@ -595,7 +611,7 @@
   <div class="marca">
     <svg class="logo" viewBox="0 0 80 80" aria-hidden="true"><use href="#logoMini"/></svg>
     <div style="min-width:0;">
-      <h1 id="tituloMarca">Alma bordado</h1>
+      <div class="fila-marca"><h1 id="tituloMarca">Alma bordado</h1><span class="ver-badge" title="AlmaApp 2.0">2.0</span></div>
       <p class="lema">Plantillas a tamaño real, listas para bordar</p>
     </div>
   </div>
@@ -670,6 +686,7 @@
   </div>
   <button class="boton-pdf" id="pdfRect" disabled>📄 Generar PDF para imprimir</button>
   <button class="boton-sec boton-img" id="imgRect" type="button">🖼️ Guardar imagen (para compartir)</button>
+  <button class="boton-sec boton-img boton-kit" id="btnKitRect" type="button">🎁 Crear kit de bordado con este diseño</button>
 </section>
 
 <!-- ============ MODO 2 ============ -->
@@ -722,6 +739,7 @@
   </div>
   <button class="boton-pdf" id="pdfCirc" disabled>📄 Generar PDF para imprimir</button>
   <button class="boton-sec boton-img" id="imgCirc" type="button">🖼️ Guardar imagen (para compartir)</button>
+  <button class="boton-sec boton-img boton-kit" id="btnKitCirc" type="button">🎁 Crear kit de bordado con este diseño</button>
 </section>
 
 <!-- ============ MODO 3 ============ -->
@@ -774,6 +792,7 @@
   </div>
   <button class="boton-pdf" id="pdfLetras" disabled>📄 Generar PDF para imprimir</button>
   <button class="boton-sec boton-img" id="imgLetras" type="button">🖼️ Guardar imagen (para compartir)</button>
+  <button class="boton-sec boton-img boton-kit" id="btnKitLetras" type="button">🎁 Crear kit de bordado con este diseño</button>
 </section>
 
 <!-- ============ MODO FOTO + TEXTO ============ -->
@@ -841,6 +860,7 @@
   </div>
   <button class="boton-pdf" id="pdfFt" disabled>📄 Generar PDF para imprimir</button>
   <button class="boton-sec boton-img" id="imgFt" type="button">🖼️ Guardar imagen (para compartir)</button>
+  <button class="boton-sec boton-img boton-kit" id="btnKitFt" type="button">🎁 Crear kit de bordado con este diseño</button>
 </section>
 
 <!-- ============ MODO 4 ============ -->
@@ -917,6 +937,7 @@
   </div>
   <button class="boton-pdf" id="pdfLibre" disabled>📄 Generar PDF para imprimir</button>
   <button class="boton-sec boton-img" id="imgLibre" type="button" disabled>🖼️ Guardar imagen (para compartir)</button>
+  <button class="boton-sec boton-img boton-kit" id="btnKitLibre" type="button">🎁 Crear kit de bordado con este diseño</button>
 </section>
 
 <!-- ============ PUNTO DE CRUZ ============ -->
@@ -993,6 +1014,7 @@
   </div>
   <button class="boton-pdf" id="pdfCruz" disabled>📄 Generar patrón PDF para imprimir</button>
   <button class="boton-sec boton-img" id="imgCruz" type="button" disabled>🖼️ Guardar imagen del patrón</button>
+  <button class="boton-sec boton-img boton-kit" id="btnKitCruz" type="button">🎁 Crear kit de bordado con este patrón</button>
 </section>
 
 <!-- ============ MOCKUP / VER EN PRODUCTO ============ -->
@@ -1044,47 +1066,60 @@
 
 <!-- ============ KITS DE BORDADO ============ -->
 <section id="panel-kits" class="panel">
-  <p class="intro">Arma un kit listo para vender o para acompañar un encargo — de <strong>bordado libre o punto de cruz</strong>. Genera un <strong>manual profesional</strong> con tu logo: bienvenida, insumos con lista de control, guía de puntadas ilustrada, paso a paso, el diseño y los cuidados finales. 🌸</p>
+  <p class="intro">El corazón de tu negocio: convierte <strong>cualquier diseño</strong> — bastidores con fotos, letras, dibujos, punto de cruz — en un <strong>kit listo para vender</strong>, con un <strong>manual profesional</strong> paso a paso que acompaña a tu clienta desde la primera puntada hasta el acabado. 🌸</p>
   <svg class="divisor" viewBox="0 0 150 22"><use href="#divisorBot"/></svg>
 
   <div class="tarjeta">
-    <h2><span class="paso">1</span> Origen del kit</h2>
+    <h2><span class="paso">1</span> El diseño del kit</h2>
     <div class="controles-previa" style="justify-content:flex-start;">
-      <button class="boton-sec" id="kitDesdeCruz" type="button">🧶 Desde mi punto de cruz</button>
-      <button class="boton-sec" id="kitDesdeActual" type="button">✨ Desde mi diseño actual</button>
+      <button class="boton-sec" id="kitDesdeActual" type="button">✨ Usar mi diseño actual</button>
+      <button class="boton-sec" id="kitDesdeCruz" type="button">🧶 Usar mi punto de cruz</button>
+      <label class="boton-sec" for="archivoKitDis" style="cursor:pointer;">🖼️ Subir un diseño</label>
+      <input type="file" id="archivoKitDis" accept="image/*" hidden>
     </div>
-    <p class="info-img" style="text-align:left;">También puedes generarlo desde «Mis proyectos» (botón 🎁 en cada uno). Desde punto de cruz se llena solo con los hilos DMC y las madejas.</p>
+    <p class="info-img" style="text-align:left;">Más fácil aún: en cada módulo de diseño tienes el botón <strong>«🎁 Crear kit»</strong>, y en «Mis proyectos» el botón 🎁 de cada tarjeta. La app rellena sola los insumos, hilos y pasos según el diseño — tú solo revisas y ajustas.</p>
   </div>
 
   <div class="tarjeta">
     <h2><span class="paso">2</span> Datos del kit</h2>
     <div class="campo"><label for="kitTitulo">Nombre del kit</label><input type="text" id="kitTitulo" placeholder="Kit cojín de flores" maxlength="80"></div>
     <div class="fila" style="margin-top:10px;">
+      <div class="campo"><label for="kitTecnica">Técnica</label><select id="kitTecnica"><option value="libre">Bordado tradicional (a mano alzada)</option><option value="cruz">Punto de cruz</option></select><small class="ayuda-campo">Define las puntadas, los pasos y los consejos del manual. El gráfico de símbolos se incluye cuando el kit nace del módulo Punto de cruz.</small></div>
+    </div>
+    <div class="fila" style="margin-top:10px;">
       <div class="campo"><label for="kitNivel">Dificultad</label><select id="kitNivel"><option value="">—</option><option>Fácil</option><option>Media</option><option>Avanzada</option></select></div>
       <div class="campo"><label for="kitTiempo">Tiempo estimado</label><input type="text" id="kitTiempo" placeholder="3–4 horas" maxlength="40"></div>
     </div>
-    <div class="campo" style="margin-top:10px;"><label for="kitTela">Tela y bastidor</label><input type="text" id="kitTela" placeholder="Aida 14 blanca · bastidor 20 cm" maxlength="120"></div>
+    <div class="campo" style="margin-top:10px;"><label for="kitTela">Tela y bastidor</label><input type="text" id="kitTela" placeholder="Algodón crudo 25 × 25 cm · bastidor 20 cm" maxlength="120"></div>
+    <div class="campo" style="margin-top:10px;"><label for="kitMensaje">Mensaje personal para tu clienta <small style="font-weight:400; color:var(--tinta-suave);">(opcional, abre el manual)</small></label><input type="text" id="kitMensaje" placeholder="Gracias por elegir este kit; lo preparé con mucho cariño…" maxlength="240"></div>
   </div>
 
   <div class="tarjeta">
     <h2><span class="paso">3</span> Insumos necesarios</h2>
     <div id="kitInsumos" class="kit-lista"></div>
-    <button class="boton-sec" id="kitAddInsumo" type="button">＋ Agregar insumo</button>
+    <div class="controles-previa" style="justify-content:flex-start;">
+      <button class="boton-sec" id="kitAddInsumo" type="button">＋ Agregar insumo</button>
+      <button class="boton-sec" id="kitSugerirIns" type="button">✨ Sugerir insumos</button>
+      <button class="boton-sec" id="kitHilosDis" type="button" title="Detecta los colores del diseño y sugiere los hilos DMC más parecidos">🧵 Hilos DMC del diseño</button>
+    </div>
   </div>
 
   <div class="tarjeta">
-    <h2><span class="paso">4</span> Instrucciones</h2>
+    <h2><span class="paso">4</span> Paso a paso del bordado</h2>
     <div id="kitPasos" class="kit-lista"></div>
     <div class="controles-previa" style="justify-content:flex-start;">
       <button class="boton-sec" id="kitAddPaso" type="button">＋ Agregar paso</button>
       <button class="boton-sec" id="kitSugerir" type="button">✨ Sugerir pasos</button>
     </div>
+    <p class="info-img" style="text-align:left; margin-top:10px;">El manual ya trae la preparación, la guía de puntadas ilustrada, los problemas frecuentes y el acabado. Aquí va solo el paso a paso <strong>de este diseño</strong>.</p>
   </div>
 
   <div class="tarjeta vista-previa">
-    <h2><span class="paso">5</span> Diseño del kit</h2>
+    <h2><span class="paso">5</span> El manual de tu kit</h2>
     <div class="lienzo-wrap"><canvas id="lienzoKit" width="420" height="420" role="img" aria-label="Diseño del kit"></canvas></div>
     <div class="pie" id="pieKit">Genera un kit desde un diseño para ver su portada.</div>
+    <p class="kit-indice-tit">El manual incluye</p>
+    <ul class="kit-indice" id="kitIndice"></ul>
   </div>
   <button class="boton-pdf" id="kitPdf" disabled>📘 Generar manual profesional del kit (PDF)</button>
 </section>
@@ -1198,11 +1233,27 @@
     <ul class="bienvenida-lista">
       <li>📐 Imprime cualquier imagen o texto al <strong>tamaño exacto</strong>, lista para calcar.</li>
       <li>🧶 Convierte fotos en <strong>patrones de punto de cruz</strong> con sus hilos DMC.</li>
+      <li>🎁 Convierte cualquier diseño en un <strong>kit de bordado</strong> con manual profesional.</li>
       <li>🪡 Pídele ideas y diseños a <strong>Alma</strong>, tu asistente.</li>
       <li>❤️ Guarda tus <strong>favoritos</strong> para volver cuando quieras.</li>
     </ul>
     <div class="campo" style="margin-top:4px;"><label>Elige tu color (lo cambias cuando quieras)</label><div class="temas-fila" id="temasFilaBienv"></div></div>
     <div class="modal-acciones"><button class="boton-primario" id="empezarBienvenida" type="button">Empezar ✨</button></div>
+  </div>
+</div>
+
+<div class="modal" id="modalNovedades" hidden>
+  <div class="modal-caja" role="dialog" aria-modal="true" aria-labelledby="tituloNovedades">
+    <svg viewBox="0 0 240 175" aria-hidden="true" style="width:120px; height:auto; display:block; margin:0 auto 4px; opacity:.9;"><use href="#ramoAlma"/></svg>
+    <h2 id="tituloNovedades" style="font-family:'Cormorant Garamond',Georgia,serif; font-size:1.7rem; text-align:center;">AlmaApp 2.0 ✨</h2>
+    <p class="sub" style="text-align:center;">Tu taller dio un salto — esto es lo nuevo:</p>
+    <ul class="bienvenida-lista">
+      <li>🎁 <strong>Kits para cualquier técnica</strong>: bastidores con fotos, letras, dibujos o punto de cruz. Botón «Crear kit» en cada módulo de diseño.</li>
+      <li>📘 <strong>Manual profesional renovado</strong>: preparación ilustrada, guía de puntadas ampliada, cómo pasar el diseño a la tela, rescates para los sustos típicos y acabado — todo con páginas numeradas y tu marca.</li>
+      <li>🧵 <strong>Hilos DMC automáticos</strong>: la app detecta los colores de tu diseño y te sugiere los hilos, insumos, bastidor y tiempos.</li>
+      <li>💌 <strong>Mensaje personal</strong> para tu clienta en la bienvenida de cada manual.</li>
+    </ul>
+    <div class="modal-acciones"><button class="boton-primario" id="cerrarNovedades" type="button">¡A bordar! 🌸</button></div>
   </div>
 </div>
 
@@ -4066,6 +4117,44 @@
     var t = document.createElement('canvas'); t.width = Math.max(1, Math.round(c.width * e)); t.height = Math.max(1, Math.round(c.height * e));
     try { t.getContext('2d').drawImage(c, 0, 0, t.width, t.height); return { panel: panel, url: t.toDataURL('image/png') }; } catch (e2) { return null; }
   }
+  function canvasAUrl(cv) { try { return cv.toDataURL('image/jpeg', 0.92); } catch (e) { try { return cv.toDataURL(); } catch (e2) { return null; } } }
+  // Render en ALTA RESOLUCIÓN del diseño del panel activo (sin la hoja de la vista previa).
+  // Lo usan Kits y Mockup. Llama cb({ url, wCm, hCm, panel }) o cb(null) si no hay diseño listo.
+  function renderDisenoActual(cb) {
+    var panel = panelDisenoActivo();
+    function dpiPara(wCm, hCm) { var pulg = Math.max(wCm, hCm, 1) / 2.54; return Math.max(60, Math.min(220, Math.round(1400 / pulg))); }
+    function entregar(cv, wCm, hCm) { var u = cv && canvasAUrl(cv); cb(u ? { url: u, wCm: wCm, hCm: hCm, panel: panel } : respaldo()); }
+    function respaldo() { var s = snapshotDiseno(1100); return s ? { url: s.url, wCm: 0, hCm: 0, panel: s.panel } : null; }
+    try {
+      if (panel === 'panel-rect' && imgRect) {
+        var aw = num('anchoRect'), ah = num('altoRect');
+        if (aw > 0 && ah > 0) { entregar(dibujarRect(imgRect, aw, ah, dpiPara(aw, ah), flipRect), aw, ah); return; }
+      } else if (panel === 'panel-circulo' && imgCirc) {
+        var d = num('diametroCirc');
+        if (d > 0) { var rc = dibujarCirculo(imgCirc, d / 2, modoCirculo(), num('anchoCentro'), false, dpiPara(d, d), { dx: desplCirc.x, dy: desplCirc.y, zoom: zoomCirc, flip: flipCirc }); entregar(rc.canvas, d, d); return; }
+      } else if (panel === 'panel-letras') {
+        var validas = lineasValidasLetras();
+        if (validas.length) {
+          var o = opcionesGlobLetras();
+          conFuentesListas(validas.map(function (l) { return l.fuente; }), function () {
+            var probe = construirCanvasLetras(validas, o, 30);
+            var r = probe && construirCanvasLetras(validas, o, dpiPara(probe.wCm, probe.hCm));
+            if (r) entregar(r.canvas, r.wCm, r.hCm); else cb(respaldo());
+          });
+          return;
+        }
+      } else if (panel === 'panel-fototexto' && imgFt) {
+        conFuentesFt(function () { try { var r = renderFtHiRes(); entregar(r.canvas, r.wCm, r.hCm); } catch (e) { cb(respaldo()); } });
+        return;
+      } else if (panel === 'panel-libre' && libreObjs.length) {
+        var dim = libreDim();
+        entregar(renderLibreCanvas(dpiPara(dim.w, dim.h)), dim.w, dim.h); return;
+      } else if (panel === 'panel-cruz' && modeloCruz) {
+        entregar(chartColorCanvas(modeloCruz, 1000), modeloCruz.wCm, modeloCruz.hCm); return;
+      }
+    } catch (e) {}
+    cb(respaldo());
+  }
   var mkFondo = null, mkDisOrig = null, mkDis = null, mkPos = { x: 0.5, y: 0.5 }, mkEsc = 0.4, mkRot = 0, mkBlanco = false, mkW = 600, mkH = 400;
   function prepararMockupDis() {
     if (!mkDisOrig) { mkDis = null; return; }
@@ -4124,9 +4213,10 @@
       cargarImagen(f, function (img) { mkDisOrig = img; mkPos = { x: 0.5, y: 0.5 }; mkRot = 0; prepararMockupDis(); mostrarMkControles(); dibujarMockup(); self.value = ''; }, function () { toast('No se pudo leer el diseño'); });
     });
     $('mockupUsarActual').addEventListener('click', function () {
-      var snap = snapshotDiseno(1000);
-      if (!snap) { toast('Primero dibuja algo en un panel de diseño'); return; }
-      var im = new Image(); im.onload = function () { mkDisOrig = im; mkPos = { x: 0.5, y: 0.5 }; mkRot = 0; prepararMockupDis(); mostrarMkControles(); dibujarMockup(); }; im.src = snap.url;
+      renderDisenoActual(function (r) {
+        if (!r) { toast('Primero dibuja algo en un panel de diseño'); return; }
+        var im = new Image(); im.onload = function () { mkDisOrig = im; mkPos = { x: 0.5, y: 0.5 }; mkRot = 0; prepararMockupDis(); mostrarMkControles(); dibujarMockup(); }; im.src = r.url;
+      });
     });
     $('mockupEscala').addEventListener('input', function () { mkEsc = (parseInt(this.value, 10) || 40) / 100; dibujarMockup(); });
     $('mockupGirar').addEventListener('click', function () { mkRot = (mkRot + 1) % 4; dibujarMockup(); });
@@ -4204,7 +4294,9 @@
   }
 
   // ===================== KITS DE BORDADO =====================
-  function nuevoKit() { return { titulo: '', nivel: '', tiempo: '', tela: '', tipo: 'libre', disenoImg: null, insumos: [], pasos: [], cruz: null }; }
+  // El producto estrella: cualquier diseño (bastidor con foto, letras, dibujo, punto de cruz)
+  // se convierte en un kit con manual profesional. La app sugiere sola insumos, hilos y pasos.
+  function nuevoKit() { return { titulo: '', nivel: '', tiempo: '', tela: '', tipo: 'libre', origen: '', mensaje: '', wCm: 0, hCm: 0, disenoImg: null, insumos: [], pasos: [], cruz: null }; }
   var kit = nuevoKit();
   function telaNombreCruz(t) { return ({ blanca: 'blanca', crema: 'crema/ecru', negra: 'negra' })[t] || 'blanca'; }
   function chartColorCanvas(m, maxPx) {
@@ -4234,11 +4326,22 @@
   }
   function pasosLibreDefault() {
     return [
-      { titulo: 'Pasa el diseño a la tela', detalle: 'Calca el diseño con papel transfer, lápiz hidrosoluble o a contraluz sobre la tela.' },
-      { titulo: 'Monta el bastidor', detalle: 'Pon la tela en el bastidor bien tensa para que las puntadas queden parejas.' },
-      { titulo: 'Borda los contornos', detalle: 'Empieza por las líneas con punto atrás o punto de tallo, usando 2 hebras.' },
-      { titulo: 'Rellena las áreas', detalle: 'Rellena con punto satín, punto largo y corto o nudos franceses según el diseño.' },
-      { titulo: 'Termina y limpia', detalle: 'Remata por detrás, borra las marcas del diseño y plancha por el revés.' }
+      { titulo: 'Pasa el diseño a la tela', detalle: 'Elige uno de los tres métodos de la página «El diseño a la tela»: a contraluz, con papel de transferencia o con lápiz hidrosoluble. Líneas finas y suaves.' },
+      { titulo: 'Monta el bastidor', detalle: 'Pon la tela en el bastidor bien tensa, como un tamborcito, con el diseño centrado. Vuelve a tensar cada vez que la sientas floja.' },
+      { titulo: 'Borda los contornos', detalle: 'Empieza por las líneas principales con punto atrás o punto de tallo, usando 2 hebras. Del centro del diseño hacia afuera.' },
+      { titulo: 'Rellena las áreas', detalle: 'Rellena con punto satín las zonas lisas, cadeneta para bordes gruesos y nudos franceses para los puntitos con volumen.' },
+      { titulo: 'Da los detalles finales', detalle: 'Deja para el final los detalles chiquitos (centros de flores, pestañas, brillitos): así no se aplastan mientras bordas el resto.' },
+      { titulo: 'Termina y limpia', detalle: 'Remata por detrás bajo unas puntadas, borra las marcas del diseño con agua fría y plancha por el revés sobre una toalla.' }
+    ];
+  }
+  function pasosLetrasDefault() {
+    return [
+      { titulo: 'Pasa las letras a la tela', detalle: 'Imprime el diseño a tamaño real y cálcalo a contraluz o con lápiz hidrosoluble. En letras, unas líneas finas y fieles hacen toda la diferencia.' },
+      { titulo: 'Monta el bastidor', detalle: 'Tela bien tensa y derecha: si la tela cede, las letras se tuercen. Revisa que el renglón quede paralelo a la trama de la tela.' },
+      { titulo: 'Borda los trazos finos', detalle: 'Sigue cada letra con punto atrás o punto de tallo (2 hebras). En las curvas haz puntadas más cortas para que queden redonditas.' },
+      { titulo: 'Rellena los trazos gruesos', detalle: 'Las zonas anchas de la letra se rellenan con punto satín (2–3 hebras), todas las puntadas en el mismo ángulo.' },
+      { titulo: 'Revisa a distancia', detalle: 'Aléjate un poco y mira el conjunto: las letras se leen de lejos. Corrige cualquier puntada que rompa la línea antes de rematar.' },
+      { titulo: 'Remata y limpia', detalle: 'Remata por detrás bajo las puntadas, borra las marcas con agua fría y plancha por el revés.' }
     ];
   }
   function insumosLibreDefault() {
@@ -4249,6 +4352,108 @@
       { item: 'Aguja de bordado', detalle: '' },
       { item: 'Tijeras y lápiz de marcar', detalle: '' }
     ];
+  }
+  // ---- Inteligencia del kit: tallas, tiempos, insumos e hilos sugeridos ----
+  function bastidorSugerido(ladoCm) {
+    var comunes = [10, 13, 15, 18, 20, 23, 26, 30], objetivo = ladoCm + 4;
+    for (var i = 0; i < comunes.length; i++) if (comunes[i] >= objetivo) return comunes[i];
+    return Math.ceil(objetivo);
+  }
+  function nivelTiempoKit(k) {
+    var lado = Math.max(k.wCm || 0, k.hCm || 0);
+    var tiempo = !lado ? '3–5 horas' : (lado <= 8 ? '2–3 horas' : (lado <= 14 ? '3–5 horas' : (lado <= 22 ? '5–8 horas' : '8–12 horas')));
+    var nivel = (k.origen === 'panel-letras') ? 'Fácil' : 'Media';
+    return { nivel: nivel, tiempo: tiempo };
+  }
+  function telaSugeridaLibre(k) {
+    if (k.wCm > 0 && k.hCm > 0) return 'Algodón o lino · corte de ' + Math.ceil(k.wCm + 8) + ' × ' + Math.ceil(k.hCm + 8) + ' cm · bastidor de ' + bastidorSugerido(Math.max(k.wCm, k.hCm)) + ' cm';
+    return 'Algodón o lino · deja 4–5 cm de margen alrededor del diseño';
+  }
+  function insumosLibreSmart(k, hilos) {
+    var lista = [];
+    if (k.wCm > 0 && k.hCm > 0) {
+      lista.push({ item: 'Tela para bordar (algodón o lino)', detalle: 'corte de ' + Math.ceil(k.wCm + 8) + ' × ' + Math.ceil(k.hCm + 8) + ' cm' });
+      lista.push({ item: 'Bastidor', detalle: bastidorSugerido(Math.max(k.wCm, k.hCm)) + ' cm' });
+    } else {
+      lista.push({ item: 'Tela para bordar (algodón o lino)', detalle: 'deja 4–5 cm de margen alrededor del diseño' });
+      lista.push({ item: 'Bastidor', detalle: 'un poco más grande que el diseño' });
+    }
+    if (hilos && hilos.length) hilos.forEach(function (h) { lista.push({ item: 'Hilo DMC ' + h.code + ' (' + h.name + ')', detalle: '1 madeja' }); });
+    else lista.push({ item: 'Hilos de bordar DMC', detalle: 'según los colores del diseño' });
+    lista.push({ item: 'Aguja de bordado (punta afilada)', detalle: 'nº 7–9' });
+    lista.push({ item: 'Tijeras de bordado', detalle: 'pequeñas y con buena punta' });
+    lista.push({ item: 'Lápiz hidrosoluble o papel de transferencia', detalle: 'para pasar el diseño a la tela' });
+    lista.push({ item: 'El diseño impreso a tamaño real', detalle: '' });
+    return lista;
+  }
+  function pasosSegunKit() {
+    if (kit.tipo === 'cruz') return pasosCruzDefault();
+    if (kit.origen === 'panel-letras') return pasosLetrasDefault();
+    return pasosLibreDefault();
+  }
+  // Detecta los colores del diseño y sugiere los hilos DMC más parecidos (misma
+  // ciencia de color del punto de cruz: median-cut + calce perceptual CIEDE2000)
+  function hilosDesdeUrl(url, cb) {
+    if (!url) { cb(null); return; }
+    var im = new Image();
+    im.onload = function () {
+      try {
+        var max = 96, e = Math.min(1, max / Math.max(im.naturalWidth, im.naturalHeight));
+        var w = Math.max(1, Math.round(im.naturalWidth * e)), h = Math.max(1, Math.round(im.naturalHeight * e));
+        var c = document.createElement('canvas'); c.width = w; c.height = h;
+        var x = c.getContext('2d', { willReadFrequently: true });
+        x.imageSmoothingEnabled = false;   // muestreo sin mezclar: evita inventar tonos en los bordes
+        x.drawImage(im, 0, 0, w, h);
+        var d = x.getImageData(0, 0, w, h).data, pts = [], i;
+        for (i = 0; i < d.length; i += 4) {
+          if (d[i + 3] < 160) continue;
+          var lum = (0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2]) / 255;
+          if (lum > 0.93) continue;   // fondo blanco del papel/tela
+          pts.push([d[i], d[i + 1], d[i + 2]]);
+        }
+        if (pts.length < 12) { cb(null); return; }
+        var reps = medianCut(pts, 8), elegidos = [], vistos = {};
+        reps.forEach(function (p) {
+          var dmc = dmcCercano(p[0], p[1], p[2]);
+          if (!vistos[dmc.code]) { vistos[dmc.code] = { code: dmc.code, name: dmc.name, hex: dmc.hex, lab: dmc.lab, count: 0 }; elegidos.push(vistos[dmc.code]); }
+        });
+        var paso = Math.max(1, Math.floor(pts.length / 3000));
+        for (var s = 0; s < pts.length; s += paso) {
+          var lab = labDe(pts[s][0], pts[s][1], pts[s][2]), bi = 0, bd = 1e9;
+          for (var k2 = 0; k2 < elegidos.length; k2++) { var dd = dELab(lab, elegidos[k2].lab); if (dd < bd) { bd = dd; bi = k2; } }
+          elegidos[bi].count++;
+        }
+        var total = elegidos.reduce(function (s2, o) { return s2 + o.count; }, 0) || 1;
+        var lista = elegidos.filter(function (o) { return o.count / total >= 0.03; });
+        lista.sort(function (p2, q) { return q.count - p2.count; });
+        // Quita hilos casi idénticos entre sí (tonos vecinos que salen del degradado de la foto)
+        var finales = [];
+        lista.forEach(function (o) {
+          for (var f = 0; f < finales.length; f++) if (de2000(o.lab, finales[f].lab) < 60) { finales[f].count += o.count; return; }
+          finales.push(o);
+        });
+        cb(finales.slice(0, 8));
+      } catch (e2) { cb(null); }
+    };
+    im.onerror = function () { cb(null); };
+    im.src = url;
+  }
+  // Reemplaza los hilos de la lista de insumos por los detectados (conserva el resto)
+  function aplicarHilosAInsumos(hilos) {
+    var resto = kit.insumos.filter(function (o) { return !/^hilos? (de bordar )?(dmc|\()/i.test(o.item || ''); });
+    var idx = Math.min(2, resto.length);
+    var nuevos = hilos.map(function (h) { return { item: 'Hilo DMC ' + h.code + ' (' + h.name + ')', detalle: '1 madeja' }; });
+    kit.insumos = resto.slice(0, idx).concat(nuevos, resto.slice(idx));
+  }
+  function sugerirInsumosKit() {
+    leerFormularioAKit();
+    if (kit.tipo === 'cruz' && kit.cruz) { kit.insumos = insumosDeCruz(kit.cruz); renderKitInsumos(); guardarKit(); toast('Insumos exactos del patrón 🧶'); return; }
+    kit.insumos = insumosLibreSmart(kit, null); renderKitInsumos(); guardarKit();
+    if (kit.disenoImg) hilosDesdeUrl(kit.disenoImg, function (hilos) {
+      if (hilos && hilos.length) { aplicarHilosAInsumos(hilos); renderKitInsumos(); guardarKit(); toast('Insumos e hilos DMC sugeridos según el diseño 🧵'); }
+      else toast('Insumos sugeridos 🌸');
+    });
+    else toast('Insumos sugeridos 🌸');
   }
   function kitRow(tipo, a, b, idx) {
     var row = document.createElement('div'); row.className = 'kit-row';
@@ -4269,36 +4474,89 @@
       var max = 460, e = Math.min(1, max / Math.max(im.width, im.height)); cv.width = Math.max(1, Math.round(im.width * e)); cv.height = Math.max(1, Math.round(im.height * e));
       x.fillStyle = '#fff'; x.fillRect(0, 0, cv.width, cv.height); x.drawImage(im, 0, 0, cv.width, cv.height);
     }; im.src = kit.disenoImg;
-    $('pieKit').textContent = (kit.tipo === 'cruz' ? 'Kit de punto de cruz' : 'Kit de bordado libre') + ' · listo para generar el manual';
+    var med = (kit.wCm > 0 && kit.hCm > 0) ? ' · diseño de ' + kit.wCm.toFixed(0) + ' × ' + kit.hCm.toFixed(0) + ' cm' : '';
+    $('pieKit').textContent = (kit.tipo === 'cruz' ? 'Kit de punto de cruz' : 'Kit de bordado tradicional') + med + ' · listo para generar el manual';
     $('kitPdf').disabled = false;
+  }
+  // Índice vivo del manual: muestra qué páginas tendrá el PDF según la técnica
+  function renderKitIndice() {
+    var el = $('kitIndice'); if (!el) return;
+    var esCruz = kit.tipo === 'cruz';
+    var items = [
+      'Portada con tu marca y el diseño',
+      'Bienvenida' + (kit.mensaje ? ' con tu mensaje personal' : '') + ' e índice',
+      'Insumos con lista de control',
+      'Preparación: bastidor, hebras y aguja',
+      esCruz ? 'La técnica del punto de cruz, ilustrada' : 'Guía ilustrada de puntadas',
+      esCruz ? null : 'El diseño a la tela: 3 métodos ilustrados',
+      'El paso a paso de este diseño',
+      (esCruz && kit.cruz) ? 'El patrón completo con símbolos, por hojas' : 'El diseño a página completa',
+      'Rescates: problemas frecuentes y su solución',
+      'Acabado: lavado, planchado y montaje en bastidor',
+      'Cierre con tu marca y contacto'
+    ].filter(Boolean);
+    el.innerHTML = items.map(function (t) { return '<li>' + t + '</li>'; }).join('');
   }
   function aplicarKitAFormulario() {
     $('kitTitulo').value = kit.titulo || ''; $('kitNivel').value = kit.nivel || ''; $('kitTiempo').value = kit.tiempo || ''; $('kitTela').value = kit.tela || '';
-    renderKitInsumos(); renderKitPasos(); pintarKitPreview();
+    if ($('kitTecnica')) $('kitTecnica').value = kit.tipo === 'cruz' ? 'cruz' : 'libre';
+    if ($('kitMensaje')) $('kitMensaje').value = kit.mensaje || '';
+    renderKitInsumos(); renderKitPasos(); renderKitIndice(); pintarKitPreview();
   }
   function leerFormularioAKit() {
     kit.titulo = $('kitTitulo').value.toString().slice(0, 80); kit.nivel = $('kitNivel').value; kit.tiempo = $('kitTiempo').value.toString().slice(0, 40); kit.tela = $('kitTela').value.toString().slice(0, 120);
+    if ($('kitTecnica')) kit.tipo = $('kitTecnica').value === 'cruz' ? 'cruz' : 'libre';
+    if ($('kitMensaje')) kit.mensaje = $('kitMensaje').value.toString().slice(0, 240);
   }
   function irAKits() { var t = document.querySelector('.tab-btn[data-panel="panel-kits"]'); if (t) t.click(); }
   function kitDesdeCruz() {
     if (!modeloCruz) { toast('Primero crea o sube un patrón en Punto de cruz'); var tc = document.querySelector('.tab-btn[data-panel="panel-cruz"]'); if (tc) tc.click(); return; }
-    var m = modeloCruz; kit = nuevoKit(); kit.tipo = 'cruz'; kit.cruz = m;
+    var m = modeloCruz; kit = nuevoKit(); kit.tipo = 'cruz'; kit.cruz = m; kit.origen = 'panel-cruz';
+    kit.wCm = m.wCm; kit.hCm = m.hCm;
     kit.titulo = 'Kit punto de cruz';
     kit.nivel = m.palette.length > 16 ? 'Avanzada' : (m.palette.length > 8 ? 'Media' : 'Fácil');
     var hrs = Math.max(1, Math.round((m.totalPuntos || m.cols * m.rows) / 700)); kit.tiempo = '~' + hrs + (hrs > 1 ? ' horas' : ' hora');
     kit.tela = 'Aida ' + m.aida + ' ct ' + telaNombreCruz(m.tela) + ' · ' + m.wCm.toFixed(0) + ' × ' + m.hCm.toFixed(0) + ' cm';
     kit.insumos = insumosDeCruz(m); kit.pasos = pasosCruzDefault();
     try { kit.disenoImg = chartColorCanvas(m, 760).toDataURL('image/jpeg', 0.85); } catch (e) { kit.disenoImg = null; }
-    aplicarKitAFormulario(); guardarKit(); irAKits(); toast('Kit armado desde tu punto de cruz 🌸');
+    aplicarKitAFormulario(); guardarKit(); irAKits(); toast('Kit armado desde tu punto de cruz, con sus hilos y madejas exactos 🌸');
   }
   function kitDesdeActual() {
     if (panelDisenoActivo() === 'panel-cruz' && modeloCruz) { kitDesdeCruz(); return; }
-    var snap = snapshotDiseno(1100);
-    if (!snap) { toast('Primero dibuja algo en un panel de diseño'); return; }
-    kit = nuevoKit(); kit.tipo = 'libre'; kit.disenoImg = snap.url;
-    kit.titulo = 'Kit ' + ((NOMBRE_PANEL_CORTO[snap.panel] || 'bordado').toLowerCase());
-    kit.insumos = insumosLibreDefault(); kit.pasos = pasosLibreDefault();
-    aplicarKitAFormulario(); guardarKit(); irAKits(); toast('Kit armado desde tu diseño 🌸');
+    renderDisenoActual(function (r) {
+      if (!r) { toast('Primero dibuja algo en un panel de diseño'); return; }
+      kit = nuevoKit(); kit.tipo = 'libre'; kit.origen = r.panel; kit.disenoImg = r.url;
+      kit.wCm = +r.wCm || 0; kit.hCm = +r.hCm || 0;
+      kit.titulo = 'Kit ' + ((NOMBRE_PANEL_CORTO[r.panel] || 'bordado').toLowerCase());
+      var nt = nivelTiempoKit(kit); kit.nivel = nt.nivel; kit.tiempo = nt.tiempo;
+      kit.tela = telaSugeridaLibre(kit);
+      kit.insumos = insumosLibreSmart(kit, null); kit.pasos = pasosSegunKit();
+      aplicarKitAFormulario(); guardarKit(); irAKits(); toast('Kit armado desde tu diseño 🌸');
+      // En segundo plano: detectar los colores y sugerir los hilos DMC
+      hilosDesdeUrl(kit.disenoImg, function (hilos) {
+        if (!hilos || !hilos.length) return;
+        aplicarHilosAInsumos(hilos); renderKitInsumos(); guardarKit();
+        toast('Te sugerí ' + hilos.length + ' hilos DMC según los colores del diseño 🧵');
+      });
+    });
+  }
+  // Kit desde una imagen subida (un diseño hecho fuera de la app)
+  function kitDesdeArchivo(img) {
+    var max = 1200, e = Math.min(1, max / Math.max(img.naturalWidth || img.width, img.naturalHeight || img.height));
+    var w = Math.max(1, Math.round((img.naturalWidth || img.width) * e)), h = Math.max(1, Math.round((img.naturalHeight || img.height) * e));
+    var c = document.createElement('canvas'); c.width = w; c.height = h;
+    var x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, w, h); x.drawImage(img, 0, 0, w, h);
+    kit = nuevoKit(); kit.tipo = 'libre'; kit.origen = 'archivo'; kit.disenoImg = canvasAUrl(c);
+    kit.titulo = 'Kit de bordado';
+    var nt = nivelTiempoKit(kit); kit.nivel = nt.nivel; kit.tiempo = nt.tiempo;
+    kit.tela = telaSugeridaLibre(kit);
+    kit.insumos = insumosLibreSmart(kit, null); kit.pasos = pasosSegunKit();
+    aplicarKitAFormulario(); guardarKit(); toast('Kit armado con tu diseño 🌸');
+    hilosDesdeUrl(kit.disenoImg, function (hilos) {
+      if (!hilos || !hilos.length) return;
+      aplicarHilosAInsumos(hilos); renderKitInsumos(); guardarKit();
+      toast('Te sugerí ' + hilos.length + ' hilos DMC según los colores del diseño 🧵');
+    });
   }
   function kitDesdeProyecto(id) {
     var p = null; for (var i = 0; i < proyectos.length; i++) if (proyectos[i].id === id) p = proyectos[i];
@@ -4308,26 +4566,49 @@
     setTimeout(function () { kitDesdeActual(); if (kit.titulo) { kit.titulo = 'Kit ' + p.nombre; $('kitTitulo').value = kit.titulo; guardarKit(); } }, 800);
   }
   function guardarKit() {
-    var lite = { titulo: kit.titulo, nivel: kit.nivel, tiempo: kit.tiempo, tela: kit.tela, tipo: kit.tipo, disenoImg: kit.disenoImg, insumos: kit.insumos, pasos: kit.pasos };
+    var lite = { titulo: kit.titulo, nivel: kit.nivel, tiempo: kit.tiempo, tela: kit.tela, tipo: kit.tipo, origen: kit.origen, mensaje: kit.mensaje, wCm: kit.wCm, hCm: kit.hCm, disenoImg: kit.disenoImg, insumos: kit.insumos, pasos: kit.pasos };
     try { localStorage.setItem('alma_kit', JSON.stringify(lite)); } catch (e) {}
   }
   function cargarKit() {
-    try { var s = JSON.parse(localStorage.getItem('alma_kit') || 'null'); if (s && typeof s === 'object') { kit = nuevoKit(); kit.titulo = s.titulo || ''; kit.nivel = s.nivel || ''; kit.tiempo = s.tiempo || ''; kit.tela = s.tela || ''; kit.tipo = s.tipo === 'cruz' ? 'cruz' : 'libre'; kit.disenoImg = (typeof s.disenoImg === 'string' && s.disenoImg.slice(0, 11) === 'data:image/') ? s.disenoImg : null; kit.insumos = Array.isArray(s.insumos) ? s.insumos.slice(0, 60) : []; kit.pasos = Array.isArray(s.pasos) ? s.pasos.slice(0, 40) : []; } } catch (e) {}
+    try { var s = JSON.parse(localStorage.getItem('alma_kit') || 'null'); if (s && typeof s === 'object') { kit = nuevoKit(); kit.titulo = s.titulo || ''; kit.nivel = s.nivel || ''; kit.tiempo = s.tiempo || ''; kit.tela = s.tela || ''; kit.tipo = s.tipo === 'cruz' ? 'cruz' : 'libre'; kit.origen = typeof s.origen === 'string' ? s.origen : ''; kit.mensaje = typeof s.mensaje === 'string' ? s.mensaje.slice(0, 240) : ''; kit.wCm = +s.wCm || 0; kit.hCm = +s.hCm || 0; kit.disenoImg = (typeof s.disenoImg === 'string' && s.disenoImg.slice(0, 11) === 'data:image/') ? s.disenoImg : null; kit.insumos = Array.isArray(s.insumos) ? s.insumos.slice(0, 60) : []; kit.pasos = Array.isArray(s.pasos) ? s.pasos.slice(0, 40) : []; } } catch (e) {}
   }
   (function () {
     if (!$('kitInsumos')) return;
-    ['kitTitulo', 'kitNivel', 'kitTiempo', 'kitTela'].forEach(function (id) { $(id).addEventListener('input', function () { leerFormularioAKit(); guardarKit(); }); $(id).addEventListener('change', function () { leerFormularioAKit(); guardarKit(); }); });
+    ['kitTitulo', 'kitNivel', 'kitTiempo', 'kitTela', 'kitMensaje'].forEach(function (id) { $(id).addEventListener('input', function () { leerFormularioAKit(); guardarKit(); if (id === 'kitMensaje') renderKitIndice(); }); $(id).addEventListener('change', function () { leerFormularioAKit(); guardarKit(); }); });
+    $('kitTecnica').addEventListener('change', function () {
+      leerFormularioAKit(); renderKitIndice(); pintarKitPreview(); guardarKit();
+      toast('Técnica del kit: ' + (kit.tipo === 'cruz' ? 'punto de cruz' : 'bordado tradicional') + ' — toca «✨ Sugerir pasos» para adaptar las instrucciones');
+    });
     $('kitAddInsumo').addEventListener('click', function () { kit.insumos.push({ item: '', detalle: '' }); renderKitInsumos(); var ins = $('kitInsumos').lastChild; if (ins) ins.querySelector('input').focus(); guardarKit(); });
     $('kitAddPaso').addEventListener('click', function () { kit.pasos.push({ titulo: '', detalle: '' }); renderKitPasos(); var ps = $('kitPasos').lastChild; if (ps) ps.querySelector('input').focus(); guardarKit(); });
-    $('kitSugerir').addEventListener('click', function () { kit.pasos = kit.tipo === 'cruz' ? pasosCruzDefault() : pasosLibreDefault(); renderKitPasos(); guardarKit(); toast('Pasos sugeridos 🌸'); });
+    $('kitSugerir').addEventListener('click', function () { leerFormularioAKit(); kit.pasos = pasosSegunKit(); renderKitPasos(); guardarKit(); toast('Pasos sugeridos según la técnica 🌸'); });
+    $('kitSugerirIns').addEventListener('click', sugerirInsumosKit);
+    $('kitHilosDis').addEventListener('click', function () {
+      leerFormularioAKit();
+      if (kit.tipo === 'cruz' && kit.cruz) { toast('Tu punto de cruz ya trae los hilos exactos del patrón 🧶'); return; }
+      if (!kit.disenoImg) { toast('Primero ponle un diseño al kit'); return; }
+      toast('Buscando los hilos DMC del diseño…');
+      hilosDesdeUrl(kit.disenoImg, function (hilos) {
+        if (!hilos || !hilos.length) { toast('No encontré colores para calzar (¿diseño muy claro?)'); return; }
+        aplicarHilosAInsumos(hilos); renderKitInsumos(); guardarKit(); toast(hilos.length + ' hilos DMC sugeridos 🧵');
+      });
+    });
     $('kitDesdeCruz').addEventListener('click', kitDesdeCruz);
     $('kitDesdeActual').addEventListener('click', kitDesdeActual);
+    $('archivoKitDis').addEventListener('change', function () {
+      var f = this.files && this.files[0]; if (!f) return;
+      cargarImagen(f, function (img) { kitDesdeArchivo(img); }, function (m) { toast('⚠️ ' + m); });
+      this.value = '';
+    });
+    // Botones «🎁 Crear kit» de los módulos de diseño
+    ['btnKitRect', 'btnKitCirc', 'btnKitLetras', 'btnKitFt', 'btnKitLibre'].forEach(function (id) { var b = $(id); if (b) b.addEventListener('click', kitDesdeActual); });
+    (function () { var b = $('btnKitCruz'); if (b) b.addEventListener('click', kitDesdeCruz); })();
     $('kitPdf').addEventListener('click', function () { leerFormularioAKit(); toast('Generando PDF…'); setTimeout(function () { try { generarKitPdf(function () { toast('PDF listo  ✓'); }); } catch (e) { toast('Hubo un problema al generar el PDF'); } }, 50); });
   })();
 
   // ---- Manual profesional del kit (PDF) ----
   var KIT_C = { titulo: '#6f6151', tinta: '#3a342c', suave: '#6f665a', acento: '#a98a5f', hilo: '#b05a7d', tela: '#faf6ee', borde: '#e2d8c4' };
-  function kitTipoNombre() { return kit.tipo === 'cruz' ? 'Punto de cruz' : 'Bordado libre'; }
+  function kitTipoNombre() { return kit.tipo === 'cruz' ? 'Punto de cruz' : 'Bordado tradicional'; }
   // Margarita pastel dibujada (portada y detalles del manual)
   function florKit(x, cx, cy, r, color) {
     x.save(); x.translate(cx, cy); x.fillStyle = color || '#ecc8cf';
@@ -4358,7 +4639,8 @@
     x.fillStyle = KIT_C.tinta; x.font = 'bold ' + Math.round(dpi * 0.26) + 'px Georgia, serif'; y = textoEnvueltoC(x, kit.titulo || 'Kit de bordado', W / 2, y, W - 2 * M, Math.round(dpi * 0.34)) + Math.round(dpi * 0.18);
     if (kit.disenoImg) { var im = portadaImgCache; if (im && im.complete && im.naturalWidth) { var maxW = W - 2 * M, maxH = Math.round(dpi * 4.0), e = Math.min(maxW / im.naturalWidth, maxH / im.naturalHeight), dw = im.naturalWidth * e, dh = im.naturalHeight * e; x.save(); x.shadowColor = 'rgba(0,0,0,0.18)'; x.shadowBlur = 10; x.shadowOffsetY = 5; x.fillStyle = '#fff'; x.fillRect(W / 2 - dw / 2 - 6, y - 6, dw + 12, dh + 12); x.drawImage(im, W / 2 - dw / 2, y, dw, dh); x.restore(); y += dh + Math.round(dpi * 0.38); } }
     x.fillStyle = KIT_C.suave; x.font = Math.round(dpi * 0.15) + 'px sans-serif';
-    var meta = [kit.nivel ? 'Dificultad: ' + kit.nivel : '', kit.tiempo ? 'Tiempo: ' + kit.tiempo : ''].filter(Boolean).join('   ·   ');
+    var meta = [kit.nivel ? 'Dificultad: ' + kit.nivel : '', kit.tiempo ? 'Tiempo: ' + kit.tiempo : '',
+      (kit.wCm > 0 && kit.hCm > 0) ? 'Diseño: ' + kit.wCm.toFixed(0) + ' × ' + kit.hCm.toFixed(0) + ' cm' : ''].filter(Boolean).join('   ·   ');
     if (meta) { x.fillText(meta, W / 2, y); y += Math.round(dpi * 0.26); }
     if (kit.tela) y = textoEnvueltoC(x, kit.tela, W / 2, y, W - 2 * M, Math.round(dpi * 0.24));
     var by = H - M; x.fillStyle = acc; x.font = '600 ' + Math.round(dpi * 0.14) + 'px sans-serif';
@@ -4429,6 +4711,129 @@
     x.quadraticCurveTo(cx - r * 0.9, cy + r * 1.15, cx - r * 1.5, cy + r * 0.7); x.stroke();
     x.fillStyle = KIT_C.hilo; x.beginPath(); x.arc(cx, cy, r * 0.15, 0, 6.2832); x.fill();
   }
+  function digLanzado(x, cx, cy, w, h, dpi) {
+    hiloTrazo(x, dpi);
+    var pares = [[-0.32, 0.3, -0.38, -0.26], [-0.05, 0.32, 0.0, -0.32], [0.24, 0.3, 0.34, -0.18]];
+    pares.forEach(function (p) { x.beginPath(); x.moveTo(cx + p[0] * w, cy + p[1] * h); x.lineTo(cx + p[2] * w, cy + p[3] * h); x.stroke(); });
+    puntoNum(x, cx - 0.05 * w, cy + 0.32 * h, 1, dpi); puntoNum(x, cx, cy - 0.32 * h, 2, dpi);
+  }
+  function digFeston(x, cx, cy, w, h, dpi) {
+    hiloTrazo(x, dpi); var n = 4, seg = w * 0.8 / n, x0 = cx - w * 0.4, y0 = cy + h * 0.3, alto = h * 0.55;
+    x.beginPath(); x.moveTo(x0, y0); x.lineTo(x0 + n * seg, y0); x.stroke();
+    for (var i = 0; i <= n; i++) { x.beginPath(); x.moveTo(x0 + i * seg, y0); x.lineTo(x0 + i * seg, y0 - alto); x.stroke(); }
+  }
+  // --- Diagramas de preparación y acabado (manual profesional) ---
+  function digHebras(x, cx, cy, w, h, dpi) {
+    hiloTrazo(x, dpi); var lw = x.lineWidth; x.lineWidth = Math.max(2, lw * 0.5);
+    var x0 = cx - w * 0.45, x1 = cx + w * 0.1;
+    for (var i = 0; i < 6; i++) {
+      var t = (i - 2.5) * (h * 0.09);
+      x.beginPath(); x.moveTo(x0, cy + t * 0.25); x.quadraticCurveTo((x0 + x1) / 2, cy + t * 0.7, x1, cy + t); x.stroke();
+    }
+    x.beginPath(); x.moveTo(x1, cy - h * 0.225); x.quadraticCurveTo(cx + w * 0.28, cy - h * 0.4, cx + w * 0.45, cy - h * 0.42); x.stroke();
+    x.beginPath(); x.moveTo(x1, cy - h * 0.135); x.quadraticCurveTo(cx + w * 0.28, cy - h * 0.3, cx + w * 0.45, cy - h * 0.34); x.stroke();
+    flechaKit(x, cx + w * 0.2, cy - h * 0.02, cx + w * 0.34, cy - h * 0.26);
+    x.lineWidth = lw;
+  }
+  function digEnhebrar(x, cx, cy, w, h, dpi) {
+    var top = cy - h * 0.38, nx = cx + w * 0.16;
+    x.strokeStyle = '#948b7c'; x.lineCap = 'round';
+    x.lineWidth = Math.max(4, Math.round(dpi * 0.045));
+    x.beginPath(); x.moveTo(nx, cy + h * 0.42); x.lineTo(nx, top + h * 0.16); x.stroke();
+    x.lineWidth = Math.max(2, Math.round(dpi * 0.018));
+    x.beginPath(); x.ellipse(nx, top + h * 0.08, Math.max(3, dpi * 0.024), Math.max(5, dpi * 0.05), 0, 0, 6.2832); x.stroke();
+    hiloTrazo(x, dpi); x.lineWidth = Math.max(2.5, Math.round(dpi * 0.026));
+    x.beginPath(); x.moveTo(cx - w * 0.42, cy + h * 0.3);
+    x.quadraticCurveTo(cx - w * 0.3, cy - h * 0.15, nx - w * 0.02, top + h * 0.08);
+    x.quadraticCurveTo(nx + w * 0.12, top + h * 0.02, nx + w * 0.2, top + h * 0.3); x.stroke();
+  }
+  function digBastidor(x, cx, cy, w, h, dpi) {
+    var r = Math.min(w, h) * 0.42;
+    x.save(); x.beginPath(); x.arc(cx, cy, r * 0.86, 0, 6.2832); x.clip();
+    x.strokeStyle = '#e3d9c6'; x.lineWidth = 1.5;
+    for (var i = -5; i <= 5; i++) {
+      x.beginPath(); x.moveTo(cx + i * r * 0.22, cy - r); x.lineTo(cx + i * r * 0.22, cy + r); x.stroke();
+      x.beginPath(); x.moveTo(cx - r, cy + i * r * 0.22); x.lineTo(cx + r, cy + i * r * 0.22); x.stroke();
+    }
+    x.restore();
+    x.strokeStyle = '#b09468'; x.lineWidth = Math.max(3, Math.round(dpi * 0.035));
+    x.beginPath(); x.arc(cx, cy, r, 0, 6.2832); x.stroke();
+    x.beginPath(); x.arc(cx, cy, r * 0.86, 0, 6.2832); x.stroke();
+    x.fillStyle = '#b09468';
+    x.fillRect(cx - r * 0.16, cy - r - dpi * 0.09, r * 0.32, dpi * 0.07);
+    x.fillRect(cx - r * 0.05, cy - r - dpi * 0.16, r * 0.1, dpi * 0.16);
+  }
+  function digSinNudo(x, cx, cy, w, h, dpi) {
+    x.strokeStyle = '#d8cbb2'; x.lineWidth = 1.5;
+    x.strokeRect(cx - w * 0.42, cy - h * 0.3, w * 0.84, h * 0.6);
+    hiloTrazo(x, dpi); x.globalAlpha = 0.5;
+    x.beginPath(); x.moveTo(cx - w * 0.36, cy + h * 0.16); x.quadraticCurveTo(cx, cy + h * 0.28, cx + w * 0.3, cy + h * 0.1); x.stroke();
+    x.globalAlpha = 1;
+    for (var i = 0; i < 3; i++) { var px = cx - w * 0.2 + i * w * 0.18; x.beginPath(); x.moveTo(px, cy - h * 0.12); x.lineTo(px + w * 0.09, cy + h * 0.2); x.stroke(); }
+  }
+  function digCentroTela(x, cx, cy, w, h, dpi) {
+    x.strokeStyle = '#b8a888'; x.lineWidth = 2;
+    x.strokeRect(cx - w * 0.4, cy - h * 0.36, w * 0.8, h * 0.72);
+    x.setLineDash([6, 5]); x.strokeStyle = KIT_C.hilo; x.lineWidth = 2;
+    x.beginPath(); x.moveTo(cx, cy - h * 0.36); x.lineTo(cx, cy + h * 0.36); x.stroke();
+    x.beginPath(); x.moveTo(cx - w * 0.4, cy); x.lineTo(cx + w * 0.4, cy); x.stroke();
+    x.setLineDash([]);
+    x.fillStyle = KIT_C.hilo; x.beginPath(); x.arc(cx, cy, Math.max(3.5, dpi * 0.03), 0, 6.2832); x.fill();
+  }
+  function digAcabadoBastidor(x, cx, cy, w, h, dpi) {
+    var r = Math.min(w, h) * 0.46;
+    x.strokeStyle = '#cdbfa6'; x.lineWidth = 2;
+    x.beginPath(); x.arc(cx, cy, r, 0, 6.2832); x.stroke();
+    x.strokeStyle = '#b09468'; x.lineWidth = Math.max(3, Math.round(dpi * 0.03));
+    x.beginPath(); x.arc(cx, cy, r * 0.6, 0, 6.2832); x.stroke();
+    hiloTrazo(x, dpi); x.lineWidth = Math.max(2, Math.round(dpi * 0.02));
+    x.setLineDash([Math.max(4, dpi * 0.045), Math.max(4, dpi * 0.045)]);
+    x.beginPath(); x.arc(cx, cy, r * 0.85, 0, 6.2832); x.stroke(); x.setLineDash([]);
+    for (var i = 0; i < 4; i++) { var a = i * Math.PI / 2 + Math.PI / 4; flechaKit(x, cx + Math.cos(a) * r * 0.8, cy + Math.sin(a) * r * 0.8, cx + Math.cos(a) * r * 0.45, cy + Math.sin(a) * r * 0.45); }
+  }
+  // --- Diagramas de transferencia del diseño a la tela ---
+  function corazonPath(x, cx, cy, r) {
+    x.beginPath();
+    x.moveTo(cx, cy + r);
+    x.bezierCurveTo(cx - 2 * r, cy - r * 0.5, cx - r * 0.7, cy - 1.6 * r, cx, cy - r * 0.55);
+    x.bezierCurveTo(cx + r * 0.7, cy - 1.6 * r, cx + 2 * r, cy - r * 0.5, cx, cy + r);
+  }
+  function digVentana(x, cx, cy, w, h, dpi) {
+    w = Math.min(w, h * 2.4);   // en tarjetas anchas, mantiene la proporción del dibujo
+    x.fillStyle = '#fdf6e3'; x.strokeStyle = '#b8a888'; x.lineWidth = 2;
+    var vw = w * 0.46, vh = h * 0.84, vx = cx - w * 0.44, vy = cy - vh / 2;
+    x.fillRect(vx, vy, vw, vh); x.strokeRect(vx, vy, vw, vh);
+    x.beginPath(); x.moveTo(vx + vw / 2, vy); x.lineTo(vx + vw / 2, vy + vh); x.moveTo(vx, vy + vh / 2); x.lineTo(vx + vw, vy + vh / 2); x.stroke();
+    x.fillStyle = '#e9c46a'; x.beginPath(); x.arc(vx + vw * 0.27, vy + vh * 0.24, Math.min(vw, vh) * 0.11, 0, 6.2832); x.fill();
+    x.fillStyle = '#ffffff'; x.strokeStyle = '#cdbfa6';
+    var hx = cx + w * 0.08, hy = cy - h * 0.34, hw = w * 0.3, hh = h * 0.68;
+    x.fillRect(hx, hy, hw, hh); x.strokeRect(hx, hy, hw, hh);
+    hiloTrazo(x, dpi); x.lineWidth = 2.5;
+    corazonPath(x, hx + hw / 2, hy + hh / 2, Math.min(hw, hh) * 0.22); x.stroke();
+  }
+  function digCalco(x, cx, cy, w, h, dpi) {
+    w = Math.min(w, h * 2.4);
+    x.lineWidth = 2;
+    x.fillStyle = '#f6efe0'; x.strokeStyle = '#b8a888';
+    x.fillRect(cx - w * 0.42, cy - h * 0.1, w * 0.62, h * 0.44); x.strokeRect(cx - w * 0.42, cy - h * 0.1, w * 0.62, h * 0.44);
+    x.fillStyle = '#e8d7e2'; x.strokeStyle = '#c3a8bd';
+    x.fillRect(cx - w * 0.34, cy - h * 0.24, w * 0.62, h * 0.44); x.strokeRect(cx - w * 0.34, cy - h * 0.24, w * 0.62, h * 0.44);
+    x.fillStyle = '#ffffff'; x.strokeStyle = '#cdbfa6';
+    x.fillRect(cx - w * 0.26, cy - h * 0.38, w * 0.62, h * 0.44); x.strokeRect(cx - w * 0.26, cy - h * 0.38, w * 0.62, h * 0.44);
+    hiloTrazo(x, dpi); x.lineWidth = 2.5; corazonPath(x, cx + w * 0.05, cy - h * 0.16, Math.min(w, h) * 0.12); x.stroke();
+    x.strokeStyle = '#8a6a32'; x.lineWidth = Math.max(3, Math.round(dpi * 0.03)); x.lineCap = 'round';
+    x.beginPath(); x.moveTo(cx + w * 0.13, cy - h * 0.2); x.lineTo(cx + w * 0.34, cy - h * 0.46); x.stroke();
+  }
+  function digHidro(x, cx, cy, w, h, dpi) {
+    w = Math.min(w, h * 2.4);
+    x.fillStyle = '#f6efe0'; x.strokeStyle = '#b8a888'; x.lineWidth = 2;
+    x.fillRect(cx - w * 0.4, cy - h * 0.36, w * 0.8, h * 0.72); x.strokeRect(cx - w * 0.4, cy - h * 0.36, w * 0.8, h * 0.72);
+    x.strokeStyle = '#7fa8c9'; x.lineWidth = 2.5; x.setLineDash([5, 4]);
+    corazonPath(x, cx - w * 0.05, cy + h * 0.02, Math.min(w, h) * 0.2); x.stroke(); x.setLineDash([]);
+    x.strokeStyle = '#5f8aa8'; x.lineWidth = Math.max(3, Math.round(dpi * 0.03)); x.lineCap = 'round';
+    x.beginPath(); x.moveTo(cx + w * 0.1, cy + h * 0.02); x.lineTo(cx + w * 0.3, cy - h * 0.28); x.stroke();
+    x.fillStyle = '#9cc0dc'; x.beginPath(); x.arc(cx + w * 0.3, cy + h * 0.24, Math.max(4, dpi * 0.04), 0, 6.2832); x.fill();
+  }
   function gridCeldas(x, gx, gy, cell, cols, rows) {
     x.strokeStyle = '#d8cbb2'; x.lineWidth = 1.5;
     for (var r = 0; r <= rows; r++) { x.beginPath(); x.moveTo(gx, gy + r * cell); x.lineTo(gx + cols * cell, gy + r * cell); x.stroke(); }
@@ -4470,25 +4875,35 @@
     if (ah > dpi * 0.3) dibuja(x, bx + bw / 2, ty + ah / 2, bw - 2 * pad - Math.round(dpi * 0.16), ah - Math.round(dpi * 0.08), dpi);
   }
   var PUNTADAS_LIBRE = [
-    { n: 'Punto atrás', d: 'Para contornos y líneas: retrocede una puntada y avanza dos.', f: digAtras },
-    { n: 'Punto de tallo', d: 'Línea con efecto de cordón, ideal para tallos y curvas.', f: digTallo },
-    { n: 'Cadeneta', d: 'Eslabones enlazados: bordes gruesos o rellenos en espiral.', f: digCadeneta },
-    { n: 'Punto margarita', d: 'Pétalos sueltos para hacer florcitas en un dos por tres.', f: digMargarita },
-    { n: 'Punto satín', d: 'Relleno liso y brillante: puntadas paralelas bien juntitas.', f: digSatin },
-    { n: 'Nudo francés', d: 'Puntitos con volumen: enrolla el hilo 2–3 veces en la aguja.', f: digNudo }
+    { n: 'Punto lanzado', d: 'La puntada más simple: sube en 1 y baja en 2. Para detalles sueltos, pastito y rayitos.', f: digLanzado },
+    { n: 'Punto atrás', d: 'Para contornos y líneas firmes: retrocede una puntada y avanza dos por debajo.', f: digAtras },
+    { n: 'Punto de tallo', d: 'Línea con efecto de cordón, ideal para tallos, ramas y curvas suaves.', f: digTallo },
+    { n: 'Cadeneta', d: 'Eslabones enlazados: bordes gruesos, letras o rellenos en espiral.', f: digCadeneta },
+    { n: 'Punto margarita', d: 'Cadeneta suelta en pétalos: florcitas y hojitas en un dos por tres.', f: digMargarita },
+    { n: 'Punto satín', d: 'Relleno liso y brillante: puntadas paralelas bien juntitas y en el mismo ángulo.', f: digSatin },
+    { n: 'Nudo francés', d: 'Puntitos con volumen: enrolla el hilo 2–3 veces en la aguja y baja cerquita.', f: digNudo },
+    { n: 'Festón', d: 'Borde rematado y decorativo: perfecto para orillas, aplicaciones y círculos.', f: digFeston }
   ];
   var PUNTADAS_CRUZ = [
     { n: 'La puntada (X)', d: 'Sube en 1 y baja en 2; luego sube en 3 y baja en 4. Esa es tu cruz.', f: digCruzX },
     { n: 'Bordar por filas', d: 'Avanza con medias puntadas y vuelve cerrando cada cruz.', f: digCruzFilas }
   ];
+  // Orden de la guía según el origen del diseño (en letras mandan contornos y rellenos)
+  function puntadasParaKit() {
+    if (kit.origen === 'panel-letras') {
+      var orden = ['Punto atrás', 'Punto de tallo', 'Punto satín', 'Cadeneta', 'Punto lanzado', 'Punto margarita', 'Nudo francés', 'Festón'];
+      return orden.map(function (n) { return PUNTADAS_LIBRE.filter(function (p) { return p.n === n; })[0]; }).filter(Boolean);
+    }
+    return PUNTADAS_LIBRE;
+  }
   function kitPaginaPuntadas() {
     var esCruz = kit.tipo === 'cruz';
-    var lista = esCruz ? PUNTADAS_CRUZ : PUNTADAS_LIBRE;
-    return kitPaginasTexto(esCruz ? '🧵 La técnica del punto de cruz' : '🧵 Guía de puntadas', function (x, M, y, maxW, dpi) {
+    var lista = esCruz ? PUNTADAS_CRUZ : puntadasParaKit();
+    return kitCanvasesTexto(esCruz ? '🧵 La técnica del punto de cruz' : '🧵 Tu guía de puntadas', function (x, M, y, maxW, dpi) {
       x.fillStyle = KIT_C.suave; x.font = 'italic ' + Math.round(dpi * 0.13) + 'px Georgia, serif';
-      y = textoEnvuelto(x, esCruz ? 'Con una sola puntada haces todo el bordado. Practica unas cruces en una esquina de la tela antes de empezar.' : 'Estas son las puntadas que usarás en este kit. Practica cada una en un rinconcito de la tela antes de empezar.', M, y, maxW, Math.round(dpi * 0.19)) + Math.round(dpi * 0.15);
+      y = textoEnvuelto(x, esCruz ? 'Con una sola puntada haces todo el bordado. Practica unas cruces en una esquina de la tela antes de empezar.' : 'Estas son las puntadas de este kit (las primeras son las protagonistas). Practica cada una en un rinconcito de la tela antes de empezar: cinco minutos de práctica se notan en todo el bordado.', M, y, maxW, Math.round(dpi * 0.19)) + Math.round(dpi * 0.15);
       var gap = Math.round(dpi * 0.14);
-      var cols = esCruz ? 1 : 2, cw = Math.floor((maxW - gap * (cols - 1)) / cols), ch = Math.round(dpi * (esCruz ? 2.1 : 1.72));
+      var cols = esCruz ? 1 : 2, cw = Math.floor((maxW - gap * (cols - 1)) / cols), ch = Math.round(dpi * (esCruz ? 2.1 : 1.62));
       for (var i = 0; i < lista.length; i++) {
         var ci = i % cols, ri = Math.floor(i / cols);
         tarjetaPuntada(x, M + ci * (cw + gap), y + ri * (ch + gap), cw, ch, lista[i].n, lista[i].d, lista[i].f, dpi);
@@ -4501,86 +4916,244 @@
          'Empieza por el centro del gráfico y de la tela, y ve marcando en el papel las zonas listas.'].forEach(function (t) {
           y = textoEnvuelto(x, '•  ' + t, M, y, maxW, Math.round(dpi * 0.2)) + Math.round(dpi * 0.06);
         });
+      } else {
+        x.fillStyle = KIT_C.tinta; x.font = Math.round(dpi * 0.135) + 'px sans-serif';
+        y = textoEnvuelto(x, '💡 Regla de oro: contornos con 2 hebras, rellenos con 2–3. Si una puntada no te sale a la primera, respira y prueba más lento: la aguja aprende contigo.', M, y, maxW, Math.round(dpi * 0.2)) + Math.round(dpi * 0.06);
       }
+      return y;
+    });
+  }
+  // Preparación: lo que va antes de la primera puntada (con diagramas)
+  function kitPaginaPreparacion() {
+    var esCruz = kit.tipo === 'cruz';
+    return kitCanvasesTexto('🧰 Antes de la primera puntada', function (x, M, y, maxW, dpi) {
+      x.fillStyle = KIT_C.suave; x.font = 'italic ' + Math.round(dpi * 0.13) + 'px Georgia, serif';
+      y = textoEnvuelto(x, 'Cinco minutos de preparación hacen que todo el bordado salga mejor. Busca buena luz, lávate las manos y sigue estos pasos:', M, y, maxW, Math.round(dpi * 0.19)) + Math.round(dpi * 0.15);
+      var cards = [
+        { n: '1 · Monta el bastidor', d: 'Afloja el tornillo, separa los aros, centra la tela y aprieta tirando parejito de los bordes: la tela debe sonar como tamborcito.', f: digBastidor },
+        { n: '2 · Corta y separa las hebras', d: 'Corta 40–50 cm de hilo. La madeja trae 6 hebras: sepáralas de a UNA y junta ' + (esCruz ? '2 para bordar (así las cruces quedan planas y parejas).' : 'las que pida cada zona: 2 para líneas finas, 3 para rellenos.'), f: digHebras },
+        { n: '3 · Enhebra la aguja', d: 'Humedece la punta del hilo, aplánala entre los dedos y pásala por el ojo. Si cuesta, dobla el hilo sobre la aguja y pasa el doblez.', f: digEnhebrar },
+        { n: '4 · Empieza sin nudo', d: 'Deja una colita de 5 cm por detrás y atrápala con las primeras puntadas. El bordado queda plano, sin bultos que se marquen.', f: digSinNudo }
+      ];
+      if (esCruz) cards.push({ n: '5 · Encuentra el centro', d: 'Dobla la tela en cuatro y marca el cruce con un hilván suave: ahí parte el patrón (el gráfico también se lee desde el centro).', f: digCentroTela });
+      var gap = Math.round(dpi * 0.14), cols = 2, cw = Math.floor((maxW - gap) / cols), ch = Math.round(dpi * 1.95);
+      for (var i = 0; i < cards.length; i++) {
+        var ci = i % cols, ri = Math.floor(i / cols);
+        tarjetaPuntada(x, M + ci * (cw + gap), y + ri * (ch + gap), cw, ch, cards[i].n, cards[i].d, cards[i].f, dpi);
+      }
+      y += Math.ceil(cards.length / cols) * (ch + gap) + Math.round(dpi * 0.06);
+      x.fillStyle = KIT_C.tinta; x.font = Math.round(dpi * 0.135) + 'px sans-serif';
+      y = textoEnvuelto(x, '💡 Consejo: mantén los hilos ordenados en una tarjetita de cartón con el código DMC anotado; los tonos parecidos se confunden con poca luz.', M, y, maxW, Math.round(dpi * 0.2)) + Math.round(dpi * 0.05);
+      return y;
+    });
+  }
+  // El diseño a la tela: tres métodos de transferencia ilustrados (kits de bordado tradicional)
+  function kitPaginaTransferencia() {
+    return kitCanvasesTexto('✏️ El diseño a la tela', function (x, M, y, maxW, dpi) {
+      x.fillStyle = KIT_C.suave; x.font = 'italic ' + Math.round(dpi * 0.13) + 'px Georgia, serif';
+      y = textoEnvuelto(x, 'El kit incluye el diseño impreso a tamaño real. Elige el método que más te acomode para pasarlo a la tela — los tres funcionan, usa el que tengas a mano:', M, y, maxW, Math.round(dpi * 0.19)) + Math.round(dpi * 0.15);
+      var cards = [
+        { n: 'A contraluz (ventana)', d: 'Pega el diseño en una ventana con luz, la tela encima bien estirada, y repasa las líneas con lápiz hidrosoluble. El más fácil en telas claras.', f: digVentana },
+        { n: 'Papel de transferencia', d: 'Tela abajo, papel carbónico de costura al medio y el diseño arriba. Repasa las líneas con lápiz haciendo presión pareja. Ideal en telas oscuras.', f: digCalco },
+        { n: 'Dibujo directo', d: 'Si el diseño es simple, dibújalo directo con lápiz hidrosoluble mirando el impreso: sus líneas se borran con agua fría al terminar.', f: digHidro }
+      ];
+      var gap = Math.round(dpi * 0.14), ch = Math.round(dpi * 1.45);
+      for (var i = 0; i < cards.length; i++) tarjetaPuntada(x, M, y + i * (ch + gap), maxW, ch, cards[i].n, cards[i].d, cards[i].f, dpi);
+      y += cards.length * (ch + gap) + Math.round(dpi * 0.08);
+      x.fillStyle = KIT_C.tinta; x.font = Math.round(dpi * 0.135) + 'px sans-serif';
+      ['Marca líneas finas y suaves: las gruesas después cuestan más de tapar con hilo.',
+       'Prueba el lápiz en una esquina de la tela antes de marcar todo el diseño.',
+       '¿Prefieres transferir con plancha? Imprime el diseño en modo espejo desde la app.'].forEach(function (t) {
+        y = textoEnvuelto(x, '•  ' + t, M, y, maxW, Math.round(dpi * 0.2)) + Math.round(dpi * 0.06);
+      });
+      return y;
+    });
+  }
+  // Rescates: los sustos típicos y cómo se arreglan
+  function kitPaginaSOS() {
+    var esCruz = kit.tipo === 'cruz';
+    var items = [
+      ['El hilo se enreda o se hace nuditos', 'Usa hebras de 40–50 cm y deja colgar la aguja cada tanto: el hilo se destuerce solo. Borda sin apuro y con el hilo suelto.'],
+      ['Me equivoqué en una zona', 'Respira 🌸 Desarma las puntadas con la punta de la aguja (nunca cortes pegado a la tela) y borda de nuevo. Le pasa a todas.'],
+      ['La tela se frunce alrededor del bordado', 'Las puntadas van muy apretadas o el bastidor quedó flojo. Afloja la mano, vuelve a tensar la tela y revisa cada tanto.'],
+      ['Se acabó la hebra a mitad de una zona', 'Remata por detrás pasando el hilo bajo las últimas puntadas y sigue con hebra nueva desde el mismo punto: no se notará.'],
+      esCruz ? ['El nudo de atrás se ve abultado', 'Evita los nudos: atrapa las colitas bajo las cruces vecinas. El revés casi tan ordenado como el derecho es señal de buena técnica.']
+             : ['El nudo francés se hunde o queda flojo', 'Enrolla solo 2 vueltas, mantén el hilo tensito con la otra mano y baja MUY cerca de donde subiste (no en el mismo agujero).'],
+      esCruz ? ['Perdí la cuenta en el gráfico', 'Marca en el papel las zonas ya bordadas y, si te ayuda, cuadricula la tela de 10 en 10 puntos con un hilván de color.']
+             : ['Las marcas del diseño se borraron', 'Vuelve a ponerte a contraluz y remarca solo lo que falta. Guarda el diseño impreso hasta terminar el bordado.'],
+      ['Las puntadas quedan disparejas', 'Es normal al empezar: borda con buena luz y puntadas cortas. Se emparejan solas con la práctica — nadie nace bordando.']
+    ];
+    return kitCanvasesTexto('🛟 Rescates: si algo no sale', function (x, M, y, maxW, dpi) {
+      x.fillStyle = KIT_C.suave; x.font = 'italic ' + Math.round(dpi * 0.13) + 'px Georgia, serif';
+      y = textoEnvuelto(x, 'Todo bordado tiene sus sustos, y todos tienen solución. Deja esta página a mano:', M, y, maxW, Math.round(dpi * 0.19)) + Math.round(dpi * 0.16);
+      items.forEach(function (par) {
+        x.fillStyle = KIT_C.hilo; x.font = 'bold ' + Math.round(dpi * 0.145) + 'px sans-serif';
+        y = textoEnvuelto(x, '✿  ' + par[0], M, y, maxW, Math.round(dpi * 0.21));
+        x.fillStyle = KIT_C.tinta; x.font = Math.round(dpi * 0.135) + 'px sans-serif';
+        y = textoEnvuelto(x, par[1], M + Math.round(dpi * 0.24), y + 3, maxW - Math.round(dpi * 0.24), Math.round(dpi * 0.2)) + Math.round(dpi * 0.13);
+      });
       return y;
     });
   }
   function kitPaginaBienvenida() {
     var neg = (CONFIG.nombre || 'Alma bordado').trim();
-    return kitPaginasTexto('🌸 Bienvenida a tu kit', function (x, M, y, maxW, dpi) {
+    return kitCanvasesTexto('🌸 Bienvenida a tu kit', function (x, M, y, maxW, dpi) {
       x.fillStyle = KIT_C.tinta; x.font = Math.round(dpi * 0.15) + 'px Georgia, serif';
-      y = textoEnvuelto(x, '¡Hola! Gracias por elegir un kit de ' + neg + '. Este manual te acompaña puntada a puntada: aquí encontrarás todo lo que necesitas para disfrutar bordando, aunque sea tu primera vez.', M, y, maxW, Math.round(dpi * 0.23)) + Math.round(dpi * 0.22);
+      y = textoEnvuelto(x, '¡Hola! Gracias por elegir un kit de ' + neg + '. Este manual te acompaña puntada a puntada: primero preparamos todo, después aprendes (o repasas) las puntadas y al final le damos el acabado. Está pensado para que disfrutes, aunque sea tu primera vez bordando.', M, y, maxW, Math.round(dpi * 0.23)) + Math.round(dpi * 0.18);
+      if (kit.mensaje && kit.mensaje.trim()) {
+        var y0 = y;
+        x.fillStyle = KIT_C.titulo; x.font = 'italic ' + Math.round(dpi * 0.16) + 'px Georgia, serif';
+        y = textoEnvuelto(x, '«' + kit.mensaje.trim() + '»', M + Math.round(dpi * 0.24), y, maxW - Math.round(dpi * 0.3), Math.round(dpi * 0.24));
+        x.fillStyle = KIT_C.hilo; x.fillRect(M + 2, y0, Math.max(3, Math.round(dpi * 0.04)), y - y0 - Math.round(dpi * 0.05));
+        y += Math.round(dpi * 0.2);
+      }
       x.fillStyle = KIT_C.titulo; x.font = 'bold ' + Math.round(dpi * 0.16) + 'px sans-serif'; x.fillText('Tu kit incluye', M, y); y += Math.round(dpi * 0.26);
       x.fillStyle = KIT_C.tinta; x.font = Math.round(dpi * 0.14) + 'px sans-serif';
-      [(kit.tipo === 'cruz' ? 'El patrón con su gráfico de símbolos y la lista de hilos DMC.' : 'El diseño listo para pasar a la tela.'),
+      [(kit.tipo === 'cruz' ? 'El patrón con su gráfico de símbolos y la lista de hilos DMC.' : 'El diseño impreso a tamaño real, listo para pasar a la tela.'),
        'La lista de insumos (' + kit.insumos.filter(function (o) { return o.item; }).length + ' artículos) con casillas para revisar que esté todo.',
-       (kit.tipo === 'cruz' ? 'La técnica del punto de cruz, ilustrada.' : 'Una guía ilustrada con las puntadas que vas a usar.'),
-       'El paso a paso completo, con consejos en cada etapa.'].forEach(function (t) {
+       (kit.tipo === 'cruz' ? 'La técnica del punto de cruz, ilustrada paso a paso.' : 'Una guía ilustrada con las puntadas que vas a usar.'),
+       'El paso a paso completo, los rescates para los sustos típicos y el acabado final.'].forEach(function (t) {
         y = textoEnvuelto(x, '•  ' + t, M, y, maxW, Math.round(dpi * 0.21)) + Math.round(dpi * 0.05);
       });
-      y += Math.round(dpi * 0.2);
-      x.fillStyle = KIT_C.titulo; x.font = 'bold ' + Math.round(dpi * 0.16) + 'px sans-serif'; x.fillText('Antes de empezar', M, y); y += Math.round(dpi * 0.26);
-      x.fillStyle = KIT_C.tinta; x.font = Math.round(dpi * 0.14) + 'px sans-serif';
-      ['Busca buena luz y lávate las manos: la tela clara lo agradece.',
-       'Monta la tela en el bastidor bien tensa, como un tamborcito.',
-       'Corta hebras de 40–50 cm: las muy largas se enredan y anudan.',
-       'Sin apuro: bordar se disfruta puntada a puntada. 🌸'].forEach(function (t) {
-        y = textoEnvuelto(x, '•  ' + t, M, y, maxW, Math.round(dpi * 0.21)) + Math.round(dpi * 0.05);
+      y += Math.round(dpi * 0.18);
+      x.fillStyle = KIT_C.titulo; x.font = 'bold ' + Math.round(dpi * 0.16) + 'px sans-serif'; x.fillText('Qué encontrarás en este manual', M, y); y += Math.round(dpi * 0.26);
+      x.fillStyle = KIT_C.tinta; x.font = Math.round(dpi * 0.135) + 'px sans-serif';
+      var indice = [
+        'Los insumos, con su lista de control',
+        'La preparación: bastidor, hebras, aguja',
+        (kit.tipo === 'cruz' ? 'La técnica del punto de cruz' : 'La guía de puntadas ilustrada'),
+        (kit.tipo === 'cruz' ? null : 'Cómo pasar el diseño a la tela'),
+        'El paso a paso de este diseño',
+        (kit.tipo === 'cruz' && kit.cruz ? 'El patrón completo, con símbolos' : 'El diseño a página completa'),
+        'Rescates: problemas frecuentes y su solución',
+        'El acabado: lavado, planchado y montaje'
+      ].filter(Boolean);
+      indice.forEach(function (t, i) {
+        y = textoEnvuelto(x, (i + 1) + '.  ' + t, M + Math.round(dpi * 0.06), y, maxW, Math.round(dpi * 0.2)) + Math.round(dpi * 0.035);
       });
+      y += Math.round(dpi * 0.16);
+      x.fillStyle = KIT_C.suave; x.font = 'italic ' + Math.round(dpi * 0.14) + 'px Georgia, serif';
+      y = textoEnvuelto(x, 'Sin apuro: bordar se disfruta puntada a puntada. 🌸', M, y, maxW, Math.round(dpi * 0.21));
       return y;
     });
   }
   function kitPaginaCuidados() {
-    var neg = (CONFIG.nombre || 'Alma bordado').trim();
-    return kitPaginasTexto('💛 Cuidados y acabado', function (x, M, y, maxW, dpi) {
+    return kitCanvasesTexto('💛 Acabado y cuidados', function (x, M, y, maxW, dpi) {
+      x.fillStyle = KIT_C.suave; x.font = 'italic ' + Math.round(dpi * 0.13) + 'px Georgia, serif';
+      y = textoEnvuelto(x, 'Tu bordado está listo: estos últimos mimos lo dejan precioso y lo protegen por años.', M, y, maxW, Math.round(dpi * 0.19)) + Math.round(dpi * 0.16);
+      x.fillStyle = KIT_C.titulo; x.font = 'bold ' + Math.round(dpi * 0.16) + 'px sans-serif'; x.fillText('Lavar y planchar', M, y); y += Math.round(dpi * 0.26);
       x.fillStyle = KIT_C.tinta; x.font = Math.round(dpi * 0.145) + 'px sans-serif';
       ['Al terminar cada color, remata por detrás pasando el hilo bajo unas puntadas (sin nudos grandes).',
-       'Lava tu bordado a mano, con agua fría y jabón neutro, sin refregar.',
-       'Sécalo extendido a la sombra, sobre una toalla limpia.',
-       'Plancha por el revés con la tela sobre una toalla, para no aplastar las puntadas.',
-       'Enmárcalo en el bastidor, cóselo a un cojín o cuélgalo donde lo veas todos los días.'].forEach(function (t) {
+       'Lava el bordado a mano, con agua fría y jabón neutro, sin refregar; así también se van las marcas del lápiz.',
+       'Sécalo extendido a la sombra, sobre una toalla limpia (nunca lo estrujes).',
+       'Plancha por el revés con la tela sobre una toalla mullida, para no aplastar las puntadas.'].forEach(function (t) {
         y = textoEnvuelto(x, '•  ' + t, M, y, maxW, Math.round(dpi * 0.21)) + Math.round(dpi * 0.07);
       });
-      y += Math.round(dpi * 0.5);
+      y += Math.round(dpi * 0.16);
+      x.fillStyle = KIT_C.titulo; x.font = 'bold ' + Math.round(dpi * 0.16) + 'px sans-serif'; x.fillText('Montaje en el bastidor (mini cuadro)', M, y); y += Math.round(dpi * 0.22);
+      tarjetaPuntada(x, M, y, maxW, Math.round(dpi * 1.5), 'Así se cierra por detrás',
+        'Centra el bordado y ténsalo. Recorta la tela dejando 3–4 cm de borde, pasa un hilván flojo alrededor, tira del hilo para fruncir la tela hacia atrás y remata. Si quieres un acabado de lujo, tapa la espalda con un círculo de fieltro cosido con festón.', digAcabadoBastidor, dpi);
+      y += Math.round(dpi * 1.5) + Math.round(dpi * 0.16);
+      x.fillStyle = KIT_C.tinta; x.font = Math.round(dpi * 0.145) + 'px sans-serif';
+      y = textoEnvuelto(x, '•  ¿Otras ideas? Cóselo a un cojín, conviértelo en bolsita de lavanda o enmárcalo: este bordado ya es tuyo.', M, y, maxW, Math.round(dpi * 0.21)) + Math.round(dpi * 0.05);
+      return y;
+    });
+  }
+  // Página final: la marca, el contacto y la invitación a compartir
+  function kitPaginaCierre() {
+    var neg = (CONFIG.nombre || 'Alma bordado').trim();
+    return kitCanvasesTexto('🌷 Gracias por bordar conmigo', function (x, M, y, maxW, dpi) {
+      x.fillStyle = KIT_C.tinta; x.font = Math.round(dpi * 0.15) + 'px Georgia, serif';
+      y = textoEnvuelto(x, 'Ojalá hayas disfrutado cada puntada tanto como yo disfruté preparando este kit. Si te quedó una duda o quieres mostrar tu bordado terminado, me encantaría verlo — y hay más diseños esperándote.', M, y, maxW, Math.round(dpi * 0.23)) + Math.round(dpi * 0.5);
       var cx = M + maxW / 2;
       x.strokeStyle = KIT_C.acento; x.lineWidth = 2; x.beginPath(); x.moveTo(cx - dpi, y); x.lineTo(cx + dpi, y); x.stroke();
-      florKit(x, cx, y, Math.round(dpi * 0.1)); y += Math.round(dpi * 0.3);
-      if (logoImg && logoImg.complete && logoImg.naturalWidth) { var lh = Math.round(dpi * 0.7), lw = lh * (logoImg.naturalWidth / logoImg.naturalHeight); x.drawImage(logoImg, cx - lw / 2, y, lw, lh); y += lh + Math.round(dpi * 0.16); }
-      x.textAlign = 'center';
-      x.fillStyle = KIT_C.titulo; x.font = 'bold ' + Math.round(dpi * 0.2) + 'px Georgia, serif'; x.fillText(neg, cx, y); y += Math.round(dpi * 0.3);
-      if (CONFIG.contacto && CONFIG.contacto.trim()) { x.fillStyle = KIT_C.acento; x.font = '600 ' + Math.round(dpi * 0.14) + 'px sans-serif'; x.fillText(CONFIG.contacto.trim(), cx, y); y += Math.round(dpi * 0.26); }
+      florKit(x, cx, y, Math.round(dpi * 0.1)); y += Math.round(dpi * 0.34);
+      if (logoImg && logoImg.complete && logoImg.naturalWidth) { var lh = Math.round(dpi * 0.75), lw = lh * (logoImg.naturalWidth / logoImg.naturalHeight); x.drawImage(logoImg, cx - lw / 2, y, lw, lh); y += lh + Math.round(dpi * 0.18); }
+      x.textAlign = 'center'; x.textBaseline = 'top';
+      x.fillStyle = KIT_C.titulo; x.font = 'bold ' + Math.round(dpi * 0.22) + 'px Georgia, serif'; x.fillText(neg, cx, y); y += Math.round(dpi * 0.34);
+      if (CONFIG.contacto && CONFIG.contacto.trim()) { x.fillStyle = KIT_C.acento; x.font = '600 ' + Math.round(dpi * 0.15) + 'px sans-serif'; x.fillText(CONFIG.contacto.trim(), cx, y); y += Math.round(dpi * 0.28); }
       x.fillStyle = '#9a8f7d'; x.font = 'italic ' + Math.round(dpi * 0.14) + 'px Georgia, serif';
-      x.fillText('Gracias por bordar con nosotras · Hecho con cariño 🌸', cx, y); y += Math.round(dpi * 0.2);
+      x.fillText('Hecho a mano, con cariño 🌸', cx, y); y += Math.round(dpi * 0.24);
       x.textAlign = 'left';
       return y;
     });
   }
-  function kitPaginasTexto(titulo, dibujarCuerpo) {
+  // Páginas de texto largas: se dibuja el contenido en un lienzo alto y se corta en hojas A4,
+  // reservando una banda inferior para el pie de página numerado del manual.
+  function kitCanvasesTexto(titulo, dibujarCuerpo) {
     var dpi = 150, W = Math.round(HOJAS.A4.w / 2.54 * dpi), pageH = Math.round(HOJAS.A4.h / 2.54 * dpi), M = Math.round(1.3 / 2.54 * dpi);
     var sc = document.createElement('canvas'); sc.width = W; sc.height = pageH * 8; var x = sc.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, sc.width, sc.height); x.textBaseline = 'top';
-    var maxW = W - 2 * M, y = M; x.fillStyle = '#6f6151'; x.font = 'bold ' + Math.round(dpi * 0.26) + 'px sans-serif'; y = textoEnvuelto(x, titulo, M, y, maxW, Math.round(dpi * 0.34)) + Math.round(dpi * 0.12);
-    x.strokeStyle = '#d8cbb2'; x.lineWidth = 2; x.beginPath(); x.moveTo(M, y); x.lineTo(W - M, y); x.stroke(); y += Math.round(dpi * 0.2);
+    var maxW = W - 2 * M, y = M;
+    x.fillStyle = KIT_C.titulo; x.font = 'bold ' + Math.round(dpi * 0.26) + 'px Georgia, serif';
+    y = textoEnvuelto(x, titulo, M, y, maxW, Math.round(dpi * 0.34)) + Math.round(dpi * 0.1);
+    x.strokeStyle = KIT_C.acento; x.lineWidth = 2.5; x.beginPath(); x.moveTo(M, y); x.lineTo(M + Math.round(dpi * 1.1), y); x.stroke();
+    x.strokeStyle = '#e2d8c4'; x.lineWidth = 1.5; x.beginPath(); x.moveTo(M + Math.round(dpi * 1.1), y); x.lineTo(W - M, y); x.stroke();
+    y += Math.round(dpi * 0.2);
     y = dibujarCuerpo(x, M, y, maxW, dpi);
-    var totalH = Math.min(sc.height, y + M), pgs = [];
-    for (var oy = 0; oy < totalH; oy += pageH) {
+    var utilH = pageH - Math.round(dpi * 0.55);   // banda libre para el pie del manual
+    var totalH = Math.min(sc.height, y + Math.round(dpi * 0.2)), cvs = [];
+    for (var oy = 0; oy < totalH; oy += utilH) {
       var pc = document.createElement('canvas'); pc.width = W; pc.height = pageH; var p = pc.getContext('2d'); p.fillStyle = '#fff'; p.fillRect(0, 0, W, pageH);
-      p.drawImage(sc, 0, oy, W, Math.min(pageH, totalH - oy), 0, 0, W, Math.min(pageH, totalH - oy));
-      pgs.push({ wCm: HOJAS.A4.w, hCm: HOJAS.A4.h, pie: pieParaPdf(), regla: false, imagenes: [{ jpeg: jpegDeCanvas(pc, 0.9), wpx: pc.width, hpx: pc.height, xCm: 0, yCm: 0, wCm: HOJAS.A4.w, hCm: HOJAS.A4.h }] });
+      var hTrozo = Math.min(utilH, totalH - oy);
+      p.drawImage(sc, 0, oy, W, hTrozo, 0, 0, W, hTrozo);
+      cvs.push(pc);
     }
-    return pgs;
+    return cvs;
+  }
+  // Pie de página del manual: título del kit, marca y numeración (con su florcita)
+  function pieManualKit(cv, n, total) {
+    var x = cv.getContext('2d'), W = cv.width, H = cv.height, dpi = W / (HOJAS.A4.w / 2.54);
+    x.save(); x.textAlign = 'center'; x.textBaseline = 'alphabetic';
+    x.strokeStyle = '#ddd2bd'; x.lineWidth = Math.max(1, Math.round(dpi / 150));
+    x.beginPath(); x.moveTo(W / 2 - dpi * 0.85, H - dpi * 0.42); x.lineTo(W / 2 + dpi * 0.85, H - dpi * 0.42); x.stroke();
+    florKit(x, W / 2, H - dpi * 0.42, dpi * 0.05);
+    x.fillStyle = '#a3937c'; x.font = 'italic ' + Math.round(dpi * 0.105) + 'px Georgia, serif';
+    var tit = (kit.titulo || 'Kit de bordado').trim(), neg = (CONFIG.nombre || 'Alma bordado').trim();
+    x.fillText(tit + '  ·  ' + neg + '   —   ' + n + ' de ' + total, W / 2, H - dpi * 0.2);
+    x.restore();
   }
   function pgFullCanvas(cv) { return { wCm: HOJAS.A4.w, hCm: HOJAS.A4.h, pie: pieParaPdf(), regla: false, imagenes: [{ jpeg: jpegDeCanvas(cv, 0.9), wpx: cv.width, hpx: cv.height, xCm: 0, yCm: 0, wCm: HOJAS.A4.w, hCm: HOJAS.A4.h }] }; }
-  function kitPaginasGraficoCruz(m) {
+  // El gráfico del patrón por hojas, cada una con su encabezado de ubicación
+  function canvasesGraficoCruz(m) {
     var hoja = HOJAS.A4, margen = 1.0, printCellCm = 0.5, dpi = 200, cellPx = Math.round(printCellCm / 2.54 * dpi);
-    var usableW = hoja.w - margen * 2, usableH = hoja.h - margen * 2 - 0.5;
-    var colsPP = Math.max(10, Math.floor(usableW / printCellCm) - 2), rowsPP = Math.max(10, Math.floor(usableH / printCellCm) - 2), solape = 2, pgs = [];
-    for (var r0 = 0; r0 < m.rows; r0 += rowsPP) for (var c0 = 0; c0 < m.cols; c0 += colsPP) {
-      var c1 = Math.min(m.cols, c0 + colsPP + solape), r1 = Math.min(m.rows, r0 + rowsPP + solape);
-      var cv = dibujarRegionCruz(m, c0, r0, c1, r1, cellPx, true, true, false);
-      var wCm = cv.width / cellPx * printCellCm, hCm = cv.height / cellPx * printCellCm;
-      pgs.push({ wCm: hoja.w, hCm: hoja.h, pie: pieParaPdf(), regla: false, imagenes: [{ jpeg: jpegDeCanvas(cv, 0.97), wpx: cv.width, hpx: cv.height, xCm: (hoja.w - wCm) / 2, yCm: margen, wCm: wCm, hCm: hCm }] });
+    var usableW = hoja.w - margen * 2, usableH = hoja.h - margen * 2 - 1.5;
+    var colsPP = Math.max(10, Math.floor(usableW / printCellCm) - 2), rowsPP = Math.max(10, Math.floor(usableH / printCellCm) - 2), solape = 2;
+    var regiones = [];
+    for (var r0 = 0; r0 < m.rows; r0 += rowsPP) for (var c0 = 0; c0 < m.cols; c0 += colsPP) regiones.push([c0, r0, Math.min(m.cols, c0 + colsPP + solape), Math.min(m.rows, r0 + rowsPP + solape)]);
+    var W = Math.round(hoja.w / 2.54 * dpi), H = Math.round(hoja.h / 2.54 * dpi), Mpx = Math.round(margen / 2.54 * dpi);
+    return regiones.map(function (rg, i) {
+      var cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+      var x = cv.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, W, H); x.textBaseline = 'top';
+      x.fillStyle = KIT_C.titulo; x.font = 'bold ' + Math.round(dpi * 0.14) + 'px Georgia, serif';
+      x.fillText('El gráfico del patrón · hoja ' + (i + 1) + ' de ' + regiones.length, Mpx, Math.round(dpi * 0.28));
+      x.fillStyle = KIT_C.suave; x.font = Math.round(dpi * 0.1) + 'px sans-serif'; x.textAlign = 'right';
+      x.fillText('columnas ' + rg[0] + '–' + rg[2] + ' · filas ' + rg[1] + '–' + rg[3] + (regiones.length > 1 ? ' · se repiten ' + solape + ' filas/columnas entre hojas' : ''), W - Mpx, Math.round(dpi * 0.31));
+      x.textAlign = 'left';
+      var reg = dibujarRegionCruz(m, rg[0], rg[1], rg[2], rg[3], cellPx, true, true, false);
+      x.drawImage(reg, Math.round((W - reg.width) / 2), Math.round(dpi * 0.55));
+      return cv;
+    });
+  }
+  // Página del diseño a tamaño completo (kits de bordado tradicional)
+  function paginaDisenoKit() {
+    var im = portadaImgCache;
+    var dd = 150, DW = Math.round(HOJAS.A4.w / 2.54 * dd), DH = Math.round(HOJAS.A4.h / 2.54 * dd);
+    var dcv = document.createElement('canvas'); dcv.width = DW; dcv.height = DH; var dx = dcv.getContext('2d');
+    dx.fillStyle = '#fff'; dx.fillRect(0, 0, DW, DH);
+    dx.fillStyle = KIT_C.titulo; dx.font = 'bold ' + Math.round(dd * 0.24) + 'px Georgia, serif'; dx.textAlign = 'center'; dx.fillText('El diseño', DW / 2, Math.round(dd * 1.0));
+    dx.fillStyle = KIT_C.suave; dx.font = 'italic ' + Math.round(dd * 0.13) + 'px Georgia, serif';
+    var sub = (kit.wCm > 0 && kit.hCm > 0)
+      ? 'Tamaño real del bordado: ' + kit.wCm.toFixed(1) + ' × ' + kit.hCm.toFixed(1) + ' cm · pásalo a la tela con el método que elegiste.'
+      : 'Pásalo a la tela con el método que elegiste en «El diseño a la tela».';
+    dx.fillText(sub, DW / 2, Math.round(dd * 1.4));
+    if (im && im.complete && im.naturalWidth) {
+      var mw = DW - 2 * Math.round(dd * 1.2), mh = DH - Math.round(dd * 3.4), e = Math.min(mw / im.naturalWidth, mh / im.naturalHeight), w2 = im.naturalWidth * e, h2 = im.naturalHeight * e;
+      dx.save(); dx.shadowColor = 'rgba(0,0,0,0.15)'; dx.shadowBlur = 8; dx.shadowOffsetY = 4;
+      dx.fillStyle = '#fff'; dx.fillRect(DW / 2 - w2 / 2 - 6, Math.round(dd * 2.0) - 6, w2 + 12, h2 + 12); dx.restore();
+      dx.drawImage(im, DW / 2 - w2 / 2, Math.round(dd * 2.0), w2, h2);
+      dx.strokeStyle = KIT_C.borde; dx.lineWidth = 2; dx.strokeRect(DW / 2 - w2 / 2 - 6, Math.round(dd * 2.0) - 6, w2 + 12, h2 + 12);
     }
-    return pgs;
+    dx.textAlign = 'left'; return dcv;
   }
   function generarKitPdf(done) {
     leerFormularioAKit();
@@ -4589,12 +5162,20 @@
     if (kit.disenoImg) { var pim = new Image(); pim.onload = function () { portadaImgCache = pim; armarKitPdf(done); }; pim.onerror = function () { portadaImgCache = null; armarKitPdf(done); }; pim.src = kit.disenoImg; }
     else armarKitPdf(done);
   }
+  function nombreArchivoKit() {
+    var s = (kit.titulo || 'kit de bordado').toLowerCase()
+      .replace(/[áàâä]/g, 'a').replace(/[éèêë]/g, 'e').replace(/[íìîï]/g, 'i').replace(/[óòôö]/g, 'o').replace(/[úùûü]/g, 'u').replace(/ñ/g, 'n')
+      .replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 40) || 'kit_bordado';
+    return 'manual_' + s + '.pdf';
+  }
   function armarKitPdf(done) {
-    // Manual profesional: portada → bienvenida → insumos → guía de puntadas → paso a paso → diseño/patrón → cuidados
-    var paginas = [];
-    paginas.push(pgFullCanvas(lienzoPortadaKit()));
-    paginas = paginas.concat(kitPaginaBienvenida());
-    if (kit.insumos.length) paginas = paginas.concat(kitPaginasTexto('🧶 Insumos del kit', function (x, M, y, maxW, dpi) {
+    // Manual profesional 2.0: portada → bienvenida (con índice) → insumos → preparación →
+    // puntadas → transferencia → paso a paso → diseño/patrón → rescates → acabado → cierre
+    var hojas = [];
+    function agrega(cvs, sinPie) { (Array.isArray(cvs) ? cvs : [cvs]).forEach(function (cv) { hojas.push({ cv: cv, sinPie: !!sinPie }); }); }
+    agrega(lienzoPortadaKit(), true);
+    agrega(kitPaginaBienvenida());
+    if (kit.insumos.length) agrega(kitCanvasesTexto('🧶 Los insumos de tu kit', function (x, M, y, maxW, dpi) {
       x.fillStyle = KIT_C.suave; x.font = 'italic ' + Math.round(dpi * 0.13) + 'px Georgia, serif';
       y = textoEnvuelto(x, 'Marca cada casilla al armar o revisar tu kit:', M, y, maxW, Math.round(dpi * 0.19)) + Math.round(dpi * 0.12);
       var box = Math.round(dpi * 0.13), tx = M + box + Math.round(dpi * 0.14);
@@ -4605,10 +5186,15 @@
         var ny = textoEnvuelto(x, o.item + (o.detalle ? '  —  ' + o.detalle : ''), tx, y, maxW - (tx - M), Math.round(dpi * 0.22));
         y = Math.max(ny, y + box + 6) + Math.round(dpi * 0.07);
       });
+      y += Math.round(dpi * 0.12);
+      x.fillStyle = KIT_C.suave; x.font = 'italic ' + Math.round(dpi * 0.125) + 'px Georgia, serif';
+      y = textoEnvuelto(x, '¿Falta algo o un hilo llegó distinto? Escríbeme y lo resolvemos al tiro.', M, y, maxW, Math.round(dpi * 0.19));
       return y;
     }));
-    paginas = paginas.concat(kitPaginaPuntadas());
-    if (kit.pasos.length) paginas = paginas.concat(kitPaginasTexto('📋 Cómo bordarlo, paso a paso', function (x, M, y, maxW, dpi) {
+    agrega(kitPaginaPreparacion());
+    agrega(kitPaginaPuntadas());
+    if (kit.tipo !== 'cruz') agrega(kitPaginaTransferencia());
+    if (kit.pasos.length) agrega(kitCanvasesTexto('📋 Cómo bordarlo, paso a paso', function (x, M, y, maxW, dpi) {
       var r = Math.round(dpi * 0.09), num = 0;
       kit.pasos.forEach(function (o) {
         if (!o.titulo && !o.detalle) return;
@@ -4623,22 +5209,20 @@
         if (o.detalle) { x.fillStyle = KIT_C.suave; x.font = Math.round(dpi * 0.135) + 'px sans-serif'; y = textoEnvuelto(x, o.detalle, tx, y + 2, maxW - (tx - M), Math.round(dpi * 0.2)); }
         y += Math.round(dpi * 0.16);
       });
+      y += Math.round(dpi * 0.06);
+      x.fillStyle = KIT_C.tinta; x.font = Math.round(dpi * 0.135) + 'px sans-serif';
+      y = textoEnvuelto(x, '💡 Si en algún paso algo no sale como esperabas, mira la página «Rescates» antes de deshacer nada.', M, y, maxW, Math.round(dpi * 0.2));
       return y;
     }));
     // El diseño / patrón
-    if (kit.cruz) { paginas.push(pgFullCanvas(dibujarPortadaCruz(kit.cruz, HOJAS.A4, 150))); paginas = paginas.concat(kitPaginasGraficoCruz(kit.cruz)); }
-    else if (kit.disenoImg) {
-      var im = portadaImgCache;
-      var dcv = document.createElement('canvas'), dd = 150, DW = Math.round(HOJAS.A4.w / 2.54 * dd), DH = Math.round(HOJAS.A4.h / 2.54 * dd);
-      dcv.width = DW; dcv.height = DH; var dx = dcv.getContext('2d'); dx.fillStyle = '#fff'; dx.fillRect(0, 0, DW, DH);
-      dx.fillStyle = KIT_C.titulo; dx.font = 'bold ' + Math.round(dd * 0.24) + 'px Georgia, serif'; dx.textAlign = 'center'; dx.fillText('El diseño', DW / 2, Math.round(dd * 1.0));
-      dx.fillStyle = KIT_C.suave; dx.font = 'italic ' + Math.round(dd * 0.13) + 'px Georgia, serif';
-      dx.fillText('Pásalo a la tela con papel transfer, lápiz hidrosoluble o a contraluz.', DW / 2, Math.round(dd * 1.4));
-      if (im && im.complete && im.naturalWidth) { var mw = DW - 2 * Math.round(dd * 1.2), mh = DH - Math.round(dd * 3.2), e = Math.min(mw / im.naturalWidth, mh / im.naturalHeight), w2 = im.naturalWidth * e, h2 = im.naturalHeight * e; dx.drawImage(im, DW / 2 - w2 / 2, Math.round(dd * 2.0), w2, h2); }
-      dx.textAlign = 'left'; paginas.push(pgFullCanvas(dcv));
-    }
-    paginas = paginas.concat(kitPaginaCuidados());
-    descargar(construirPdf(paginas), 'manual_kit_bordado.pdf');
+    if (kit.tipo === 'cruz' && kit.cruz) { agrega(dibujarPortadaCruz(kit.cruz, HOJAS.A4, 150)); agrega(canvasesGraficoCruz(kit.cruz)); }
+    else if (kit.disenoImg) agrega(paginaDisenoKit());
+    agrega(kitPaginaSOS());
+    agrega(kitPaginaCuidados());
+    agrega(kitPaginaCierre());
+    var total = hojas.length;
+    hojas.forEach(function (h, i) { if (!h.sinPie) pieManualKit(h.cv, i + 1, total); });
+    descargar(construirPdf(hojas.map(function (h) { return pgFullCanvas(h.cv); })), nombreArchivoKit());
     if (done) done();
   }
 
@@ -4688,16 +5272,24 @@
   cargarProyectos(); cargarGaleria(); actualizarCuentaGaleria(); cargarKit();
   personalizarVacioChat();
   restaurarEstado();   // recupera el trabajo en curso (fotos, textos, medidas, posiciones)
-  // Bienvenida la primera vez
+  // Bienvenida la primera vez · novedades 2.0 para quienes ya usaban la app
   (function () {
-    if (localStorage.getItem('alma_visto')) return;
-    temaSel = CONFIG.tema || 'trigo'; pintarTemas('temasFilaBienv');
-    $('modalBienvenida').hidden = false;
-    $('empezarBienvenida').addEventListener('click', function () {
-      CONFIG.tema = temaSel; guardarConfig(); aplicarTema();
-      try { localStorage.setItem('alma_visto', '1'); } catch (e) {}
-      $('modalBienvenida').hidden = true;
-    });
+    if (!localStorage.getItem('alma_visto')) {
+      temaSel = CONFIG.tema || 'trigo'; pintarTemas('temasFilaBienv');
+      $('modalBienvenida').hidden = false;
+      $('empezarBienvenida').addEventListener('click', function () {
+        CONFIG.tema = temaSel; guardarConfig(); aplicarTema();
+        try { localStorage.setItem('alma_visto', '1'); localStorage.setItem('alma_v20', '1'); } catch (e) {}
+        $('modalBienvenida').hidden = true;
+      });
+      return;
+    }
+    if (!localStorage.getItem('alma_v20')) {
+      $('modalNovedades').hidden = false;
+      var cerrarNov = function () { try { localStorage.setItem('alma_v20', '1'); } catch (e) {} $('modalNovedades').hidden = true; };
+      $('cerrarNovedades').addEventListener('click', cerrarNov);
+      $('modalNovedades').addEventListener('click', function (e) { if (e.target === this) cerrarNov(); });
+    }
   })();
 
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
