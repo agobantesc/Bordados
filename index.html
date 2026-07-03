@@ -361,6 +361,14 @@
   .tema-chip.activa { box-shadow: 0 0 0 2px var(--superficie), 0 0 0 4px var(--trigo-osc); }
   .bienvenida-lista { list-style: none; margin: 12px 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
   .bienvenida-lista li { font-size: .96rem; color: var(--tinta); line-height: 1.35; }
+  /* Modal "Analizando tu diseño": pasos que se van marcando */
+  .analisis-lista { list-style: none; margin: 14px 0 4px; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .analisis-lista li { font-size: .94rem; color: var(--tinta-suave); opacity: .38; transition: opacity .35s; display: flex; gap: 9px; align-items: baseline; }
+  .analisis-lista li::before { content: "○"; color: var(--trigo-osc); flex-shrink: 0; }
+  .analisis-lista li.ok { opacity: 1; color: var(--tinta); }
+  .analisis-lista li.ok::before { content: "✿"; }
+  @keyframes girarFlor { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  .analisis-flor { animation: girarFlor 3.4s linear infinite; transform-origin: 50% 50%; }
 
   .toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom)); transform: translateX(-50%) translateY(12px); z-index: 60; background: var(--marron-osc); color: #fff; padding: 13px 20px; border-radius: 12px; font-size: .95rem; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.3); opacity: 0; transition: opacity .25s, transform .25s; pointer-events: none; max-width: 90vw; text-align: center; }
   .toast.ver { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -1100,7 +1108,7 @@
     <div class="controles-previa" style="justify-content:flex-start;">
       <button class="boton-sec" id="kitAddInsumo" type="button">＋ Agregar insumo</button>
       <button class="boton-sec" id="kitSugerirIns" type="button">✨ Sugerir insumos</button>
-      <button class="boton-sec" id="kitHilosDis" type="button" title="Detecta los colores del diseño y sugiere los hilos DMC más parecidos">🧵 Hilos DMC del diseño</button>
+      <button class="boton-sec" id="kitHilosDis" type="button" title="Estudia el diseño a fondo: colores → hilos DMC, superficie por color, madejas y zonas">🔍 Analizar el diseño</button>
     </div>
   </div>
 
@@ -1254,6 +1262,15 @@
       <li>💌 <strong>Mensaje personal</strong> para tu clienta en la bienvenida de cada manual.</li>
     </ul>
     <div class="modal-acciones"><button class="boton-primario" id="cerrarNovedades" type="button">¡A bordar! 🌸</button></div>
+  </div>
+</div>
+
+<div class="modal" id="modalAnalisis" hidden>
+  <div class="modal-caja" role="dialog" aria-modal="true" aria-live="polite" style="max-width:400px;">
+    <svg viewBox="0 0 80 80" class="analisis-flor" aria-hidden="true" style="width:54px; height:54px; display:block; margin:0 auto 6px;"><use href="#margarita" transform="translate(40,40)"/></svg>
+    <h2 style="font-family:'Cormorant Garamond',Georgia,serif; text-align:center; font-size:1.45rem;">Analizando tu diseño…</h2>
+    <p class="sub" style="text-align:center;">Estudio los colores, las zonas y las superficies para escribir el manual a la medida de este bordado.</p>
+    <ul class="analisis-lista" id="analisisLista"></ul>
   </div>
 </div>
 
@@ -4296,7 +4313,7 @@
   // ===================== KITS DE BORDADO =====================
   // El producto estrella: cualquier diseño (bastidor con foto, letras, dibujo, punto de cruz)
   // se convierte en un kit con manual profesional. La app sugiere sola insumos, hilos y pasos.
-  function nuevoKit() { return { titulo: '', nivel: '', tiempo: '', tela: '', tipo: 'libre', origen: '', mensaje: '', wCm: 0, hCm: 0, disenoImg: null, insumos: [], pasos: [], cruz: null }; }
+  function nuevoKit() { return { titulo: '', nivel: '', tiempo: '', tela: '', tipo: 'libre', origen: '', mensaje: '', wCm: 0, hCm: 0, disenoImg: null, insumos: [], pasos: [], cruz: null, analisis: null }; }
   var kit = nuevoKit();
   function telaNombreCruz(t) { return ({ blanca: 'blanca', crema: 'crema/ecru', negra: 'negra' })[t] || 'blanca'; }
   function chartColorCanvas(m, maxPx) {
@@ -4391,6 +4408,198 @@
     if (kit.origen === 'panel-letras') return pasosLetrasDefault();
     return pasosLibreDefault();
   }
+  // ============ ANÁLISIS PROFUNDO DEL DISEÑO ============
+  // Lee el diseño píxel a píxel y arma su ficha de bordado: qué hilos DMC usa,
+  // cuánta superficie cubre cada color (→ madejas), cuántas zonas tiene y dónde
+  // están, y qué rol juega cada color (contorno / relleno / detalle). Con esto
+  // el manual se escribe A LA MEDIDA de ese diseño.
+  function analizarDiseno(url, wCm, hCm, cb) {
+    if (!url) { cb(null); return; }
+    var im = new Image();
+    im.onerror = function () { cb(null); };
+    im.onload = function () {
+      try { cb(analizarDisenoImg(im, wCm, hCm)); } catch (e) { cb(null); }
+    };
+    im.src = url;
+  }
+  function analizarDisenoImg(im, wCm, hCm) {
+    var max = 140, e = Math.min(1, max / Math.max(im.naturalWidth, im.naturalHeight));
+    var w = Math.max(1, Math.round(im.naturalWidth * e)), h = Math.max(1, Math.round(im.naturalHeight * e));
+    var c = document.createElement('canvas'); c.width = w; c.height = h;
+    var x = c.getContext('2d', { willReadFrequently: true });
+    x.imageSmoothingEnabled = false;   // muestreo fiel: no inventa tonos en los bordes
+    x.drawImage(im, 0, 0, w, h);
+    var d = x.getImageData(0, 0, w, h).data, N = w * h;
+    var ink = [], i, distintos = {}, nDist = 0;
+    for (i = 0; i < N; i++) {
+      var r = d[i * 4], g = d[i * 4 + 1], b = d[i * 4 + 2], a = d[i * 4 + 3];
+      var lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+      if (a < 160 || lum > 0.93) continue;   // fondo (papel/tela clara)
+      ink.push([r, g, b, i]);
+      var q = ((r >> 3) << 10) | ((g >> 3) << 5) | (b >> 3);
+      if (!distintos[q]) { distintos[q] = 1; nDist++; }
+    }
+    if (ink.length < 12) return null;
+    var esFoto = nDist > 500;   // gradientes de foto vs dibujo plano
+    // 1) Paleta: median-cut generoso → población por candidato → calce DMC →
+    //    fusión de tonos casi iguales (gana el más poblado) → semilla para líneas oscuras
+    var pts = ink.map(function (p) { return [p[0], p[1], p[2]]; });
+    var paraCut = pts;
+    if (pts.length > 9000) { var st = Math.ceil(pts.length / 9000); paraCut = []; for (var j = 0; j < pts.length; j += st) paraCut.push(pts[j]); }
+    var reps = medianCut(paraCut, 12);
+    var pops = reps.map(function () { return 0; });
+    paraCut.forEach(function (p) {
+      var bi = 0, bd = 1e9;
+      for (var k = 0; k < reps.length; k++) { var dr = p[0] - reps[k][0], dg = p[1] - reps[k][1], db = p[2] - reps[k][2], dd = dr * dr + dg * dg + db * db; if (dd < bd) { bd = dd; bi = k; } }
+      pops[bi]++;
+    });
+    var candidatos = reps.map(function (p, ri) { var dmc = dmcCercano(p[0], p[1], p[2]); return { dmc: dmc, pop: pops[ri] }; });
+    candidatos.sort(function (p2, q) { return q.pop - p2.pop; });
+    function nuevoHilo(dmc) { return { code: dmc.code, name: dmc.name, hex: dmc.hex, lab: dmc.lab, lum: dmc.lum, count: 0, edge: 0, blobs: 0, cx: 0, cy: 0 }; }
+    var finales = [];
+    candidatos.forEach(function (cand) {
+      for (var f = 0; f < finales.length; f++) {
+        if (finales[f].code === cand.dmc.code || de2000(cand.dmc.lab, finales[f].lab) < 60) return;   // tono casi igual: se queda el más poblado
+      }
+      if (finales.length < (esFoto ? 10 : 8)) finales.push(nuevoHilo(cand.dmc));
+    });
+    if (!finales.length) return null;
+    // Semilla oscura: los marcos y contornos delgados son pocos píxeles y el median-cut
+    // los pierde dentro de un relleno; si hay líneas oscuras y ningún hilo oscuro, se agrega.
+    var oscuros = 0, or_ = 0, og = 0, ob = 0;
+    ink.forEach(function (p) { var l2 = (0.299 * p[0] + 0.587 * p[1] + 0.114 * p[2]) / 255; if (l2 < 0.14) { oscuros++; or_ += p[0]; og += p[1]; ob += p[2]; } });
+    if (oscuros / ink.length >= 0.02 && !finales.some(function (o) { return o.lum < 0.22; })) {
+      var dmcOsc = dmcCercano(Math.round(or_ / oscuros), Math.round(og / oscuros), Math.round(ob / oscuros));
+      if (!finales.some(function (o) { return o.code === dmcOsc.code; })) finales.push(nuevoHilo(dmcOsc));
+    }
+    // 2) Asignación de TODOS los píxeles a su hilo + refinamiento (1 pasada k-means):
+    //    la media real de cada grupo re-calza su DMC y se reasigna — colores más fieles.
+    var labels = new Int16Array(N);
+    function asignarTodo() {
+      for (i = 0; i < N; i++) labels[i] = -1;
+      finales.forEach(function (o) { o.count = 0; o.sr = 0; o.sg = 0; o.sb = 0; });
+      ink.forEach(function (p) {
+        var lab = labDe(p[0], p[1], p[2]), bi = 0, bd = 1e9;
+        for (var k = 0; k < finales.length; k++) { var dd = dELab(lab, finales[k].lab); if (dd < bd) { bd = dd; bi = k; } }
+        labels[p[3]] = bi; finales[bi].count++; finales[bi].sr += p[0]; finales[bi].sg += p[1]; finales[bi].sb += p[2];
+      });
+    }
+    asignarTodo();
+    var cambio = false;
+    finales.forEach(function (o) {
+      if (!o.count) return;
+      var dmc2 = dmcCercano(Math.round(o.sr / o.count), Math.round(o.sg / o.count), Math.round(o.sb / o.count));
+      if (dmc2.code !== o.code && !finales.some(function (q) { return q !== o && q.code === dmc2.code; })) {
+        o.code = dmc2.code; o.name = dmc2.name; o.hex = dmc2.hex; o.lab = dmc2.lab; o.lum = dmc2.lum; cambio = true;
+      }
+    });
+    if (cambio) asignarTodo();
+    finales.forEach(function (o) { delete o.sr; delete o.sg; delete o.sb; });
+    // Descarta residuos (<2 % del bordado) reasignándolos al hilo más parecido
+    var totalInk = ink.length;
+    var vivos = finales.filter(function (o) { return o.count / totalInk >= 0.02; });
+    if (vivos.length && vivos.length < finales.length) {
+      for (i = 0; i < N; i++) {
+        if (labels[i] < 0) continue;
+        var o0 = finales[labels[i]];
+        if (o0.count / totalInk >= 0.02) { labels[i] = vivos.indexOf(o0); continue; }
+        var bi2 = 0, bd2 = 1e9;
+        for (var k2 = 0; k2 < vivos.length; k2++) { var dd2 = de2000(o0.lab, vivos[k2].lab); if (dd2 < bd2) { bd2 = dd2; bi2 = k2; } }
+        labels[i] = bi2;
+      }
+      vivos.forEach(function (o) { o.count = 0; });
+      for (i = 0; i < N; i++) if (labels[i] >= 0) vivos[labels[i]].count++;
+    } else if (vivos.length) {
+      for (i = 0; i < N; i++) if (labels[i] >= 0) labels[i] = vivos.indexOf(finales[labels[i]]);
+    } else vivos = finales;
+    // 3) Ratio de borde por hilo: distingue líneas finas de zonas macizas
+    for (var yy = 0; yy < h; yy++) for (var xx = 0; xx < w; xx++) {
+      var idx = yy * w + xx, v = labels[idx]; if (v < 0) continue;
+      var borde = (xx === 0 || labels[idx - 1] !== v) || (xx === w - 1 || labels[idx + 1] !== v) ||
+                  (yy === 0 || labels[idx - w] !== v) || (yy === h - 1 || labels[idx + w] !== v);
+      if (borde) vivos[v].edge++;
+      vivos[v].cx += xx; vivos[v].cy += yy;
+    }
+    // 4) Zonas (componentes conexas) por hilo, con la posición de la mayor
+    var visit = new Uint8Array(N), cola = new Int32Array(N);
+    vivos.forEach(function (o, vi) {
+      var minBlob = Math.max(3, Math.round(o.count * 0.02)), mayor = 0, mcx = 0, mcy = 0;
+      for (var s0 = 0; s0 < N; s0++) {
+        if (labels[s0] !== vi || visit[s0]) continue;
+        var head = 0, tail = 0, tam = 0, sx = 0, sy = 0;
+        cola[tail++] = s0; visit[s0] = 1;
+        while (head < tail) {
+          var cu = cola[head++]; tam++; sx += cu % w; sy += (cu / w) | 0;
+          var cxx = cu % w, cyy = (cu / w) | 0;
+          if (cxx > 0 && labels[cu - 1] === vi && !visit[cu - 1]) { visit[cu - 1] = 1; cola[tail++] = cu - 1; }
+          if (cxx < w - 1 && labels[cu + 1] === vi && !visit[cu + 1]) { visit[cu + 1] = 1; cola[tail++] = cu + 1; }
+          if (cyy > 0 && labels[cu - w] === vi && !visit[cu - w]) { visit[cu - w] = 1; cola[tail++] = cu - w; }
+          if (cyy < h - 1 && labels[cu + w] === vi && !visit[cu + w]) { visit[cu + w] = 1; cola[tail++] = cu + w; }
+        }
+        if (tam >= minBlob) { o.blobs++; if (tam > mayor) { mayor = tam; mcx = sx / tam; mcy = sy / tam; } }
+      }
+      if (!o.blobs) { o.blobs = 1; o.posicion = 'en pequeños detalles repartidos'; }
+      else o.posicion = posicionDescripcion(mcx / w, mcy / h, o.blobs);
+    });
+    // 4b) Polvo de borde (solo dibujos planos): los tonos que nacen del suavizado
+    // entre dos colores (100 % borde, poca superficie, muy repartidos) no son un
+    // hilo real — se fusionan con el color más parecido.
+    if (!esFoto && vivos.length > 1) {
+      var limpios = [], polvo = [];
+      vivos.forEach(function (o) {
+        var er = o.count ? o.edge / o.count : 0;
+        if (er >= 0.9 && o.count / totalInk < 0.08 && o.blobs >= 3) polvo.push(o); else limpios.push(o);
+      });
+      if (polvo.length && limpios.length) {
+        polvo.forEach(function (o) {
+          var mejor = limpios[0], bd3 = 1e9;
+          limpios.forEach(function (t) { var dd3 = de2000(o.lab, t.lab); if (dd3 < bd3) { bd3 = dd3; mejor = t; } });
+          mejor.count += o.count; mejor.edge += o.edge;
+        });
+        vivos = limpios;
+      }
+    }
+    // 5) Roles, puntadas, superficie y madejas
+    var areaCm2 = (wCm > 0 && hCm > 0) ? (totalInk / N) * wCm * hCm : 0;
+    vivos.sort(function (p2, q) { return q.count - p2.count; });
+    var masOscuro = null;
+    vivos.forEach(function (o) { if (o.count / totalInk >= 0.02 && (!masOscuro || o.lum < masOscuro.lum)) masOscuro = o; });
+    vivos.forEach(function (o) {
+      o.share = o.count / totalInk;
+      o.edgeRatio = o.count ? o.edge / o.count : 0;
+      o.cm2 = areaCm2 ? o.share * areaCm2 : 0;
+      if (o === masOscuro && (o.edgeRatio >= 0.45 || o.share <= 0.1) && vivos.length > 1) o.rol = 'contorno';
+      else if (o.share >= 0.18) o.rol = 'relleno-grande';
+      else if (o.share >= 0.06) o.rol = 'relleno';
+      else o.rol = 'detalle';
+      if (o.rol !== 'contorno' && o.edgeRatio >= 0.7 && o.share < 0.12) o.rol = 'detalle';
+      o.puntada = puntadaParaRol(o.rol, esFoto, o.blobs);
+      o.madejas = Math.max(1, Math.ceil((o.cm2 || 8) / (o.rol === 'contorno' || o.rol === 'detalle' ? 30 : 22)));
+      delete o.lab; delete o.edge; delete o.cx; delete o.cy;   // no persistir internos
+    });
+    if (!vivos.some(function (o) { return o.rol === 'contorno'; })) {
+      var candidato = null;
+      vivos.forEach(function (o) { if (o.edgeRatio >= 0.6 && (!candidato || o.edgeRatio > candidato.edgeRatio)) candidato = o; });
+      if (candidato && vivos.length > 1) { candidato.rol = 'contorno'; candidato.puntada = puntadaParaRol('contorno', esFoto, candidato.blobs); }
+    }
+    var totalMadejas = vivos.reduce(function (s2, o) { return s2 + o.madejas; }, 0);
+    return { hilos: vivos.slice(0, 10), areaCm2: Math.round(areaCm2 * 10) / 10, cobertura: Math.round(totalInk / N * 100), esFoto: esFoto, totalMadejas: totalMadejas };
+  }
+  function posicionDescripcion(fx, fy, blobs) {
+    if (blobs >= 4) return 'repartidas por todo el diseño';
+    var fila = fy < 0.34 ? 'arriba' : (fy > 0.66 ? 'abajo' : 'al centro');
+    var col = fx < 0.34 ? ' a la izquierda' : (fx > 0.66 ? ' a la derecha' : '');
+    return (fila === 'al centro' && !col) ? 'al centro del diseño' : (fila + col);
+  }
+  function puntadaParaRol(rol, esFoto, blobs) {
+    if (rol === 'contorno') return 'punto atrás o punto de tallo, 2 hebras';
+    if (rol === 'relleno-grande') return esFoto ? 'punto largo y corto (pintura con aguja), 2–3 hebras' : 'punto satín por secciones, 2–3 hebras';
+    if (rol === 'relleno') return 'punto satín, 2 hebras';
+    return blobs >= 3 ? 'nudos franceses y punto lanzado' : 'punto satín pequeño o lanzado, 2 hebras';
+  }
+  function rolNombre(rol) {
+    return { 'contorno': 'contornos y líneas', 'relleno-grande': 'relleno principal', 'relleno': 'relleno', 'detalle': 'detalles y acentos' }[rol] || rol;
+  }
   // Detecta los colores del diseño y sugiere los hilos DMC más parecidos (misma
   // ciencia de color del punto de cruz: median-cut + calce perceptual CIEDE2000)
   function hilosDesdeUrl(url, cb) {
@@ -4438,6 +4647,97 @@
     im.onerror = function () { cb(null); };
     im.src = url;
   }
+  // ---- Aplicación del análisis al kit: insumos, pasos y ficha ----
+  function insumosDesdeAnalisis(k) {
+    var lista = [];
+    if (k.wCm > 0 && k.hCm > 0) {
+      lista.push({ item: 'Tela para bordar (algodón o lino)', detalle: 'corte de ' + Math.ceil(k.wCm + 8) + ' × ' + Math.ceil(k.hCm + 8) + ' cm' });
+      lista.push({ item: 'Bastidor', detalle: bastidorSugerido(Math.max(k.wCm, k.hCm)) + ' cm' });
+    } else {
+      lista.push({ item: 'Tela para bordar (algodón o lino)', detalle: 'deja 4–5 cm de margen alrededor del diseño' });
+      lista.push({ item: 'Bastidor', detalle: 'un poco más grande que el diseño' });
+    }
+    ((k.analisis && k.analisis.hilos) || []).forEach(function (hilo) {
+      var det = hilo.madejas + ' madeja' + (hilo.madejas > 1 ? 's' : '') + ' · ' + rolNombre(hilo.rol) + (hilo.cm2 ? ' · ≈' + Math.round(hilo.cm2) + ' cm²' : '');
+      lista.push({ item: 'Hilo DMC ' + hilo.code + ' (' + hilo.name + ')', detalle: det });
+    });
+    lista.push({ item: 'Aguja de bordado (punta afilada)', detalle: 'nº 7–9' });
+    lista.push({ item: 'Tijeras de bordado', detalle: 'pequeñas y con buena punta' });
+    lista.push({ item: 'Lápiz hidrosoluble o papel de transferencia', detalle: 'para pasar el diseño a la tela' });
+    lista.push({ item: 'El diseño impreso a tamaño real', detalle: '' });
+    return lista;
+  }
+  function cuentaZonas(o) { return o.blobs > 1 ? (o.blobs + ' zonas') : 'Una zona'; }
+  // El paso a paso escrito PARA ESTE diseño: por color, con su puntada, zona y madejas
+  function pasosDesdeAnalisis(k) {
+    var an = k.analisis; if (!an || !an.hilos.length) return pasosSegunKit();
+    var p = [];
+    p.push({ titulo: 'Pasa el diseño a la tela', detalle: 'Usa el método que prefieras de la página «El diseño a la tela» (contraluz, papel de transferencia o dibujo directo). Marca líneas finas y suaves.' });
+    p.push({ titulo: 'Monta el bastidor', detalle: 'Tela bien tensa y el diseño centrado' + (k.wCm > 0 ? ' (bastidor sugerido: ' + bastidorSugerido(Math.max(k.wCm, k.hCm)) + ' cm)' : '') + '. Vuelve a tensarla cuando la sientas floja.' });
+    var rellenos = an.hilos.filter(function (o) { return o.rol === 'relleno-grande' || o.rol === 'relleno'; });
+    var contornos = an.hilos.filter(function (o) { return o.rol === 'contorno'; });
+    var detalles = an.hilos.filter(function (o) { return o.rol === 'detalle'; });
+    if (rellenos.length > 3) {
+      var listaR = rellenos.map(function (o) { return 'DMC ' + o.code + ' (' + o.name + ')'; }).join(', ');
+      p.push({ titulo: 'Rellena por colores, del más claro al más oscuro', detalle: 'Zona por zona con ' + (an.esFoto ? 'punto largo y corto' : 'punto satín') + ': ' + listaR + '. Termina cada color antes de pasar al siguiente para no enredar hebras.' });
+    } else rellenos.forEach(function (o) {
+      p.push({ titulo: 'Rellena las zonas de ' + o.name.toLowerCase(), detalle: cuentaZonas(o) + ' ' + (o.posicion || '') + '. Usa DMC ' + o.code + ' con ' + o.puntada + (o.cm2 ? ' — ≈' + Math.round(o.cm2) + ' cm², tienes ' + o.madejas + ' madeja' + (o.madejas > 1 ? 's' : '') : '') + '.' });
+    });
+    contornos.forEach(function (o) {
+      p.push({ titulo: 'Perfila los contornos', detalle: 'Repasa las líneas del diseño con DMC ' + o.code + ' (' + o.name + '), ' + o.puntada + '. Los contornos van ENCIMA de los rellenos: definen y ordenan todo el bordado.' });
+    });
+    if (detalles.length) {
+      var listaD = detalles.map(function (o) { return 'DMC ' + o.code + ' (' + o.name + ')'; }).join(', ');
+      p.push({ titulo: 'Da los toques finales', detalle: 'Los acentos pequeños van al final para que no se aplasten mientras bordas: ' + listaD + ', con nudos franceses, punto lanzado o satín pequeñito.' });
+    }
+    p.push({ titulo: 'Remata y limpia', detalle: 'Remata cada color por detrás bajo unas puntadas, borra las marcas del diseño con agua fría y plancha por el revés sobre una toalla.' });
+    return p;
+  }
+  function nivelTiempoDesdeAnalisis(k) {
+    var an = k.analisis; if (!an) return nivelTiempoKit(k);
+    var horas = Math.max(2, Math.min(30, Math.round((an.areaCm2 || 40) / 6 + an.hilos.length * 0.5)));
+    var nivel = (an.esFoto || an.hilos.length >= 6) ? 'Avanzada' : (an.hilos.length <= 3 ? 'Fácil' : 'Media');
+    return { nivel: nivel, tiempo: '~' + horas + '–' + Math.round(horas * 1.4) + ' horas' };
+  }
+  // Modal de progreso: la app "se toma su tiempo" y muestra qué está estudiando
+  var _analisisTimers = [];
+  function abrirAnalisisKit(pasosUi) {
+    var ul = $('analisisLista'); if (!ul) return;
+    ul.innerHTML = '';
+    pasosUi.forEach(function (t) { var li = document.createElement('li'); li.textContent = t; ul.appendChild(li); });
+    $('modalAnalisis').hidden = false;
+  }
+  function cerrarAnalisisKit() { _analisisTimers.forEach(clearTimeout); _analisisTimers = []; var m = $('modalAnalisis'); if (m) m.hidden = true; }
+  // conPasos=true → también regenera el paso a paso y nivel/tiempo (creación del kit).
+  // conPasos=false → re-análisis: actualiza ficha e insumos sin tocar pasos editados.
+  function correrAnalisisKit(conPasos, fin) {
+    if (!kit.disenoImg) { toast('Primero ponle un diseño al kit'); if (fin) fin(false); return; }
+    var pasosUi = ['Leyendo el diseño en alta resolución', 'Detectando colores y calzando hilos DMC', 'Midiendo zonas, superficie y madejas', 'Escribiendo el plan puntada a puntada'];
+    abrirAnalisisKit(pasosUi);
+    var res = null, anListo = false, uiListo = false;
+    function terminar() {
+      if (!anListo || !uiListo) return;
+      cerrarAnalisisKit();
+      if (!res) { toast('No pude analizar el diseño (¿muy claro?) — dejé las sugerencias generales'); if (fin) fin(false); return; }
+      kit.analisis = res;
+      kit.insumos = insumosDesdeAnalisis(kit);
+      if (conPasos) {
+        kit.pasos = pasosDesdeAnalisis(kit);
+        var nt = nivelTiempoDesdeAnalisis(kit); kit.nivel = nt.nivel; kit.tiempo = nt.tiempo;
+      }
+      aplicarKitAFormulario(); guardarKit();
+      toast('Ficha del diseño lista: ' + res.hilos.length + ' hilos, ~' + res.totalMadejas + ' madeja' + (res.totalMadejas !== 1 ? 's' : '') + ' 🧵');
+      if (fin) fin(true);
+    }
+    var lis = $('analisisLista') ? $('analisisLista').children : [];
+    for (var i = 0; i < pasosUi.length; i++) (function (i) {
+      _analisisTimers.push(setTimeout(function () {
+        if (lis[i]) lis[i].classList.add('ok');
+        if (i === pasosUi.length - 1) { uiListo = true; terminar(); }
+      }, 620 * (i + 1)));
+    })(i);
+    analizarDiseno(kit.disenoImg, kit.wCm, kit.hCm, function (r) { res = r; anListo = true; terminar(); });
+  }
   // Reemplaza los hilos de la lista de insumos por los detectados (conserva el resto)
   function aplicarHilosAInsumos(hilos) {
     var resto = kit.insumos.filter(function (o) { return !/^hilos? (de bordar )?(dmc|\()/i.test(o.item || ''); });
@@ -4448,6 +4748,7 @@
   function sugerirInsumosKit() {
     leerFormularioAKit();
     if (kit.tipo === 'cruz' && kit.cruz) { kit.insumos = insumosDeCruz(kit.cruz); renderKitInsumos(); guardarKit(); toast('Insumos exactos del patrón 🧶'); return; }
+    if (kit.analisis && kit.analisis.hilos && kit.analisis.hilos.length) { kit.insumos = insumosDesdeAnalisis(kit); renderKitInsumos(); guardarKit(); toast('Insumos según el análisis de tu diseño 🧵'); return; }
     kit.insumos = insumosLibreSmart(kit, null); renderKitInsumos(); guardarKit();
     if (kit.disenoImg) hilosDesdeUrl(kit.disenoImg, function (hilos) {
       if (hilos && hilos.length) { aplicarHilosAInsumos(hilos); renderKitInsumos(); guardarKit(); toast('Insumos e hilos DMC sugeridos según el diseño 🧵'); }
@@ -4489,7 +4790,8 @@
       'Preparación: bastidor, hebras y aguja',
       esCruz ? 'La técnica del punto de cruz, ilustrada' : 'Guía ilustrada de puntadas',
       esCruz ? null : 'El diseño a la tela: 3 métodos ilustrados',
-      'El paso a paso de este diseño',
+      (!esCruz && kit.analisis) ? '🎨 La ficha de TU diseño: hilos, madejas y zonas' : null,
+      'El paso a paso de este diseño' + ((!esCruz && kit.analisis) ? ', color por color' : ''),
       (esCruz && kit.cruz) ? 'El patrón completo con símbolos, por hojas' : 'El diseño a página completa',
       'Rescates: problemas frecuentes y su solución',
       'Acabado: lavado, planchado y montaje en bastidor',
@@ -4531,13 +4833,9 @@
       var nt = nivelTiempoKit(kit); kit.nivel = nt.nivel; kit.tiempo = nt.tiempo;
       kit.tela = telaSugeridaLibre(kit);
       kit.insumos = insumosLibreSmart(kit, null); kit.pasos = pasosSegunKit();
-      aplicarKitAFormulario(); guardarKit(); irAKits(); toast('Kit armado desde tu diseño 🌸');
-      // En segundo plano: detectar los colores y sugerir los hilos DMC
-      hilosDesdeUrl(kit.disenoImg, function (hilos) {
-        if (!hilos || !hilos.length) return;
-        aplicarHilosAInsumos(hilos); renderKitInsumos(); guardarKit();
-        toast('Te sugerí ' + hilos.length + ' hilos DMC según los colores del diseño 🧵');
-      });
+      aplicarKitAFormulario(); guardarKit(); irAKits();
+      // Análisis profundo del diseño: hilos, zonas, madejas y plan a la medida
+      correrAnalisisKit(true, null);
     });
   }
   // Kit desde una imagen subida (un diseño hecho fuera de la app)
@@ -4551,12 +4849,8 @@
     var nt = nivelTiempoKit(kit); kit.nivel = nt.nivel; kit.tiempo = nt.tiempo;
     kit.tela = telaSugeridaLibre(kit);
     kit.insumos = insumosLibreSmart(kit, null); kit.pasos = pasosSegunKit();
-    aplicarKitAFormulario(); guardarKit(); toast('Kit armado con tu diseño 🌸');
-    hilosDesdeUrl(kit.disenoImg, function (hilos) {
-      if (!hilos || !hilos.length) return;
-      aplicarHilosAInsumos(hilos); renderKitInsumos(); guardarKit();
-      toast('Te sugerí ' + hilos.length + ' hilos DMC según los colores del diseño 🧵');
-    });
+    aplicarKitAFormulario(); guardarKit();
+    correrAnalisisKit(true, null);
   }
   function kitDesdeProyecto(id) {
     var p = null; for (var i = 0; i < proyectos.length; i++) if (proyectos[i].id === id) p = proyectos[i];
@@ -4566,11 +4860,13 @@
     setTimeout(function () { kitDesdeActual(); if (kit.titulo) { kit.titulo = 'Kit ' + p.nombre; $('kitTitulo').value = kit.titulo; guardarKit(); } }, 800);
   }
   function guardarKit() {
-    var lite = { titulo: kit.titulo, nivel: kit.nivel, tiempo: kit.tiempo, tela: kit.tela, tipo: kit.tipo, origen: kit.origen, mensaje: kit.mensaje, wCm: kit.wCm, hCm: kit.hCm, disenoImg: kit.disenoImg, insumos: kit.insumos, pasos: kit.pasos };
+    var lite = { titulo: kit.titulo, nivel: kit.nivel, tiempo: kit.tiempo, tela: kit.tela, tipo: kit.tipo, origen: kit.origen, mensaje: kit.mensaje, wCm: kit.wCm, hCm: kit.hCm, disenoImg: kit.disenoImg, insumos: kit.insumos, pasos: kit.pasos, analisis: kit.analisis };
     try { localStorage.setItem('alma_kit', JSON.stringify(lite)); } catch (e) {}
   }
   function cargarKit() {
-    try { var s = JSON.parse(localStorage.getItem('alma_kit') || 'null'); if (s && typeof s === 'object') { kit = nuevoKit(); kit.titulo = s.titulo || ''; kit.nivel = s.nivel || ''; kit.tiempo = s.tiempo || ''; kit.tela = s.tela || ''; kit.tipo = s.tipo === 'cruz' ? 'cruz' : 'libre'; kit.origen = typeof s.origen === 'string' ? s.origen : ''; kit.mensaje = typeof s.mensaje === 'string' ? s.mensaje.slice(0, 240) : ''; kit.wCm = +s.wCm || 0; kit.hCm = +s.hCm || 0; kit.disenoImg = (typeof s.disenoImg === 'string' && s.disenoImg.slice(0, 11) === 'data:image/') ? s.disenoImg : null; kit.insumos = Array.isArray(s.insumos) ? s.insumos.slice(0, 60) : []; kit.pasos = Array.isArray(s.pasos) ? s.pasos.slice(0, 40) : []; } } catch (e) {}
+    try { var s = JSON.parse(localStorage.getItem('alma_kit') || 'null'); if (s && typeof s === 'object') { kit = nuevoKit(); kit.titulo = s.titulo || ''; kit.nivel = s.nivel || ''; kit.tiempo = s.tiempo || ''; kit.tela = s.tela || ''; kit.tipo = s.tipo === 'cruz' ? 'cruz' : 'libre'; kit.origen = typeof s.origen === 'string' ? s.origen : ''; kit.mensaje = typeof s.mensaje === 'string' ? s.mensaje.slice(0, 240) : ''; kit.wCm = +s.wCm || 0; kit.hCm = +s.hCm || 0; kit.disenoImg = (typeof s.disenoImg === 'string' && s.disenoImg.slice(0, 11) === 'data:image/') ? s.disenoImg : null; kit.insumos = Array.isArray(s.insumos) ? s.insumos.slice(0, 60) : []; kit.pasos = Array.isArray(s.pasos) ? s.pasos.slice(0, 40) : [];
+      if (s.analisis && typeof s.analisis === 'object' && Array.isArray(s.analisis.hilos)) { kit.analisis = s.analisis; kit.analisis.hilos = kit.analisis.hilos.slice(0, 12); }
+    } } catch (e) {}
   }
   (function () {
     if (!$('kitInsumos')) return;
@@ -4581,16 +4877,13 @@
     });
     $('kitAddInsumo').addEventListener('click', function () { kit.insumos.push({ item: '', detalle: '' }); renderKitInsumos(); var ins = $('kitInsumos').lastChild; if (ins) ins.querySelector('input').focus(); guardarKit(); });
     $('kitAddPaso').addEventListener('click', function () { kit.pasos.push({ titulo: '', detalle: '' }); renderKitPasos(); var ps = $('kitPasos').lastChild; if (ps) ps.querySelector('input').focus(); guardarKit(); });
-    $('kitSugerir').addEventListener('click', function () { leerFormularioAKit(); kit.pasos = pasosSegunKit(); renderKitPasos(); guardarKit(); toast('Pasos sugeridos según la técnica 🌸'); });
+    $('kitSugerir').addEventListener('click', function () { leerFormularioAKit(); kit.pasos = (kit.tipo !== 'cruz' && kit.analisis) ? pasosDesdeAnalisis(kit) : pasosSegunKit(); renderKitPasos(); guardarKit(); toast(kit.analisis && kit.tipo !== 'cruz' ? 'Pasos escritos según el análisis de tu diseño 🌸' : 'Pasos sugeridos según la técnica 🌸'); });
     $('kitSugerirIns').addEventListener('click', sugerirInsumosKit);
     $('kitHilosDis').addEventListener('click', function () {
       leerFormularioAKit();
       if (kit.tipo === 'cruz' && kit.cruz) { toast('Tu punto de cruz ya trae los hilos exactos del patrón 🧶'); return; }
-      if (!kit.disenoImg) { toast('Primero ponle un diseño al kit'); return; }
-      toast('Buscando los hilos DMC del diseño…');
-      hilosDesdeUrl(kit.disenoImg, function (hilos) {
-        if (!hilos || !hilos.length) { toast('No encontré colores para calzar (¿diseño muy claro?)'); return; }
-        aplicarHilosAInsumos(hilos); renderKitInsumos(); guardarKit(); toast(hilos.length + ' hilos DMC sugeridos 🧵');
+      correrAnalisisKit(false, function (ok) {
+        if (ok && kit.pasos.length) toast('Ficha lista — toca «✨ Sugerir pasos» si quieres el plan actualizado');
       });
     });
     $('kitDesdeCruz').addEventListener('click', kitDesdeCruz);
@@ -4969,6 +5262,44 @@
       return y;
     });
   }
+  // La ficha técnica del diseño: cada hilo con su rol, superficie, madejas y zonas
+  function kitPaginaFicha() {
+    var an = kit.analisis;
+    return kitCanvasesTexto('🎨 Los colores de tu diseño', function (x, M, y, maxW, dpi) {
+      x.fillStyle = KIT_C.suave; x.font = 'italic ' + Math.round(dpi * 0.13) + 'px Georgia, serif';
+      var resumen = an.hilos.length + ' hilos DMC · ~' + an.totalMadejas + ' madeja' + (an.totalMadejas !== 1 ? 's' : '') + (an.areaCm2 ? ' · ≈' + Math.round(an.areaCm2) + ' cm² de bordado' : '') + (an.esFoto ? ' · diseño tipo foto (degradados suaves)' : '');
+      y = textoEnvuelto(x, 'La ficha técnica de ESTE diseño, medida punto por punto: cada color con su hilo, su superficie, sus madejas y su papel en el bordado. ' + resumen + '.', M, y, maxW, Math.round(dpi * 0.19)) + Math.round(dpi * 0.16);
+      var im = portadaImgCache;
+      if (an.hilos.length <= 6 && im && im.complete && im.naturalWidth) {
+        var mh = Math.round(dpi * 1.4), e2 = Math.min((maxW * 0.5) / im.naturalWidth, mh / im.naturalHeight);
+        var w2 = im.naturalWidth * e2, h2 = im.naturalHeight * e2, ix = M + maxW / 2 - w2 / 2;
+        x.save(); x.shadowColor = 'rgba(0,0,0,0.12)'; x.shadowBlur = 6; x.shadowOffsetY = 3;
+        x.fillStyle = '#fff'; x.fillRect(ix - 5, y - 5, w2 + 10, h2 + 10); x.restore();
+        x.drawImage(im, ix, y, w2, h2);
+        x.strokeStyle = KIT_C.borde; x.lineWidth = 2; x.strokeRect(ix - 5, y - 5, w2 + 10, h2 + 10);
+        y += h2 + Math.round(dpi * 0.22);
+      }
+      var rowH = Math.round(dpi * 0.58), gap = Math.round(dpi * 0.09), pad = Math.round(dpi * 0.13), sw = Math.round(dpi * 0.32);
+      an.hilos.forEach(function (o) {
+        rrectPath(x, M, y, maxW, rowH, Math.round(dpi * 0.06));
+        x.fillStyle = KIT_C.tela; x.fill(); x.strokeStyle = KIT_C.borde; x.lineWidth = 1.5; x.stroke();
+        x.fillStyle = o.hex; x.fillRect(M + pad, y + (rowH - sw) / 2, sw, sw);
+        x.strokeStyle = 'rgba(0,0,0,.25)'; x.lineWidth = 1; x.strokeRect(M + pad, y + (rowH - sw) / 2, sw, sw);
+        var tx = M + pad + sw + Math.round(dpi * 0.14);
+        x.fillStyle = KIT_C.titulo; x.font = 'bold ' + Math.round(dpi * 0.135) + 'px sans-serif';
+        x.fillText('DMC ' + o.code + ' · ' + o.name, tx, y + Math.round(dpi * 0.06));
+        x.fillStyle = KIT_C.tinta; x.font = Math.round(dpi * 0.115) + 'px sans-serif';
+        x.fillText(rolNombre(o.rol) + ' · ' + o.puntada, tx, y + Math.round(dpi * 0.24));
+        x.fillStyle = KIT_C.suave; x.font = Math.round(dpi * 0.11) + 'px sans-serif';
+        x.fillText(Math.round(o.share * 100) + '% del bordado' + (o.cm2 ? ' · ≈' + Math.round(o.cm2) + ' cm²' : '') + ' · ' + o.madejas + ' madeja' + (o.madejas > 1 ? 's' : '') + ' · ' + cuentaZonas(o).toLowerCase() + (o.posicion ? ' ' + o.posicion : ''), tx, y + Math.round(dpi * 0.41));
+        y += rowH + gap;
+      });
+      y += Math.round(dpi * 0.08);
+      x.fillStyle = KIT_C.suave; x.font = 'italic ' + Math.round(dpi * 0.12) + 'px Georgia, serif';
+      y = textoEnvuelto(x, 'Las madejas son una estimación generosa (queda hilo de sobra para practicar). El orden de trabajo de estos colores está en «Cómo bordarlo, paso a paso».', M, y, maxW, Math.round(dpi * 0.18));
+      return y;
+    });
+  }
   // Rescates: los sustos típicos y cómo se arreglan
   function kitPaginaSOS() {
     var esCruz = kit.tipo === 'cruz';
@@ -5023,6 +5354,7 @@
         'La preparación: bastidor, hebras, aguja',
         (kit.tipo === 'cruz' ? 'La técnica del punto de cruz' : 'La guía de puntadas ilustrada'),
         (kit.tipo === 'cruz' ? null : 'Cómo pasar el diseño a la tela'),
+        (kit.tipo !== 'cruz' && kit.analisis ? 'La ficha de colores de tu diseño' : null),
         'El paso a paso de este diseño',
         (kit.tipo === 'cruz' && kit.cruz ? 'El patrón completo, con símbolos' : 'El diseño a página completa'),
         'Rescates: problemas frecuentes y su solución',
@@ -5193,7 +5525,10 @@
     }));
     agrega(kitPaginaPreparacion());
     agrega(kitPaginaPuntadas());
-    if (kit.tipo !== 'cruz') agrega(kitPaginaTransferencia());
+    if (kit.tipo !== 'cruz') {
+      agrega(kitPaginaTransferencia());
+      if (kit.analisis && kit.analisis.hilos && kit.analisis.hilos.length) agrega(kitPaginaFicha());
+    }
     if (kit.pasos.length) agrega(kitCanvasesTexto('📋 Cómo bordarlo, paso a paso', function (x, M, y, maxW, dpi) {
       var r = Math.round(dpi * 0.09), num = 0;
       kit.pasos.forEach(function (o) {
