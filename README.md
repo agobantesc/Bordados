@@ -8,3 +8,4 @@ guía de puntadas, transferencia del diseño, paso a paso, rescates y acabado).
 PWA de un solo archivo (`index.html`) pensada para iPad/Safari, sin dependencias.
 
 Versión publicada: AlmaApp 2.0
+Publicada el 3 de julio.
