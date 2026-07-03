@@ -11,6 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Alma bordado">
+<meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- Tipografía de marca (títulos) -->
@@ -361,6 +362,22 @@
   .tema-chip.activa { box-shadow: 0 0 0 2px var(--superficie), 0 0 0 4px var(--trigo-osc); }
   .bienvenida-lista { list-style: none; margin: 12px 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
   .bienvenida-lista li { font-size: .96rem; color: var(--tinta); line-height: 1.35; }
+  /* Candado del taller: la app es privada; se abre con el código una vez por dispositivo */
+  .candado { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 20px;
+    background: var(--papel);
+    background-image:
+      radial-gradient(820px 480px at 102% 0%, rgba(231,201,201,0.20), transparent 58%),
+      radial-gradient(760px 460px at -8% 16%, rgba(196,209,222,0.18), transparent 60%),
+      radial-gradient(820px 520px at 50% 118%, rgba(216,196,160,0.18), transparent 60%); }
+  .candado-caja { width: 100%; max-width: 380px; background: var(--superficie); border: 1px solid var(--borde);
+    border-radius: var(--radio); box-shadow: var(--sombra); padding: 28px 24px; text-align: center; }
+  .candado-caja h2 { font-family: "Cormorant Garamond", Georgia, serif; font-size: 1.6rem; color: var(--titulo); margin: 10px 0 4px; }
+  .candado-caja .sub { color: var(--tinta-suave); font-size: .92rem; margin-bottom: 16px; }
+  .candado-caja input { width: 100%; padding: 14px; font-size: 1.15rem; text-align: center; letter-spacing: .08em;
+    border: 1px solid var(--borde-fuerte); border-radius: 12px; background: var(--papel-2); color: var(--tinta); -webkit-appearance: none; }
+  .candado-caja input:focus { outline: none; border-color: var(--trigo-osc); background: #fff; box-shadow: 0 0 0 3px rgba(184,154,106,0.18); }
+  .candado-err { color: #a14f72; font-size: .88rem; min-height: 1.3em; margin: 8px 0 10px; }
+  .boton-nuevo { border-color: #e2b7c8; color: #a14f72; background: #faf1f4; }
   /* Modal "Analizando tu diseño": pasos que se van marcando */
   .analisis-lista { list-style: none; margin: 14px 0 4px; padding: 0; display: flex; flex-direction: column; gap: 10px; }
   .analisis-lista li { font-size: .94rem; color: var(--tinta-suave); opacity: .38; transition: opacity .35s; display: flex; gap: 9px; align-items: baseline; }
@@ -614,6 +631,17 @@
   Ábrela en <strong>Safari</strong> con el enlace publicado en internet.
 </div>
 
+<div class="candado" id="candado" hidden>
+  <div class="candado-caja">
+    <svg viewBox="0 0 80 80" aria-hidden="true" style="width:66px; height:66px;"><use href="#logoMini"/></svg>
+    <h2>Taller privado 🔒</h2>
+    <p class="sub">Esta app es de uso personal.<br>Escribe el código para entrar (solo la primera vez).</p>
+    <input id="candadoClave" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Código de acceso" aria-label="Código de acceso">
+    <p class="candado-err" id="candadoErr"></p>
+    <button class="boton-primario" id="candadoEntrar" type="button" style="width:100%;">Entrar</button>
+  </div>
+</div>
+
 <header class="appbar">
   <svg class="appbar-deco" viewBox="0 0 240 175" aria-hidden="true"><use href="#ramoAlma"/></svg>
   <div class="marca">
@@ -695,6 +723,7 @@
   <button class="boton-pdf" id="pdfRect" disabled>📄 Generar PDF para imprimir</button>
   <button class="boton-sec boton-img" id="imgRect" type="button">🖼️ Guardar imagen (para compartir)</button>
   <button class="boton-sec boton-img boton-kit" id="btnKitRect" type="button">🎁 Crear kit de bordado con este diseño</button>
+  <button class="boton-sec boton-img boton-nuevo" id="btnNuevoRect" type="button">🧹 Nuevo diseño (borrar este)</button>
 </section>
 
 <!-- ============ MODO 2 ============ -->
@@ -748,6 +777,7 @@
   <button class="boton-pdf" id="pdfCirc" disabled>📄 Generar PDF para imprimir</button>
   <button class="boton-sec boton-img" id="imgCirc" type="button">🖼️ Guardar imagen (para compartir)</button>
   <button class="boton-sec boton-img boton-kit" id="btnKitCirc" type="button">🎁 Crear kit de bordado con este diseño</button>
+  <button class="boton-sec boton-img boton-nuevo" id="btnNuevoCirc" type="button">🧹 Nuevo diseño (borrar este)</button>
 </section>
 
 <!-- ============ MODO 3 ============ -->
@@ -801,6 +831,7 @@
   <button class="boton-pdf" id="pdfLetras" disabled>📄 Generar PDF para imprimir</button>
   <button class="boton-sec boton-img" id="imgLetras" type="button">🖼️ Guardar imagen (para compartir)</button>
   <button class="boton-sec boton-img boton-kit" id="btnKitLetras" type="button">🎁 Crear kit de bordado con este diseño</button>
+  <button class="boton-sec boton-img boton-nuevo" id="btnNuevoLetras" type="button">🧹 Nuevo diseño (borrar este)</button>
 </section>
 
 <!-- ============ MODO FOTO + TEXTO ============ -->
@@ -869,6 +900,7 @@
   <button class="boton-pdf" id="pdfFt" disabled>📄 Generar PDF para imprimir</button>
   <button class="boton-sec boton-img" id="imgFt" type="button">🖼️ Guardar imagen (para compartir)</button>
   <button class="boton-sec boton-img boton-kit" id="btnKitFt" type="button">🎁 Crear kit de bordado con este diseño</button>
+  <button class="boton-sec boton-img boton-nuevo" id="btnNuevoFt" type="button">🧹 Nuevo diseño (borrar este)</button>
 </section>
 
 <!-- ============ MODO 4 ============ -->
@@ -946,6 +978,7 @@
   <button class="boton-pdf" id="pdfLibre" disabled>📄 Generar PDF para imprimir</button>
   <button class="boton-sec boton-img" id="imgLibre" type="button" disabled>🖼️ Guardar imagen (para compartir)</button>
   <button class="boton-sec boton-img boton-kit" id="btnKitLibre" type="button">🎁 Crear kit de bordado con este diseño</button>
+  <button class="boton-sec boton-img boton-nuevo" id="btnNuevoLibre" type="button">🧹 Nuevo diseño (borrar este)</button>
 </section>
 
 <!-- ============ PUNTO DE CRUZ ============ -->
@@ -1023,6 +1056,7 @@
   <button class="boton-pdf" id="pdfCruz" disabled>📄 Generar patrón PDF para imprimir</button>
   <button class="boton-sec boton-img" id="imgCruz" type="button" disabled>🖼️ Guardar imagen del patrón</button>
   <button class="boton-sec boton-img boton-kit" id="btnKitCruz" type="button">🎁 Crear kit de bordado con este patrón</button>
+  <button class="boton-sec boton-img boton-nuevo" id="btnNuevoCruz" type="button">🧹 Nuevo diseño (borrar este)</button>
 </section>
 
 <!-- ============ MOCKUP / VER EN PRODUCTO ============ -->
@@ -1349,6 +1383,41 @@
     clearTimeout(toastT);
     toastT = setTimeout(function () { t.classList.remove('ver'); setTimeout(function () { t.hidden = true; }, 280); }, 2200);
   }
+
+  // ---------- Candado del taller (acceso privado) ----------
+  // La clave NO está escrita aquí: se guarda solo su huella (doble hash). Para
+  // cambiarla hay que generar los dos números de la clave nueva con huellaClave().
+  var CANDADO_HUELLA = [3328161987, 1690453098];
+  function huellaClave(s) {
+    s = String(s || '').trim().toLowerCase();
+    var d = 5381 >>> 0, m = 0 >>> 0;
+    for (var i = 0; i < s.length; i++) {
+      var c = s.charCodeAt(i);
+      d = (((d * 33) >>> 0) ^ c) >>> 0;
+      m = ((c + ((m << 6) >>> 0) + ((m << 16) >>> 0) - m) >>> 0);
+    }
+    return [d, m];
+  }
+  (function () {
+    var cand = $('candado'); if (!cand) return;
+    var ya = false; try { ya = localStorage.getItem('alma_candado') === '1'; } catch (e) {}
+    if (ya) { cand.parentNode.removeChild(cand); return; }
+    cand.hidden = false;
+    setTimeout(function () { try { $('candadoClave').focus(); } catch (e) {} }, 250);
+    function probar() {
+      var h = huellaClave($('candadoClave').value);
+      if (h[0] === CANDADO_HUELLA[0] && h[1] === CANDADO_HUELLA[1]) {
+        try { localStorage.setItem('alma_candado', '1'); } catch (e) {}
+        cand.parentNode.removeChild(cand);
+        toast('Bienvenida a tu taller 🌸');
+      } else {
+        $('candadoErr').textContent = 'Ese código no es — inténtalo de nuevo 🌸';
+        $('candadoClave').value = ''; $('candadoClave').focus();
+      }
+    }
+    $('candadoEntrar').addEventListener('click', probar);
+    $('candadoClave').addEventListener('keydown', function (e) { if (e.key === 'Enter') probar(); });
+  })();
 
   // Arrastre robusto con el dedo (iPad Safari) y con mouse. opts: { puede(), onInicio(), onMover(dx,dy), onFin() }
   // dx/dy son el desplazamiento en píxeles internos del canvas desde el inicio (1:1 con el dedo).
@@ -4897,6 +4966,68 @@
     ['btnKitRect', 'btnKitCirc', 'btnKitLetras', 'btnKitFt', 'btnKitLibre'].forEach(function (id) { var b = $(id); if (b) b.addEventListener('click', kitDesdeActual); });
     (function () { var b = $('btnKitCruz'); if (b) b.addEventListener('click', kitDesdeCruz); })();
     $('kitPdf').addEventListener('click', function () { leerFormularioAKit(); toast('Generando PDF…'); setTimeout(function () { try { generarKitPdf(function () { toast('PDF listo  ✓'); }); } catch (e) { toast('Hubo un problema al generar el PDF'); } }, 50); });
+  })();
+
+  // ---------- Botón «Nuevo diseño» por módulo: borra lo actual y deja el lienzo limpio ----------
+  function resetZonaSubida(zonaId, infoId, icono, texto) {
+    var z = $(zonaId); if (z) z.innerHTML = '<span class="icono">' + icono + '</span><p>' + texto + '</p>';
+    if (infoId && $(infoId)) $(infoId).textContent = '';
+  }
+  function setVal(id, v) { var el = $(id); if (!el) return; if (el.type === 'checkbox') el.checked = !!v; else el.value = v; }
+  function conConfirmarNuevo(fn) {
+    return function () {
+      if (!confirm('¿Borrar este diseño y empezar uno nuevo?')) return;
+      fn(); tocarEstado(); toast('Listo: lienzo limpio para un diseño nuevo 🌸');
+    };
+  }
+  (function () {
+    var b;
+    b = $('btnNuevoRect'); if (b) b.addEventListener('click', conConfirmarNuevo(function () {
+      imgRect = null; flipRect = { x: false, y: false };
+      setVal('anchoRect', 10); setVal('altoRect', 10); setVal('presetRect', 0); setVal('proporcionRect', true);
+      resetZonaSubida('zonaRect', 'infoRect', '🖼️', 'Toca aquí para elegir una imagen');
+      refrescarRect();
+    }));
+    b = $('btnNuevoCirc'); if (b) b.addEventListener('click', conConfirmarNuevo(function () {
+      imgCirc = null; desplCirc = { x: 0, y: 0 }; zoomCirc = 1; flipCirc = { x: false, y: false };
+      setVal('diametroCirc', 15); setVal('presetCirc', 0); setVal('anchoCentro', 7); setVal('guiaCirc', true); setVal('zoomCirc', 100);
+      var r = document.querySelector('input[name="modoCirc"][value="lleno"]'); if (r) r.checked = true;
+      resetZonaSubida('zonaCirc', 'infoCirc', '🖼️', 'Toca aquí para elegir una imagen');
+      refrescarCirc();
+    }));
+    b = $('btnNuevoLetras'); if (b) b.addEventListener('click', conConfirmarNuevo(function () {
+      lineasLetras = []; $('listaLineas').innerHTML = '';
+      setVal('estiloLetras', 'contorno'); setVal('alinearLetras', 'centro');
+      setVal('colorRelleno', '#b89a6a'); setVal('colorContorno', '#6f6151'); setVal('grosorLetras', 35);
+      setVal('espaciadoLetras', 0); setVal('interlineaLetras', 0);
+      setVal('degradadoLetras', false); setVal('colorRelleno2', '#d8c4a0'); setVal('dirDegradado', 'vertical');
+      setVal('sombraLetras', false); setVal('espejoLetras', false);
+      anadirLinea('', 4);
+      refrescarLetras();
+    }));
+    b = $('btnNuevoFt'); if (b) b.addEventListener('click', conConfirmarNuevo(function () {
+      imgFt = null; flipFt = { x: false, y: false }; ftTxtPos = null;
+      lineasFt = []; $('listaLineasFt').innerHTML = ''; anadirLineaFt('', 2.4);
+      var rf = document.querySelector('input[name="formaFt"][value="rect"]'); if (rf) rf.checked = true;
+      setVal('anchoFt', 12); setVal('altoFt', 9); setVal('diametroFt', 14);
+      setVal('posicionFt', 'arriba'); setVal('estiloFt', 'contorno'); setVal('colorFt', '#6f6151');
+      resetZonaSubida('zonaFt', 'infoFt', '🖼️', 'Toca aquí para elegir una foto');
+      refrescarFt();
+    }));
+    b = $('btnNuevoLibre'); if (b) b.addEventListener('click', conConfirmarNuevo(function () {
+      libreObjs = []; libreSel = null;
+      setVal('anchoLibre', 18); setVal('altoLibre', 18); setVal('textoLibre', '');
+      dibujarLibre(); libreSync(); libreActivarBotones();
+      var pie = $('pieLibre'); if (pie) pie.textContent = 'Agrega una foto o un texto para empezar';
+    }));
+    b = $('btnNuevoCruz'); if (b) b.addEventListener('click', conConfirmarNuevo(function () {
+      imgCruz = null; modeloCruz = null; recorteCruz = null; patronManual = false;
+      mostrarSimbolosCruz = false; quitarFondoCruz = false; limpiarCruz = false; bnCruz = false; cruzZoom = 1;
+      ['simbolosCruz', 'fondoCruz', 'limpiarCruzBtn', 'bnCruzBtn'].forEach(function (id) { var bb = $(id); if (bb) { bb.setAttribute('aria-pressed', 'false'); bb.classList.remove('activo'); } });
+      setVal('anchoCruz', 70); setVal('coloresCruz', '16'); setVal('telaCruz', String(CONFIG.aidaDef || 14)); setVal('telaColorCruz', 'blanca'); setVal('zoomCruz', 100);
+      resetZonaSubida('zonaCruz', 'infoCruz', '🧶', 'Toca aquí para elegir una imagen');
+      recomputeCruz();
+    }));
   })();
 
   // ---- Manual profesional del kit (PDF) ----
