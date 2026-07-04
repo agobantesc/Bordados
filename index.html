@@ -653,7 +653,7 @@
   <div class="marca">
     <svg class="logo" viewBox="0 0 80 80" aria-hidden="true"><use href="#logoMini"/></svg>
     <div style="min-width:0;">
-      <div class="fila-marca"><h1 id="tituloMarca">Alma bordado</h1><span class="ver-badge" title="AlmaApp 3.2 · Estudio PRO+">3.2</span></div>
+      <div class="fila-marca"><h1 id="tituloMarca">Alma bordado</h1><span class="ver-badge" title="AlmaApp 3.3 · Alma Estudio">3.3</span></div>
       <p class="lema">Plantillas a tamaño real, listas para bordar</p>
     </div>
   </div>
@@ -665,7 +665,7 @@
   <div class="tab-grupo" data-g="disenar" style="--n:2">
     <span class="tab-grupo-tit">✏️ Diseñar</span>
     <div class="tab-grupo-fila">
-      <button class="tab-btn activa" data-panel="panel-libre" aria-label="Estudio de diseño"><span class="ti" aria-hidden="true">🎨</span><span class="tl">Estudio</span></button>
+      <button class="tab-btn activa" data-panel="panel-libre" aria-label="Alma Estudio"><span class="ti" aria-hidden="true">🎨</span><span class="tl">Alma Estudio</span></button>
       <button class="tab-btn" data-panel="panel-cruz" aria-label="Punto de cruz"><span class="ti" aria-hidden="true">🧶</span><span class="tl">Punto cruz</span></button>
     </div>
   </div>
@@ -685,7 +685,7 @@
 </nav>
 <!-- ============ ESTUDIO DE DISEÑO (único panel de creación) ============ -->
 <section id="panel-libre" class="panel activa">
-  <p class="intro">Tu <strong>estudio de diseño</strong>: elige el lienzo (bastidor circular o rectángulo), agrega <strong>fotos</strong> y <strong>palabras</strong>, y acomódalas con el dedo. Todo lo que imagines, en un solo lugar — y de aquí sale directo a PDF a tamaño real o a un kit. 🌸</p>
+  <p class="intro"><strong>Alma Estudio</strong>, tu taller de diseño: elige el lienzo (bastidor circular o rectángulo), agrega <strong>fotos</strong> y <strong>palabras</strong>, y acomódalas con el dedo. Todo lo que imagines, en un solo lugar — y de aquí sale directo a PDF a tamaño real o a un kit. 🌸</p>
   <svg class="divisor" viewBox="0 0 150 22"><use href="#divisorBot"/></svg>
 
   <div class="tarjeta">
@@ -760,6 +760,7 @@
         <button class="boton-sec" id="voltearLibre" type="button">⇅ Voltear</button>
         <button class="boton-sec" id="masTextoBtn" type="button" style="display:none;">🎀 Más estilo</button>
         <button class="boton-sec" id="recorteLibre" type="button" title="Recorta la foto en círculo">⭕ Redondear</button>
+        <button class="boton-sec" id="centrarLibre" type="button">🎯 Centrar</button>
         <button class="boton-sec" id="dupLibre" type="button">⧉ Duplicar</button>
         <button class="boton-sec" id="frenteLibre" type="button">⬆️ Al frente</button>
         <button class="boton-sec" id="fondoLibre" type="button">⬇️ Al fondo</button>
@@ -2094,6 +2095,7 @@
   $('girarLibre').addEventListener('click', function () { var o = libreSel ? libreObj(libreSel) : null; if (!o) return; o.rot = ((o.rot || 0) + Math.PI / 12) % (Math.PI * 2); dibujarLibre(); histPush(); });
   $('flipLibre').addEventListener('click', function () { var o = libreSel ? libreObj(libreSel) : null; if (o && o.tipo !== 'texto') { o.flip = !o.flip; dibujarLibre(); histPush(); } });
   $('recorteLibre').addEventListener('click', function () { var o = libreSel ? libreObj(libreSel) : null; if (!o || o.tipo !== 'img') return; o.recorte = o.recorte === 'circ' ? null : 'circ'; libreSync(); dibujarLibre(); histPush(); });
+  $('centrarLibre').addEventListener('click', function () { var o = libreSel ? libreObj(libreSel) : null; if (!o) return; var d = libreDim(); o.xCm = d.w / 2; o.yCm = d.h / 2; dibujarLibre(); histPush(); });
   $('dupLibre').addEventListener('click', function () {
     var o = libreSel ? libreObj(libreSel) : null; if (!o) return;
     var d = libreDim(), c = {};
@@ -2104,9 +2106,25 @@
   $('frenteLibre').addEventListener('click', function () { var o = libreSel ? libreObj(libreSel) : null; if (!o) return; libreObjs = libreObjs.filter(function (q) { return q.id !== o.id; }); libreObjs.push(o); dibujarLibre(); histPush(); });
   $('fondoLibre').addEventListener('click', function () { var o = libreSel ? libreObj(libreSel) : null; if (!o) return; libreObjs = libreObjs.filter(function (q) { return q.id !== o.id; }); libreObjs.unshift(o); dibujarLibre(); histPush(); });
   $('borrarLibre').addEventListener('click', function () { if (!libreSel) return; libreObjs = libreObjs.filter(function (q) { return q.id !== libreSel; }); libreSel = null; libreSync(); dibujarLibre(); libreActivarBotones(); histPush(); });
-  ['anchoLibre', 'altoLibre', 'diametroEstudio'].forEach(function (id) { $(id).addEventListener('input', function () { if (id === 'diametroEstudio') $('presetEstudio').value = 0; libreAcotarObjs(); programar('libre', function () { dibujarLibre(); libreActivarBotones(); }); }); });
-  $('presetEstudio').addEventListener('change', function () { var v = parseFloat(this.value); if (v > 0) { $('diametroEstudio').value = v; libreAcotarObjs(); dibujarLibre(); libreActivarBotones(); } });
-  document.querySelectorAll('input[name="formaEstudio"]').forEach(function (r) { r.addEventListener('change', function () { aplicarFormaUI(); libreAcotarObjs(); dibujarLibre(); libreActivarBotones(); }); });
+  // Al cambiar el tamaño del lienzo, el diseño completo se reescala proporcionalmente
+  // (posiciones y tamaños, letras incluidas): la composición se conserva tal cual.
+  var _dimPrev = null;
+  function reescalarLienzo() {
+    var d = libreDim();
+    if (_dimPrev && _dimPrev.w > 0 && _dimPrev.h > 0 && (Math.abs(d.w - _dimPrev.w) > 0.001 || Math.abs(d.h - _dimPrev.h) > 0.001)) {
+      var fx = d.w / _dimPrev.w, fy = d.h / _dimPrev.h, f = Math.min(fx, fy);
+      libreObjs.forEach(function (o) {
+        o.xCm *= fx; o.yCm *= fy; o.wCm *= f; o.hCm *= f;
+        if (o.tipo === 'texto') o.altoCm *= f;
+      });
+      estudioRefrescaTextos();
+    }
+    _dimPrev = d;
+    libreAcotarObjs(); dibujarLibre(); libreActivarBotones(); libreSync();
+  }
+  ['anchoLibre', 'altoLibre', 'diametroEstudio'].forEach(function (id) { $(id).addEventListener('input', function () { if (id === 'diametroEstudio') $('presetEstudio').value = 0; programar('libre', reescalarLienzo); }); });
+  $('presetEstudio').addEventListener('change', function () { var v = parseFloat(this.value); if (v > 0) { $('diametroEstudio').value = v; reescalarLienzo(); } });
+  document.querySelectorAll('input[name="formaEstudio"]').forEach(function (r) { r.addEventListener('change', function () { aplicarFormaUI(); _dimPrev = libreDim(); libreAcotarObjs(); dibujarLibre(); libreActivarBotones(); }); });
   $('hojaLibre').addEventListener('change', function () {});
   $('pdfLibre').addEventListener('click', function () {
     if (!libreObjs.length) return;
@@ -2141,6 +2159,7 @@
     });
   });
   aplicarFormaUI();
+  _dimPrev = libreDim();
   dibujarLibre();
   histPush();   // estado inicial (lienzo vacío) para poder volver con deshacer
 
@@ -2675,7 +2694,7 @@
   //  MODO 5 · Asistente IA (llama a la API de Anthropic con la clave propia)
   // ====================================================================
   var ultimoPanelDiseno = 'panel-libre';
-  var NOMBRE_PANEL = { 'panel-libre': 'estudio de diseño', 'panel-cruz': 'patrón de punto de cruz' };
+  var NOMBRE_PANEL = { 'panel-libre': 'Alma Estudio', 'panel-cruz': 'patrón de punto de cruz' };
   // Memoria de la conversación (solo en este dispositivo; sin imágenes, para no llenar el almacenamiento)
   var conversa = [];
   var MAX_CONTEXTO = 16;   // cuántos turnos recientes recibe la IA como contexto
@@ -3769,7 +3788,7 @@
       if (d.tipo === 'img') { var o = { tipo: 'img', id: ++libreSeq, img: null, xCm: +d.xCm || 0, yCm: +d.yCm || 0, wCm: +d.wCm || 1, hCm: +d.hCm || 1, flip: !!d.flip, prop: d.prop || 1, rot: +d.rot || 0, recorte: d.recorte === 'circ' ? 'circ' : null, alpha: d.alpha == null ? 1 : +d.alpha, filtro: d.filtro || 'original', flipY: !!d.flipY }; libreObjs.push(o); cargarFoto(d.img, function (im) { o.img = im; }, dibujarLibre); }
       else if (d.tipo === 'motivo') { libreObjs.push({ tipo: 'motivo', id: ++libreSeq, clave: d.clave, color: d.color || '#6f6151', xCm: +d.xCm || 0, yCm: +d.yCm || 0, wCm: +d.wCm || 4, hCm: +d.hCm || 4, rot: +d.rot || 0, flip: !!d.flip, flipY: !!d.flipY }); }
       else { var t = { tipo: 'texto', id: ++libreSeq, texto: d.texto, fontCss: d.fontCss, color: d.color, estilo: d.estilo, altoCm: d.altoCm, curva: +d.curva || 0, color2c: d.color2c || null, grosor: d.grosor == null ? 0.4 : +d.grosor, espaciado: +d.espaciado || 0, degradado: !!d.degradado, colorDeg: d.colorDeg || null, dirDeg: d.dirDeg || 'vertical', sombra: !!d.sombra, xCm: +d.xCm || 0, yCm: +d.yCm || 0, wCm: +d.wCm || 2, hCm: +d.hCm || 1, rot: +d.rot || 0 }; try { libreRenderTexto(t); } catch (e3) {} libreObjs.push(t); } });
-      dibujarLibre(); libreActivarBotones(); estudioRefrescaTextos(); histPila = []; histIdx = -1; histPush(); } } catch (e) {}
+      dibujarLibre(); libreActivarBotones(); estudioRefrescaTextos(); try { _dimPrev = libreDim(); } catch (e4) {} histPila = []; histIdx = -1; histPush(); } } catch (e) {}
     // PUNTO DE CRUZ
     try { if (s.cruz) { resIn(s.cruz); mostrarSimbolosCruz = !!s.cruz.simbolos; quitarFondoCruz = !!s.cruz.fondo; limpiarCruz = !!s.cruz.limpiar; bnCruz = !!s.cruz.bn;
       [['simbolosCruz', mostrarSimbolosCruz], ['fondoCruz', quitarFondoCruz], ['limpiarCruzBtn', limpiarCruz], ['bnCruzBtn', bnCruz]].forEach(function (p) { var b = $(p[0]); if (b) { b.setAttribute('aria-pressed', p[1] ? 'true' : 'false'); b.classList.toggle('activo', p[1]); } });
@@ -3829,7 +3848,7 @@
     proyectos = proyectos.filter(function (q) { return q.id !== id; });
     guardarProyectosLS(); actualizarCuentaGaleria(); renderProyectos();
   }
-  var NOMBRE_PANEL_CORTO = { 'panel-libre': 'Estudio', 'panel-cruz': 'Punto de cruz', 'panel-rect': 'Imagen', 'panel-circulo': 'Bastidor', 'panel-letras': 'Letras', 'panel-fototexto': 'Foto+texto' };   // los últimos 4: proyectos antiguos
+  var NOMBRE_PANEL_CORTO = { 'panel-libre': 'Alma Estudio', 'panel-cruz': 'Punto de cruz', 'panel-rect': 'Imagen', 'panel-circulo': 'Bastidor', 'panel-letras': 'Letras', 'panel-fototexto': 'Foto+texto' };   // los últimos 4: proyectos antiguos
   function renderProyectos() {
     var grid = $('proyectosGrid'), sec = $('proyectosSec'); if (!grid) return;
     if (!proyectos.length) { if (sec) sec.style.display = 'none'; grid.innerHTML = ''; return; }
@@ -4501,7 +4520,7 @@
       setVal('diametroEstudio', 18); setVal('presetEstudio', 0);
       setVal('anchoLibre', 18); setVal('altoLibre', 18); setVal('textoLibre', '');
       setVal('guiaEstudio', true); setVal('espejoEstudio', false);
-      aplicarFormaUI(); dibujarLibre(); libreSync(); libreActivarBotones();
+      aplicarFormaUI(); _dimPrev = libreDim(); dibujarLibre(); libreSync(); libreActivarBotones();
       var pie = $('pieLibre'); if (pie) pie.textContent = 'Agrega una foto o un texto para empezar';
     }));
     b = $('btnNuevoCruz'); if (b) b.addEventListener('click', conConfirmarNuevo(function () {
