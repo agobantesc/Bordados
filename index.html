@@ -378,6 +378,12 @@
   .candado-caja input:focus { outline: none; border-color: var(--trigo-osc); background: #fff; box-shadow: 0 0 0 3px rgba(184,154,106,0.18); }
   .candado-err { color: #a14f72; font-size: .88rem; min-height: 1.3em; margin: 8px 0 10px; }
   .boton-nuevo { border-color: #e2b7c8; color: #a14f72; background: #faf1f4; }
+  /* Galería de motivos del Estudio */
+  .motivos-grid { grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 8px; margin-bottom: 12px; padding: 10px; background: #faf5ea; border: 1px solid #e6d8b8; border-radius: 12px; }
+  .motivo-btn { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 3px 6px; background: #fff; border: 1px solid var(--borde-fuerte); border-radius: 10px; cursor: pointer; font-family: inherit; transition: transform .1s; }
+  .motivo-btn canvas { width: 44px; height: 44px; }
+  .motivo-btn span { font-size: .66rem; color: var(--tinta-suave); }
+  .motivo-btn:active { transform: scale(.94); }
   /* Modal "Analizando tu diseño": pasos que se van marcando */
   .analisis-lista { list-style: none; margin: 14px 0 4px; padding: 0; display: flex; flex-direction: column; gap: 10px; }
   .analisis-lista li { font-size: .94rem; color: var(--tinta-suave); opacity: .38; transition: opacity .35s; display: flex; gap: 9px; align-items: baseline; }
@@ -647,7 +653,7 @@
   <div class="marca">
     <svg class="logo" viewBox="0 0 80 80" aria-hidden="true"><use href="#logoMini"/></svg>
     <div style="min-width:0;">
-      <div class="fila-marca"><h1 id="tituloMarca">Alma bordado</h1><span class="ver-badge" title="AlmaApp 3.0">3.0</span></div>
+      <div class="fila-marca"><h1 id="tituloMarca">Alma bordado</h1><span class="ver-badge" title="AlmaApp 3.1 · Estudio PRO">3.1</span></div>
       <p class="lema">Plantillas a tamaño real, listas para bordar</p>
     </div>
   </div>
@@ -704,11 +710,15 @@
   </div>
 
   <div class="tarjeta">
-    <h2><span class="paso">2</span> Agrega elementos</h2>
+    <h2><span class="paso">2</span> Herramientas</h2>
     <div class="controles-previa" style="justify-content:flex-start; margin-bottom:12px;">
-      <label class="boton-sec" id="btnFotoLibre" for="archivoLibre" style="cursor:pointer;">🖼️ Añadir foto</label>
+      <label class="boton-sec" id="btnFotoLibre" for="archivoLibre" style="cursor:pointer;">🖼️ Foto</label>
       <input type="file" id="archivoLibre" accept="image/*" hidden>
+      <button class="boton-sec" id="btnMotivos" type="button" aria-pressed="false">🌿 Motivos</button>
+      <button class="boton-sec" id="undoLibre" type="button" disabled>↩️ Deshacer</button>
+      <button class="boton-sec" id="redoLibre" type="button" disabled>↪️ Rehacer</button>
     </div>
+    <div class="motivos-grid" id="motivosGrid" style="display:none;" aria-label="Biblioteca de motivos"></div>
     <div class="campo"><label for="textoLibre">Palabras</label><input type="text" id="textoLibre" placeholder="Escribe y toca «Añadir texto»" inputmode="text"></div>
     <div class="fila" style="margin-top:12px;">
       <div class="campo"><label for="fuenteLibre">Tipografía</label><select id="fuenteLibre"></select></div>
@@ -716,7 +726,7 @@
       <div class="campo"><label for="estiloLibre">Trazo</label><select id="estiloLibre"><option value="relleno" selected>Relleno</option><option value="contorno">Solo contorno — para calcar</option><option value="ambos">Relleno + contorno</option></select></div>
     </div>
     <button class="boton-anadir" id="btnTextoLibre" type="button" style="margin-top:12px;">➕ Añadir texto</button>
-    <p class="info-img" style="text-align:left; margin-top:10px;">Con un elemento seleccionado, estos mismos controles lo <strong>editan en vivo</strong>. ¿Ideas? Pídele un diseño a <strong>Alma</strong> en el Asistente y tócale «🎨 Usar en el Estudio».</p>
+    <p class="info-img" style="text-align:left; margin-top:10px;">Toca un elemento y <strong>edítalo en vivo</strong>: arrastra sus <strong>esquinas</strong> para cambiar el tamaño y la <strong>perilla superior</strong> para girarlo. ¿Ideas? Pídele un diseño a <strong>Alma</strong> y tócale «🎨 Usar en el Estudio».</p>
   </div>
 
   <div class="tarjeta vista-previa">
@@ -725,6 +735,8 @@
     <p class="pie" id="ayudaLibre" style="display:none">👆 Toca un elemento para seleccionarlo y arrástralo con el dedo</p>
     <div id="libreSelControles" class="libre-sel" style="display:none">
       <div class="campo"><label for="tamanoLibre">Tamaño del elemento seleccionado <span id="tamanoLibreVal"></span></label><input type="range" id="tamanoLibre" min="1" max="30" step="0.5" value="6"></div>
+      <div class="campo" id="filaCurvaLibre" style="display:none; margin-top:8px;"><label for="curvaLibre">Curvar el texto · <span id="curvaLibreVal">recto</span></label><input type="range" id="curvaLibre" min="-100" max="100" step="5" value="0"></div>
+      <div class="campo" id="filaAlphaLibre" style="display:none; margin-top:8px;"><label for="alphaLibre">Transparencia de la foto (útil para calcar)</label><input type="range" id="alphaLibre" min="15" max="100" step="5" value="100"></div>
       <div class="controles-previa" style="justify-content:flex-start;">
         <button class="boton-sec" id="girarLibre" type="button" title="Girar 15°">↻ Girar</button>
         <button class="boton-sec" id="flipLibre" type="button">⇋ Espejo</button>
@@ -1003,13 +1015,13 @@
 <div class="modal" id="modalNovedades" hidden>
   <div class="modal-caja" role="dialog" aria-modal="true" aria-labelledby="tituloNovedades">
     <svg viewBox="0 0 240 175" aria-hidden="true" style="width:120px; height:auto; display:block; margin:0 auto 4px; opacity:.9;"><use href="#ramoAlma"/></svg>
-    <h2 id="tituloNovedades" style="font-family:'Cormorant Garamond',Georgia,serif; font-size:1.7rem; text-align:center;">AlmaApp 3.0 ✨</h2>
-    <p class="sub" style="text-align:center;">Tu taller se reinventó — esto es lo nuevo:</p>
+    <h2 id="tituloNovedades" style="font-family:'Cormorant Garamond',Georgia,serif; font-size:1.7rem; text-align:center;">Estudio PRO ✨</h2>
+    <p class="sub" style="text-align:center;">Tu Estudio de diseño subió de nivel:</p>
     <ul class="bienvenida-lista">
-      <li>🎨 <strong>Un solo Estudio de diseño</strong>: ya no hay módulos separados — un gran lienzo (bastidor circular o rectángulo) donde combinas fotos y palabras con total libertad.</li>
-      <li>✋ <strong>Más control</strong>: gira los elementos, duplícalos, recorta fotos en círculo, mándalos al frente o al fondo, y exporta en espejo para transferir.</li>
-      <li>📂 <strong>Tus proyectos antiguos se migran solos</strong>: al abrirlos, llegan convertidos al Estudio listos para seguir.</li>
-      <li>🎁 Kits y Punto de cruz siguen igual de potentes, ahora alimentados por el Estudio.</li>
+      <li>✋ <strong>Manipulación directa</strong>: arrastra las esquinas para cambiar el tamaño y la perilla superior para girar — como en las apps profesionales.</li>
+      <li>🌿 <strong>Biblioteca de motivos</strong>: corazones, flores, hojas, mariposas, anclas, coronas y más — vectoriales, con tu color, listos para bordar.</li>
+      <li>🌙 <strong>Texto en arco</strong>: curva nombres y frases con un deslizador.</li>
+      <li>↩️ <strong>Deshacer y rehacer</strong>, guías de centrado magnéticas y transparencia de fotos para calcar.</li>
     </ul>
     <div class="modal-acciones"><button class="boton-primario" id="cerrarNovedades" type="button">¡A bordar! 🌸</button></div>
   </div>
@@ -1574,78 +1586,170 @@
   // ====================================================================
   //  ESTUDIO DE DISEÑO · un solo lienzo con fotos, palabras y libertad total
   // ====================================================================
-  var libreObjs = [], libreSel = null, libreSeq = 0, libreDragIni = null;
+  var libreObjs = [], libreSel = null, libreSeq = 0;
   var LIBRE_TXT_DPI = 130;
   function libreForma() { var r = document.querySelector('input[name="formaEstudio"]:checked'); return r ? r.value : 'circulo'; }
   function libreDim() {
     if (libreForma() === 'circulo') { var d0 = Math.max(4, num('diametroEstudio') || 18); return { w: d0, h: d0 }; }
     return { w: Math.max(3, num('anchoLibre') || 18), h: Math.max(3, num('altoLibre') || 18) };
   }
-  function libreEscala() { var d = libreDim(); return Math.min(360 / d.w, 470 / d.h); }
+  function libreEscala() { var d = libreDim(); return Math.min(400 / d.w, 500 / d.h); }
   function libreObj(id) { for (var i = 0; i < libreObjs.length; i++) if (libreObjs[i].id === id) return libreObjs[i]; return null; }
-  // Toque→elemento considerando la rotación: se prueba en el marco local del elemento
+  // Punto → marco local del elemento (considera su rotación)
+  function libreALocal(o, cx, cy) {
+    var a = -(o.rot || 0), px = cx - o.xCm, py = cy - o.yCm;
+    return { x: px * Math.cos(a) - py * Math.sin(a), y: px * Math.sin(a) + py * Math.cos(a) };
+  }
   function libreHit(cx, cy) {
     for (var i = libreObjs.length - 1; i >= 0; i--) {
-      var o = libreObjs[i], a = -(o.rot || 0);
-      var px = cx - o.xCm, py = cy - o.yCm;
-      var rx = px * Math.cos(a) - py * Math.sin(a), ry = px * Math.sin(a) + py * Math.cos(a);
-      if (Math.abs(rx) <= o.wCm / 2 && Math.abs(ry) <= o.hCm / 2) return o;
+      var o = libreObjs[i], p = libreALocal(o, cx, cy);
+      if (Math.abs(p.x) <= o.wCm / 2 && Math.abs(p.y) <= o.hCm / 2) return o;
     }
     return null;
   }
+
+  // ---------- Biblioteca de motivos (line-art vectorial, se borda calcándolo) ----------
+  // Cada motivo dibuja centrado en (0,0) dentro de una caja de 100 unidades, solo con trazos.
+  var MOTIVOS = [
+    ['corazon', 'Corazón', function (x) { x.beginPath(); x.moveTo(0, 38); x.bezierCurveTo(-55, 2, -34, -42, 0, -14); x.bezierCurveTo(34, -42, 55, 2, 0, 38); x.stroke(); }],
+    ['flor', 'Flor', function (x) { for (var i = 0; i < 6; i++) { x.save(); x.rotate(i * Math.PI / 3); x.beginPath(); x.ellipse(0, -26, 11, 22, 0, 0, 6.2832); x.stroke(); x.restore(); } x.beginPath(); x.arc(0, 0, 8, 0, 6.2832); x.stroke(); }],
+    ['rosa', 'Rosita', function (x) { x.beginPath(); x.arc(0, 0, 7, 0.5, 5.5); x.stroke(); x.beginPath(); x.arc(2, 1, 14, 1.2, 7.2); x.stroke(); x.beginPath(); x.arc(-1, 0, 21, 2.2, 8.0); x.stroke(); x.beginPath(); x.moveTo(-6, 20); x.quadraticCurveTo(-26, 34, -38, 26); x.quadraticCurveTo(-24, 16, -8, 22); x.stroke(); x.beginPath(); x.moveTo(6, 20); x.quadraticCurveTo(26, 34, 38, 26); x.quadraticCurveTo(24, 16, 8, 22); x.stroke(); }],
+    ['hoja', 'Hoja', function (x) { x.beginPath(); x.moveTo(0, 42); x.quadraticCurveTo(-34, 8, 0, -42); x.quadraticCurveTo(34, 8, 0, 42); x.stroke(); x.beginPath(); x.moveTo(0, 36); x.lineTo(0, -36); x.stroke(); for (var i = -1; i <= 1; i += 2) for (var j = 0; j < 3; j++) { x.beginPath(); x.moveTo(0, 20 - j * 18); x.quadraticCurveTo(10 * i, 14 - j * 18, 16 * i, 6 - j * 18); x.stroke(); } }],
+    ['ramita', 'Ramita', function (x) { x.beginPath(); x.moveTo(-40, 34); x.quadraticCurveTo(0, 8, 40, -34); x.stroke(); for (var i = 0; i < 4; i++) { var t = -28 + i * 18, y0 = 26 - i * 15; x.beginPath(); x.ellipse(t - 7, y0 - 9, 5, 11, -0.9, 0, 6.2832); x.stroke(); x.beginPath(); x.ellipse(t + 7, y0 - 1, 5, 11, 0.6, 0, 6.2832); x.stroke(); } }],
+    ['mariposa', 'Mariposa', function (x) { x.beginPath(); x.moveTo(0, -20); x.lineTo(0, 22); x.stroke(); x.beginPath(); x.moveTo(-3, -18); x.quadraticCurveTo(-14, -34, -8, -38); x.stroke(); x.beginPath(); x.moveTo(3, -18); x.quadraticCurveTo(14, -34, 8, -38); x.stroke(); [[-1, 1], [1, 1]].forEach(function (s) { x.beginPath(); x.moveTo(2 * s[0], -12); x.bezierCurveTo(34 * s[0], -40, 52 * s[0], -6, 6 * s[0], 2); x.stroke(); x.beginPath(); x.moveTo(2 * s[0], 6); x.bezierCurveTo(38 * s[0], 0, 30 * s[0], 36, 3 * s[0], 16); x.stroke(); }); }],
+    ['estrella', 'Estrella', function (x) { x.beginPath(); for (var i = 0; i < 10; i++) { var r = i % 2 ? 18 : 42, a = -Math.PI / 2 + i * Math.PI / 5; var px = r * Math.cos(a), py = r * Math.sin(a); if (i) x.lineTo(px, py); else x.moveTo(px, py); } x.closePath(); x.stroke(); }],
+    ['luna', 'Luna', function (x) { x.beginPath(); x.arc(0, 0, 38, 1.0, 5.3); x.stroke(); x.beginPath(); x.arc(16, 0, 26, 1.35, 4.95, false); x.stroke(); }],
+    ['sol', 'Sol', function (x) { x.beginPath(); x.arc(0, 0, 22, 0, 6.2832); x.stroke(); for (var i = 0; i < 8; i++) { var a = i * Math.PI / 4; x.beginPath(); x.moveTo(30 * Math.cos(a), 30 * Math.sin(a)); x.lineTo(42 * Math.cos(a), 42 * Math.sin(a)); x.stroke(); } }],
+    ['nube', 'Nube', function (x) { x.beginPath(); x.arc(-20, 6, 15, 1.6, 4.5); x.arc(0, -8, 18, 2.8, 5.9); x.arc(22, 6, 14, 4.2, 1.5); x.lineTo(-20, 21); x.stroke(); }],
+    ['ola', 'Olitas', function (x) { for (var j = 0; j < 2; j++) { x.beginPath(); for (var i = -2; i < 2; i++) { x.arc(i * 24 + 12, j * 22 - 10, 12, Math.PI, 0, false); } x.stroke(); } }],
+    ['ancla', 'Ancla', function (x) { x.beginPath(); x.arc(0, -30, 8, 0, 6.2832); x.stroke(); x.beginPath(); x.moveTo(0, -22); x.lineTo(0, 30); x.stroke(); x.beginPath(); x.moveTo(-18, -8); x.lineTo(18, -8); x.stroke(); x.beginPath(); x.arc(0, 12, 26, 0.5, 2.64); x.stroke(); x.beginPath(); x.moveTo(-26, 8); x.lineTo(-32, 20); x.stroke(); x.beginPath(); x.moveTo(26, 8); x.lineTo(32, 20); x.stroke(); }],
+    ['lazo', 'Lazo', function (x) { x.beginPath(); x.ellipse(-20, 0, 18, 12, -0.3, 0, 6.2832); x.stroke(); x.beginPath(); x.ellipse(20, 0, 18, 12, 0.3, 0, 6.2832); x.stroke(); x.beginPath(); x.arc(0, 0, 5, 0, 6.2832); x.stroke(); x.beginPath(); x.moveTo(-4, 4); x.quadraticCurveTo(-14, 22, -22, 30); x.stroke(); x.beginPath(); x.moveTo(4, 4); x.quadraticCurveTo(14, 22, 22, 30); x.stroke(); }],
+    ['corona', 'Corona floral', function (x) { x.beginPath(); x.arc(0, 0, 38, 0.35, 2.79); x.stroke(); x.beginPath(); x.arc(0, 0, 38, 3.49, 5.93); x.stroke(); [[38, 0.1], [-38, 0.1], [0, -38], [0, 38]].forEach(function (p, i) { var px = i < 2 ? p[0] : p[0], py = i < 2 ? p[1] * 38 : p[1]; x.save(); x.translate(px * (i < 2 ? 1 : 0) || p[0], i < 2 ? 3 : p[1]); for (var k = 0; k < 5; k++) { x.rotate(Math.PI * 2 / 5); x.beginPath(); x.ellipse(0, -7, 3.4, 6.5, 0, 0, 6.2832); x.stroke(); } x.beginPath(); x.arc(0, 0, 2.6, 0, 6.2832); x.stroke(); x.restore(); }); }],
+    ['marco', 'Marco puntos', function (x) { x.save(); x.setLineDash([7, 6]); x.strokeRect(-44, -44, 88, 88); x.restore(); }],
+    ['banderin', 'Banderines', function (x) { x.beginPath(); x.moveTo(-46, -22); x.quadraticCurveTo(0, -2, 46, -22); x.stroke(); for (var i = 0; i < 4; i++) { var t = -0.75 + i * 0.5, bx = t * 60, by = -20 + 16 * (1 - Math.abs(t) * 0.8) - 12; x.beginPath(); x.moveTo(bx - 9, by + 10); x.lineTo(bx, by + 34); x.lineTo(bx + 9, by + 12); x.stroke(); } }]
+  ];
+  function motivoDef(clave) { for (var i = 0; i < MOTIVOS.length; i++) if (MOTIVOS[i][0] === clave) return MOTIVOS[i]; return MOTIVOS[0]; }
+
+  // ---------- Texto (recto o EN ARCO) ----------
+  function libreTextoCanvas(o, dpi) {
+    var curva = Math.max(-100, Math.min(100, +o.curva || 0));
+    if (!curva) return dibujarTexto(o.texto || ' ', { fontCss: o.fontCss, altoLineaCm: o.altoCm, estilo: o.estilo, grosor: 0.4, align: 'centro', colorRelleno: o.color, colorContorno: o.color, transparente: true }, dpi);
+    var altoPx = Math.max(6, o.altoCm / 2.54 * dpi), font = altoPx.toFixed(1) + 'px ' + o.fontCss;
+    ctxMedicion.font = font;
+    var t = String(o.texto || ' '), anchos = [], W = 0;
+    for (var i = 0; i < t.length; i++) { var wch = ctxMedicion.measureText(t[i]).width; anchos.push(wch); W += wch; }
+    W = Math.max(W, altoPx * 0.5);
+    var theta = curva / 100 * Math.PI, R = W / Math.abs(theta);
+    var sag = R * (1 - Math.cos(Math.abs(theta) / 2)), chord = 2 * R * Math.sin(Math.min(Math.PI, Math.abs(theta)) / 2);
+    var margen = altoPx * 0.9;
+    var cw = Math.ceil(Math.max(chord, altoPx) + margen * 2), ch = Math.ceil(sag + altoPx + margen * 1.2);
+    var cv = document.createElement('canvas'); cv.width = cw; cv.height = ch;
+    var x = cv.getContext('2d');
+    x.font = font; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.fillStyle = o.color; x.strokeStyle = o.color; x.lineWidth = Math.max(1, altoPx * 0.045); x.lineJoin = 'round';
+    var arriba = curva > 0;
+    var C = { x: cw / 2, y: arriba ? (R + altoPx * 0.55 + margen * 0.3) : (ch - R - altoPx * 0.55 - margen * 0.3) };
+    var acum = 0;
+    for (var j = 0; j < t.length; j++) {
+      var frac = (acum + anchos[j] / 2) / W - 0.5, a = frac * Math.abs(theta);
+      acum += anchos[j];
+      var px2 = C.x + R * Math.sin(a) * (arriba ? 1 : 1), py2 = arriba ? (C.y - R * Math.cos(a)) : (C.y + R * Math.cos(a));
+      x.save(); x.translate(px2, py2); x.rotate(arriba ? a : -a);
+      if (o.estilo !== 'contorno') x.fillText(t[j], 0, 0);
+      if (o.estilo !== 'relleno') x.strokeText(t[j], 0, 0);
+      x.restore();
+    }
+    return { canvas: cv, wCm: cw / dpi * 2.54, hCm: ch / dpi * 2.54 };
+  }
   function libreRenderTexto(o) {
-    var r = dibujarTexto(o.texto || ' ', { fontCss: o.fontCss, altoLineaCm: o.altoCm, estilo: o.estilo, grosor: 0.4, align: 'centro', colorRelleno: o.color, colorContorno: o.color, transparente: true }, LIBRE_TXT_DPI);
+    var r = libreTextoCanvas(o, LIBRE_TXT_DPI);
     o._cv = r.canvas; o.wCm = r.wCm; o.hCm = r.hCm;
   }
+
+  // ---------- Historial (deshacer / rehacer) ----------
+  var histPila = [], histIdx = -1;
+  function histClon(arr) { return arr.map(function (o) { var c = {}; for (var k in o) c[k] = o[k]; return c; }); }
+  function histBotones() {
+    var u = $('undoLibre'), r = $('redoLibre');
+    if (u) u.disabled = histIdx <= 0;
+    if (r) r.disabled = histIdx >= histPila.length - 1;
+  }
+  function histPush() {
+    histPila = histPila.slice(0, histIdx + 1);
+    histPila.push(histClon(libreObjs));
+    if (histPila.length > 40) histPila.shift();
+    histIdx = histPila.length - 1;
+    histBotones();
+  }
+  function histIr(idx) {
+    if (idx < 0 || idx >= histPila.length) return;
+    histIdx = idx;
+    libreObjs = histClon(histPila[idx]);
+    libreSel = null; libreSync(); dibujarLibre(); libreActivarBotones(); histBotones();
+  }
+
   function libreAddFoto(img) {
     var d = libreDim(), prop = (img.naturalWidth || img.width) / (img.naturalHeight || img.height);
     if (!(prop > 0)) prop = 1;
     var w = Math.min(d.w * 0.6, d.h * 0.6 * prop), h = w / prop;
     if (h > d.h * 0.9) { h = d.h * 0.9; w = h * prop; }
-    var o = { tipo: 'img', id: ++libreSeq, img: img, xCm: d.w / 2, yCm: d.h / 2, wCm: w, hCm: h, flip: false, prop: prop, rot: 0, recorte: null };
-    libreObjs.push(o); libreSel = o.id; libreSync(); dibujarLibre(); libreActivarBotones();
+    var o = { tipo: 'img', id: ++libreSeq, img: img, xCm: d.w / 2, yCm: d.h / 2, wCm: w, hCm: h, flip: false, prop: prop, rot: 0, recorte: null, alpha: 1 };
+    libreObjs.push(o); libreSel = o.id; libreSync(); dibujarLibre(); libreActivarBotones(); histPush();
   }
   function libreAddTexto() {
     var t = $('textoLibre').value.trim(); if (!t) { toast('Escribe las palabras primero'); return; }
     var d = libreDim();
-    var o = { tipo: 'texto', id: ++libreSeq, texto: t, fontCss: $('fuenteLibre').value || cssDe(FUENTES[0]), color: $('colorLibre').value, estilo: $('estiloLibre').value, altoCm: Math.max(1, Math.min(d.h * 0.4, 3)), xCm: d.w / 2, yCm: d.h / 2, wCm: 4, hCm: 2, rot: 0 };
+    var o = { tipo: 'texto', id: ++libreSeq, texto: t, fontCss: $('fuenteLibre').value || cssDe(FUENTES[0]), color: $('colorLibre').value, estilo: $('estiloLibre').value, altoCm: Math.max(1, Math.min(d.h * 0.4, 3)), curva: 0, xCm: d.w / 2, yCm: d.h / 2, wCm: 4, hCm: 2, rot: 0 };
     conFuenteLista(o.fontCss, function () {
       libreRenderTexto(o);
-      if (o.wCm > d.w * 0.92) { o.altoCm = Math.max(0.8, o.altoCm * (d.w * 0.92) / o.wCm); libreRenderTexto(o); }   // que entre de ancho
-      libreObjs.push(o); libreSel = o.id; libreSync(); dibujarLibre(); libreActivarBotones();
+      if (o.wCm > d.w * 0.92) { o.altoCm = Math.max(0.8, o.altoCm * (d.w * 0.92) / o.wCm); libreRenderTexto(o); }
+      libreObjs.push(o); libreSel = o.id; libreSync(); dibujarLibre(); libreActivarBotones(); histPush();
     });
   }
-  // Texto creado por código (propuestas de Alma, migración de proyectos antiguos)
   function libreAddTextoProg(texto, fontCss, color, estilo, altoCm, fx, fy, cb) {
     var d = libreDim();
-    var o = { tipo: 'texto', id: ++libreSeq, texto: String(texto || ' '), fontCss: fontCss || cssDe(FUENTES[0]), color: color || '#6f6151', estilo: estilo || 'relleno', altoCm: Math.max(0.6, +altoCm || 2), xCm: d.w * (fx == null ? 0.5 : fx), yCm: d.h * (fy == null ? 0.5 : fy), wCm: 4, hCm: 2, rot: 0 };
+    var o = { tipo: 'texto', id: ++libreSeq, texto: String(texto || ' '), fontCss: fontCss || cssDe(FUENTES[0]), color: color || '#6f6151', estilo: estilo || 'relleno', altoCm: Math.max(0.6, +altoCm || 2), curva: 0, xCm: d.w * (fx == null ? 0.5 : fx), yCm: d.h * (fy == null ? 0.5 : fy), wCm: 4, hCm: 2, rot: 0 };
     conFuenteLista(o.fontCss, function () {
       try {
         libreRenderTexto(o);
         if (o.wCm > d.w * 0.92) { o.altoCm = Math.max(0.6, o.altoCm * (d.w * 0.92) / o.wCm); libreRenderTexto(o); }
-        libreObjs.push(o); dibujarLibre(); libreActivarBotones();
+        libreObjs.push(o); dibujarLibre(); libreActivarBotones(); histPush();
       } catch (e) {}
       if (cb) cb(o);
     });
   }
-  // Dibuja un elemento (rotación, espejo y recorte circular) en cualquier contexto.
-  // dpi>0 = render nítido de impresión; dpi=0 = vista previa (usa el canvas cacheado del texto).
+  function libreAddMotivo(clave) {
+    var d = libreDim(), lado = Math.min(d.w, d.h) * 0.42;
+    var o = { tipo: 'motivo', id: ++libreSeq, clave: clave, color: $('colorLibre').value || '#6f6151', xCm: d.w / 2, yCm: d.h / 2, wCm: lado, hCm: lado, rot: 0, flip: false };
+    libreObjs.push(o); libreSel = o.id; libreSync(); dibujarLibre(); libreActivarBotones(); histPush();
+  }
+
+  // Dibuja un elemento (rotación, espejo, transparencia, recorte circular) en cualquier contexto.
   function libreDibujaObj(x, o, esc, dpi) {
     var ow = o.wCm * esc, oh = o.hCm * esc;
     x.save();
     x.translate(o.xCm * esc, o.yCm * esc);
     if (o.rot) x.rotate(o.rot);
+    if (o.alpha != null && o.alpha < 1) x.globalAlpha = Math.max(0.15, o.alpha);
     if (o.tipo === 'img') {
       if (!o.img) { x.restore(); return; }
       if (o.recorte === 'circ') { x.beginPath(); x.ellipse(0, 0, ow / 2, oh / 2, 0, 0, 6.2832); x.clip(); }
       if (o.flip) x.scale(-1, 1);
       x.drawImage(o.img, -ow / 2, -oh / 2, ow, oh);
+    } else if (o.tipo === 'motivo') {
+      // vectorial: nítido a cualquier tamaño y resolución
+      if (o.flip) x.scale(-1, 1);
+      x.scale(ow / 100, oh / 100);
+      x.strokeStyle = o.color || '#6f6151'; x.fillStyle = o.color || '#6f6151';
+      x.lineWidth = 3.4; x.lineCap = 'round'; x.lineJoin = 'round';
+      try { motivoDef(o.clave)[2](x); } catch (e) {}
     } else if (dpi) {
-      var r = dibujarTexto(o.texto || ' ', { fontCss: o.fontCss, altoLineaCm: o.altoCm, estilo: o.estilo, grosor: 0.4, align: 'centro', colorRelleno: o.color, colorContorno: o.color, transparente: true }, dpi);
+      var r = libreTextoCanvas(o, dpi);
       x.drawImage(r.canvas, -ow / 2, -oh / 2, ow, oh);
     } else if (o._cv) x.drawImage(o._cv, -ow / 2, -oh / 2, ow, oh);
     x.restore();
   }
+  var libreGuiaSnap = { x: false, y: false };
   function dibujarLibre() {
     tocarEstado();
     var cv = $('previaLibre'); if (!cv) return;
@@ -1658,14 +1762,28 @@
       x.strokeStyle = '#c9b17f'; x.lineWidth = 2; x.setLineDash([7, 5]);
       x.beginPath(); x.arc(W / 2, H / 2, Math.min(W, H) / 2 - 1.5, 0, 6.2832); x.stroke(); x.setLineDash([]);
     } else { x.strokeStyle = '#e0cda3'; x.lineWidth = 1; x.strokeRect(0.5, 0.5, W - 1, H - 1); }
+    // guías de centrado (aparecen al calzar con el centro mientras arrastras)
+    if (libreGuiaSnap.x || libreGuiaSnap.y) {
+      x.strokeStyle = '#c07b96'; x.lineWidth = 1; x.setLineDash([6, 5]);
+      if (libreGuiaSnap.x) { x.beginPath(); x.moveTo(W / 2 + 0.5, 0); x.lineTo(W / 2 + 0.5, H); x.stroke(); }
+      if (libreGuiaSnap.y) { x.beginPath(); x.moveTo(0, H / 2 + 0.5); x.lineTo(W, H / 2 + 0.5); x.stroke(); }
+      x.setLineDash([]);
+    }
     var s = libreSel ? libreObj(libreSel) : null;
     if (s) {
       x.save();
       x.translate(s.xCm * esc, s.yCm * esc); if (s.rot) x.rotate(s.rot);
       var sw = s.wCm * esc, sh = s.hCm * esc;
       x.strokeStyle = '#7c6b57'; x.lineWidth = 1.6; x.setLineDash([5, 4]); x.strokeRect(-sw / 2, -sh / 2, sw, sh); x.setLineDash([]);
-      x.fillStyle = '#7c6b57'; var hs = 4;
+      // esquinas = estirar con el dedo
+      x.fillStyle = '#7c6b57'; var hs = 6;
       [[-sw / 2, -sh / 2], [sw / 2, -sh / 2], [-sw / 2, sh / 2], [sw / 2, sh / 2]].forEach(function (p) { x.fillRect(p[0] - hs, p[1] - hs, hs * 2, hs * 2); });
+      // perilla superior = girar con el dedo
+      x.strokeStyle = '#7c6b57'; x.lineWidth = 1.4;
+      x.beginPath(); x.moveTo(0, -sh / 2); x.lineTo(0, -sh / 2 - 22); x.stroke();
+      x.beginPath(); x.arc(0, -sh / 2 - 28, 7, 0, 6.2832);
+      x.fillStyle = '#fff'; x.fill(); x.stroke();
+      x.beginPath(); x.arc(0, -sh / 2 - 28, 2.6, 0, 6.2832); x.fillStyle = '#7c6b57'; x.fill();
       x.restore();
     }
   }
@@ -1675,12 +1793,15 @@
     box.style.display = 'block';
     var d = libreDim(), sl = $('tamanoLibre');
     sl.min = 1; sl.max = Math.ceil(Math.max(d.w, d.h)); sl.step = 0.5;
-    sl.value = o.tipo === 'img' ? o.wCm : o.altoCm;
-    $('tamanoLibreVal').textContent = o.tipo === 'img' ? ('· ancho ' + o.wCm.toFixed(1) + ' cm') : ('· letra ' + o.altoCm.toFixed(1) + ' cm');
-    $('flipLibre').style.display = o.tipo === 'img' ? 'inline-block' : 'none';
+    sl.value = o.tipo === 'texto' ? o.altoCm : o.wCm;
+    $('tamanoLibreVal').textContent = o.tipo === 'texto' ? ('· letra ' + o.altoCm.toFixed(1) + ' cm') : ('· ancho ' + o.wCm.toFixed(1) + ' cm');
+    $('flipLibre').style.display = o.tipo !== 'texto' ? 'inline-block' : 'none';
     var rc = $('recorteLibre');
     if (rc) { rc.style.display = o.tipo === 'img' ? 'inline-block' : 'none'; rc.classList.toggle('activo', o.recorte === 'circ'); rc.setAttribute('aria-pressed', o.recorte === 'circ' ? 'true' : 'false'); }
+    var fa = $('filaAlphaLibre'); if (fa) { fa.style.display = o.tipo === 'img' ? 'block' : 'none'; if (o.tipo === 'img') $('alphaLibre').value = Math.round((o.alpha == null ? 1 : o.alpha) * 100); }
+    var fc = $('filaCurvaLibre'); if (fc) { fc.style.display = o.tipo === 'texto' ? 'block' : 'none'; if (o.tipo === 'texto') { $('curvaLibre').value = o.curva || 0; $('curvaLibreVal').textContent = (o.curva || 0) === 0 ? 'recto' : ((o.curva > 0 ? 'arco ↑ ' : 'arco ↓ ') + Math.abs(o.curva) + '%'); } }
     if (o.tipo === 'texto') { $('textoLibre').value = o.texto; $('fuenteLibre').value = o.fontCss; $('colorLibre').value = colorSeguro(o.color); $('estiloLibre').value = o.estilo; }
+    if (o.tipo === 'motivo') { $('colorLibre').value = colorSeguro(o.color); }
   }
   function libreActivarBotones() {
     var hay = libreObjs.length > 0;
@@ -1688,13 +1809,12 @@
     $('ayudaLibre').style.display = hay ? 'block' : 'none';
     var d = libreDim(), circ = libreForma() === 'circulo';
     var medida = circ ? ('Bastidor ⌀ ' + d.w.toFixed(1).replace(/\.0$/, '') + ' cm') : (d.w.toFixed(1) + ' × ' + d.h.toFixed(1) + ' cm');
-    $('pieLibre').textContent = hay ? (medida + ' · ' + libreObjs.length + ' elemento' + (libreObjs.length > 1 ? 's' : '')) : 'Agrega una foto o un texto para empezar';
+    $('pieLibre').textContent = hay ? (medida + ' · ' + libreObjs.length + ' elemento' + (libreObjs.length > 1 ? 's' : '')) : 'Agrega una foto, un texto o un motivo para empezar';
   }
-  // Render de impresión/exportación. opts: { guia, espejo }
   function renderLibreCanvas(dpi, opts) {
     opts = opts || {};
     var d = libreDim(), circ = libreForma() === 'circulo';
-    var margen = circ ? 0.3 : 0;   // aire para la guía del bastidor
+    var margen = circ ? 0.3 : 0;
     var W = Math.max(1, Math.round((d.w + margen * 2) / 2.54 * dpi)), H = Math.max(1, Math.round((d.h + margen * 2) / 2.54 * dpi));
     var cv = document.createElement('canvas'); cv.width = W; cv.height = H; var x = cv.getContext('2d');
     x.fillStyle = '#ffffff'; x.fillRect(0, 0, W, H);
@@ -1718,7 +1838,6 @@
     return opts.espejo ? espejarCanvas(cv) : cv;
   }
   function libreLadoExport() { var d = libreDim(), m = libreForma() === 'circulo' ? 0.6 : 0; return { w: d.w + m, h: d.h + m }; }
-  // Cuando llegan las tipografías reales, los textos se re-dibujan nítidos
   function estudioRefrescaTextos() {
     var pend = 0;
     libreObjs.forEach(function (o) {
@@ -1740,53 +1859,142 @@
     var d = libreDim();
     libreObjs.forEach(function (o) { o.xCm = Math.max(0, Math.min(d.w, o.xCm)); o.yCm = Math.max(0, Math.min(d.h, o.yCm)); });
   }
+
+  // ---------- Manipulación directa: mover, estirar (esquinas) y girar (perilla) ----------
+  var dragModo = null, dragDatos = null, dragCambio = false;
   hacerArrastrable($('previaLibre'), {
     puede: function () { return libreObjs.length > 0; },
     onInicio: function (p) {
-      var esc = libreEscala(), hit = libreHit(p.x / esc, p.y / esc);
-      libreSel = hit ? hit.id : null; libreDragIni = hit ? { x: hit.xCm, y: hit.yCm } : null;
+      var esc = libreEscala(), cx = p.x / esc, cy = p.y / esc;
+      dragModo = null; dragDatos = null; dragCambio = false;
+      var s = libreSel ? libreObj(libreSel) : null;
+      if (s) {
+        var loc = libreALocal(s, cx, cy), tol = 14 / esc;
+        // perilla de giro (arriba del elemento)
+        if (Math.abs(loc.x) <= tol && Math.abs(loc.y - (-s.hCm / 2 - 28 / esc)) <= tol) {
+          dragModo = 'girar';
+          dragDatos = { iniX: cx, iniY: cy, rot0: s.rot || 0, a0: Math.atan2(cy - s.yCm, cx - s.xCm) };
+          return;
+        }
+        // esquinas (estirar)
+        var esquinas = [[-1, -1], [1, -1], [-1, 1], [1, 1]], enEsquina = false;
+        esquinas.forEach(function (e) { if (Math.abs(loc.x - e[0] * s.wCm / 2) <= tol && Math.abs(loc.y - e[1] * s.hCm / 2) <= tol) enEsquina = true; });
+        if (enEsquina) {
+          dragModo = 'estirar';
+          dragDatos = { iniX: cx, iniY: cy, d0: Math.max(0.2, Math.hypot(cx - s.xCm, cy - s.yCm)), w0: s.wCm, h0: s.hCm, alto0: s.altoCm };
+          return;
+        }
+      }
+      var hit = libreHit(cx, cy);
+      libreSel = hit ? hit.id : null;
+      if (hit) { dragModo = 'mover'; dragDatos = { x0: hit.xCm, y0: hit.yCm }; }
       libreSync(); dibujarLibre();
     },
     onMover: function (dx, dy) {
-      if (!libreSel || !libreDragIni) return; var o = libreObj(libreSel); if (!o) return;
+      var o = libreSel ? libreObj(libreSel) : null; if (!o || !dragModo) return;
       var d = libreDim(), esc = libreEscala();
-      o.xCm = Math.max(0, Math.min(d.w, libreDragIni.x + dx / esc));
-      o.yCm = Math.max(0, Math.min(d.h, libreDragIni.y + dy / esc));
+      dragCambio = true;
+      if (dragModo === 'mover') {
+        var nx = dragDatos.x0 + dx / esc, ny = dragDatos.y0 + dy / esc;
+        libreGuiaSnap.x = Math.abs(nx - d.w / 2) < 0.25; if (libreGuiaSnap.x) nx = d.w / 2;
+        libreGuiaSnap.y = Math.abs(ny - d.h / 2) < 0.25; if (libreGuiaSnap.y) ny = d.h / 2;
+        o.xCm = Math.max(0, Math.min(d.w, nx));
+        o.yCm = Math.max(0, Math.min(d.h, ny));
+      } else if (dragModo === 'girar') {
+        // ángulo del dedo respecto al centro del elemento (posición actual = inicio + delta)
+        var aCur = Math.atan2(dragDatos.iniY + dy / esc - o.yCm, dragDatos.iniX + dx / esc - o.xCm);
+        var nuevo = dragDatos.rot0 + (aCur - dragDatos.a0);
+        var paso = Math.PI / 12, cerca = Math.round(nuevo / paso) * paso;   // imán en múltiplos de 15°
+        o.rot = Math.abs(nuevo - cerca) < 0.055 ? cerca : nuevo;
+      } else if (dragModo === 'estirar') {
+        var f = Math.hypot(dragDatos.iniX + dx / esc - o.xCm, dragDatos.iniY + dy / esc - o.yCm) / dragDatos.d0;
+        f = Math.max(0.12, Math.min(12, f));
+        o.wCm = dragDatos.w0 * f; o.hCm = dragDatos.h0 * f;
+        if (o.tipo === 'texto') o.altoCm = dragDatos.alto0 * f;
+      }
       programar('libre', dibujarLibre);
+    },
+    onFin: function () {
+      var o = libreSel ? libreObj(libreSel) : null;
+      libreGuiaSnap.x = libreGuiaSnap.y = false;
+      if (o && dragModo === 'estirar' && o.tipo === 'texto') conFuenteLista(o.fontCss, function () { var cx0 = o.xCm, cy0 = o.yCm; libreRenderTexto(o); o.xCm = cx0; o.yCm = cy0; dibujarLibre(); libreSync(); });
+      else if (o && dragModo === 'estirar') libreSync();
+      if (dragCambio && dragModo) histPush();
+      dragModo = null; dragDatos = null;
+      dibujarLibre();
     }
   });
   function libreEditTextoSel() {
-    var o = libreSel ? libreObj(libreSel) : null; if (!o || o.tipo !== 'texto') return;
+    var o = libreSel ? libreObj(libreSel) : null; if (!o) return;
+    if (o.tipo === 'motivo') { o.color = $('colorLibre').value; dibujarLibre(); programarRetardo('histMot', histPush, 900); return; }
+    if (o.tipo !== 'texto') return;
     o.texto = $('textoLibre').value; o.fontCss = $('fuenteLibre').value; o.color = $('colorLibre').value; o.estilo = $('estiloLibre').value;
     conFuenteLista(o.fontCss, function () { libreRenderTexto(o); dibujarLibre(); });
+    programarRetardo('histTxt', histPush, 900);
   }
   llenarSelectFuentes($('fuenteLibre'));
   llenarPresetCirc($('presetEstudio'));
+  // Galería de motivos: miniaturas vectoriales
+  (function () {
+    var grid = $('motivosGrid'); if (!grid) return;
+    MOTIVOS.forEach(function (m) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'motivo-btn'; b.title = m[1];
+      var c = document.createElement('canvas'); c.width = 64; c.height = 64;
+      var x = c.getContext('2d');
+      x.translate(32, 32); x.scale(0.55, 0.55);
+      x.strokeStyle = '#7c6b57'; x.fillStyle = '#7c6b57'; x.lineWidth = 4.4; x.lineCap = 'round'; x.lineJoin = 'round';
+      try { m[2](x); } catch (e) {}
+      b.appendChild(c);
+      var eti = document.createElement('span'); eti.textContent = m[1]; b.appendChild(eti);
+      b.addEventListener('click', function () { libreAddMotivo(m[0]); });
+      grid.appendChild(b);
+    });
+    $('btnMotivos').addEventListener('click', function () {
+      var v = grid.style.display !== 'grid';
+      grid.style.display = v ? 'grid' : 'none';
+      this.classList.toggle('activo', v);
+    });
+  })();
   $('archivoLibre').addEventListener('change', function () { var f = this.files && this.files[0]; if (!f) return; cargarImagen(f, function (img) { libreAddFoto(img); }, function (msg) { toast(msg); }); this.value = ''; });
   $('btnTextoLibre').addEventListener('click', libreAddTexto);
-  $('textoLibre').addEventListener('input', function () { libreEditTextoSel(); });
+  $('textoLibre').addEventListener('input', function () { var o = libreSel && libreObj(libreSel); if (o && o.tipo === 'texto') libreEditTextoSel(); });
   $('fuenteLibre').addEventListener('change', libreEditTextoSel);
   $('colorLibre').addEventListener('input', libreEditTextoSel);
   $('estiloLibre').addEventListener('change', libreEditTextoSel);
+  $('undoLibre').addEventListener('click', function () { histIr(histIdx - 1); });
+  $('redoLibre').addEventListener('click', function () { histIr(histIdx + 1); });
   $('tamanoLibre').addEventListener('input', function () {
     var o = libreSel ? libreObj(libreSel) : null; if (!o) return; var v = parseFloat(this.value) || 1;
-    if (o.tipo === 'img') { o.wCm = v; o.hCm = v / o.prop; $('tamanoLibreVal').textContent = '· ancho ' + v.toFixed(1) + ' cm'; programar('libre', dibujarLibre); }
-    else { o.altoCm = v; $('tamanoLibreVal').textContent = '· letra ' + v.toFixed(1) + ' cm'; conFuenteLista(o.fontCss, function () { libreRenderTexto(o); dibujarLibre(); }); }
+    if (o.tipo === 'texto') { o.altoCm = v; $('tamanoLibreVal').textContent = '· letra ' + v.toFixed(1) + ' cm'; conFuenteLista(o.fontCss, function () { libreRenderTexto(o); dibujarLibre(); }); }
+    else { var pr = o.wCm / o.hCm; o.wCm = v; o.hCm = v / pr; $('tamanoLibreVal').textContent = '· ancho ' + v.toFixed(1) + ' cm'; programar('libre', dibujarLibre); }
   });
-  $('girarLibre').addEventListener('click', function () { var o = libreSel ? libreObj(libreSel) : null; if (!o) return; o.rot = ((o.rot || 0) + Math.PI / 12) % (Math.PI * 2); dibujarLibre(); });
-  $('flipLibre').addEventListener('click', function () { var o = libreSel ? libreObj(libreSel) : null; if (o && o.tipo === 'img') { o.flip = !o.flip; dibujarLibre(); } });
-  $('recorteLibre').addEventListener('click', function () { var o = libreSel ? libreObj(libreSel) : null; if (!o || o.tipo !== 'img') return; o.recorte = o.recorte === 'circ' ? null : 'circ'; libreSync(); dibujarLibre(); });
+  $('tamanoLibre').addEventListener('change', histPush);
+  $('curvaLibre').addEventListener('input', function () {
+    var o = libreSel ? libreObj(libreSel) : null; if (!o || o.tipo !== 'texto') return;
+    o.curva = parseInt(this.value, 10) || 0;
+    $('curvaLibreVal').textContent = o.curva === 0 ? 'recto' : ((o.curva > 0 ? 'arco ↑ ' : 'arco ↓ ') + Math.abs(o.curva) + '%');
+    conFuenteLista(o.fontCss, function () { libreRenderTexto(o); dibujarLibre(); });
+  });
+  $('curvaLibre').addEventListener('change', histPush);
+  $('alphaLibre').addEventListener('input', function () {
+    var o = libreSel ? libreObj(libreSel) : null; if (!o || o.tipo !== 'img') return;
+    o.alpha = Math.max(15, Math.min(100, parseInt(this.value, 10) || 100)) / 100;
+    programar('libre', dibujarLibre);
+  });
+  $('alphaLibre').addEventListener('change', histPush);
+  $('girarLibre').addEventListener('click', function () { var o = libreSel ? libreObj(libreSel) : null; if (!o) return; o.rot = ((o.rot || 0) + Math.PI / 12) % (Math.PI * 2); dibujarLibre(); histPush(); });
+  $('flipLibre').addEventListener('click', function () { var o = libreSel ? libreObj(libreSel) : null; if (o && o.tipo !== 'texto') { o.flip = !o.flip; dibujarLibre(); histPush(); } });
+  $('recorteLibre').addEventListener('click', function () { var o = libreSel ? libreObj(libreSel) : null; if (!o || o.tipo !== 'img') return; o.recorte = o.recorte === 'circ' ? null : 'circ'; libreSync(); dibujarLibre(); histPush(); });
   $('dupLibre').addEventListener('click', function () {
     var o = libreSel ? libreObj(libreSel) : null; if (!o) return;
-    var d = libreDim();
-    var c = { tipo: o.tipo, id: ++libreSeq, xCm: Math.min(d.w, o.xCm + 0.8), yCm: Math.min(d.h, o.yCm + 0.8), wCm: o.wCm, hCm: o.hCm, rot: o.rot || 0 };
-    if (o.tipo === 'img') { c.img = o.img; c.flip = o.flip; c.prop = o.prop; c.recorte = o.recorte || null; }
-    else { c.texto = o.texto; c.fontCss = o.fontCss; c.color = o.color; c.estilo = o.estilo; c.altoCm = o.altoCm; c._cv = o._cv; }
-    libreObjs.push(c); libreSel = c.id; libreSync(); dibujarLibre(); libreActivarBotones();
+    var d = libreDim(), c = {};
+    for (var k in o) c[k] = o[k];
+    c.id = ++libreSeq; c.xCm = Math.min(d.w, o.xCm + 0.8); c.yCm = Math.min(d.h, o.yCm + 0.8);
+    libreObjs.push(c); libreSel = c.id; libreSync(); dibujarLibre(); libreActivarBotones(); histPush();
   });
-  $('frenteLibre').addEventListener('click', function () { var o = libreSel ? libreObj(libreSel) : null; if (!o) return; libreObjs = libreObjs.filter(function (q) { return q.id !== o.id; }); libreObjs.push(o); dibujarLibre(); });
-  $('fondoLibre').addEventListener('click', function () { var o = libreSel ? libreObj(libreSel) : null; if (!o) return; libreObjs = libreObjs.filter(function (q) { return q.id !== o.id; }); libreObjs.unshift(o); dibujarLibre(); });
-  $('borrarLibre').addEventListener('click', function () { if (!libreSel) return; libreObjs = libreObjs.filter(function (q) { return q.id !== libreSel; }); libreSel = null; libreSync(); dibujarLibre(); libreActivarBotones(); });
+  $('frenteLibre').addEventListener('click', function () { var o = libreSel ? libreObj(libreSel) : null; if (!o) return; libreObjs = libreObjs.filter(function (q) { return q.id !== o.id; }); libreObjs.push(o); dibujarLibre(); histPush(); });
+  $('fondoLibre').addEventListener('click', function () { var o = libreSel ? libreObj(libreSel) : null; if (!o) return; libreObjs = libreObjs.filter(function (q) { return q.id !== o.id; }); libreObjs.unshift(o); dibujarLibre(); histPush(); });
+  $('borrarLibre').addEventListener('click', function () { if (!libreSel) return; libreObjs = libreObjs.filter(function (q) { return q.id !== libreSel; }); libreSel = null; libreSync(); dibujarLibre(); libreActivarBotones(); histPush(); });
   ['anchoLibre', 'altoLibre', 'diametroEstudio'].forEach(function (id) { $(id).addEventListener('input', function () { if (id === 'diametroEstudio') $('presetEstudio').value = 0; libreAcotarObjs(); programar('libre', function () { dibujarLibre(); libreActivarBotones(); }); }); });
   $('presetEstudio').addEventListener('change', function () { var v = parseFloat(this.value); if (v > 0) { $('diametroEstudio').value = v; libreAcotarObjs(); dibujarLibre(); libreActivarBotones(); } });
   document.querySelectorAll('input[name="formaEstudio"]').forEach(function (r) { r.addEventListener('change', function () { aplicarFormaUI(); libreAcotarObjs(); dibujarLibre(); libreActivarBotones(); }); });
@@ -1810,6 +2018,7 @@
   });
   aplicarFormaUI();
   dibujarLibre();
+  histPush();   // estado inicial (lienzo vacío) para poder volver con deshacer
 
   // ====================================================================
   //  PUNTO DE CRUZ · convierte una imagen en patrón con hilos DMC
@@ -3360,8 +3569,9 @@
     s.libre = capIn(['anchoLibre', 'altoLibre', 'hojaLibre', 'diametroEstudio', 'guiaEstudio', 'espejoEstudio']);
     s.libre.forma = libreForma();
     s.libre.objs = libreObjs.map(function (o) {
-      if (o.tipo === 'img') return { tipo: 'img', xCm: o.xCm, yCm: o.yCm, wCm: o.wCm, hCm: o.hCm, flip: o.flip, prop: o.prop, rot: o.rot || 0, recorte: o.recorte || null, img: conFotos ? imgAJpeg(o.img) : null };
-      return { tipo: 'texto', xCm: o.xCm, yCm: o.yCm, wCm: o.wCm, hCm: o.hCm, rot: o.rot || 0, texto: o.texto, fontCss: o.fontCss, color: o.color, estilo: o.estilo, altoCm: o.altoCm };
+      if (o.tipo === 'img') return { tipo: 'img', xCm: o.xCm, yCm: o.yCm, wCm: o.wCm, hCm: o.hCm, flip: o.flip, prop: o.prop, rot: o.rot || 0, recorte: o.recorte || null, alpha: o.alpha == null ? 1 : o.alpha, img: conFotos ? imgAJpeg(o.img) : null };
+      if (o.tipo === 'motivo') return { tipo: 'motivo', clave: o.clave, color: o.color, xCm: o.xCm, yCm: o.yCm, wCm: o.wCm, hCm: o.hCm, rot: o.rot || 0, flip: !!o.flip };
+      return { tipo: 'texto', xCm: o.xCm, yCm: o.yCm, wCm: o.wCm, hCm: o.hCm, rot: o.rot || 0, curva: o.curva || 0, texto: o.texto, fontCss: o.fontCss, color: o.color, estilo: o.estilo, altoCm: o.altoCm };
     });
     s.cruz = capIn(['anchoCruz', 'telaCruz', 'coloresCruz', 'telaColorCruz', 'hojaCruz']);
     s.cruz.simbolos = mostrarSimbolosCruz; s.cruz.fondo = quitarFondoCruz; s.cruz.limpiar = limpiarCruz; s.cruz.bn = bnCruz; s.cruz.img = conFotos ? imgAJpeg(imgCruz) : null; s.cruz.recorte = recorteCruz;
@@ -3432,9 +3642,10 @@
     // ESTUDIO
     try { if (s.libre) { resIn(s.libre); setRadio('formaEstudio', s.libre.forma === 'rect' ? 'rect' : 'circulo'); aplicarFormaUI();
       libreObjs = []; libreSel = null; (s.libre.objs || []).forEach(function (d) {
-      if (d.tipo === 'img') { var o = { tipo: 'img', id: ++libreSeq, img: null, xCm: +d.xCm || 0, yCm: +d.yCm || 0, wCm: +d.wCm || 1, hCm: +d.hCm || 1, flip: !!d.flip, prop: d.prop || 1, rot: +d.rot || 0, recorte: d.recorte === 'circ' ? 'circ' : null }; libreObjs.push(o); cargarFoto(d.img, function (im) { o.img = im; }, dibujarLibre); }
-      else { var t = { tipo: 'texto', id: ++libreSeq, texto: d.texto, fontCss: d.fontCss, color: d.color, estilo: d.estilo, altoCm: d.altoCm, xCm: +d.xCm || 0, yCm: +d.yCm || 0, wCm: +d.wCm || 2, hCm: +d.hCm || 1, rot: +d.rot || 0 }; try { libreRenderTexto(t); } catch (e3) {} libreObjs.push(t); } });
-      dibujarLibre(); libreActivarBotones(); estudioRefrescaTextos(); } } catch (e) {}
+      if (d.tipo === 'img') { var o = { tipo: 'img', id: ++libreSeq, img: null, xCm: +d.xCm || 0, yCm: +d.yCm || 0, wCm: +d.wCm || 1, hCm: +d.hCm || 1, flip: !!d.flip, prop: d.prop || 1, rot: +d.rot || 0, recorte: d.recorte === 'circ' ? 'circ' : null, alpha: d.alpha == null ? 1 : +d.alpha }; libreObjs.push(o); cargarFoto(d.img, function (im) { o.img = im; }, dibujarLibre); }
+      else if (d.tipo === 'motivo') { libreObjs.push({ tipo: 'motivo', id: ++libreSeq, clave: d.clave, color: d.color || '#6f6151', xCm: +d.xCm || 0, yCm: +d.yCm || 0, wCm: +d.wCm || 4, hCm: +d.hCm || 4, rot: +d.rot || 0, flip: !!d.flip }); }
+      else { var t = { tipo: 'texto', id: ++libreSeq, texto: d.texto, fontCss: d.fontCss, color: d.color, estilo: d.estilo, altoCm: d.altoCm, curva: +d.curva || 0, xCm: +d.xCm || 0, yCm: +d.yCm || 0, wCm: +d.wCm || 2, hCm: +d.hCm || 1, rot: +d.rot || 0 }; try { libreRenderTexto(t); } catch (e3) {} libreObjs.push(t); } });
+      dibujarLibre(); libreActivarBotones(); estudioRefrescaTextos(); histPila = []; histIdx = -1; histPush(); } } catch (e) {}
     // PUNTO DE CRUZ
     try { if (s.cruz) { resIn(s.cruz); mostrarSimbolosCruz = !!s.cruz.simbolos; quitarFondoCruz = !!s.cruz.fondo; limpiarCruz = !!s.cruz.limpiar; bnCruz = !!s.cruz.bn;
       [['simbolosCruz', mostrarSimbolosCruz], ['fondoCruz', quitarFondoCruz], ['limpiarCruzBtn', limpiarCruz], ['bnCruzBtn', bnCruz]].forEach(function (p) { var b = $(p[0]); if (b) { b.setAttribute('aria-pressed', p[1] ? 'true' : 'false'); b.classList.toggle('activo', p[1]); } });
@@ -4888,14 +5099,14 @@
       $('modalBienvenida').hidden = false;
       $('empezarBienvenida').addEventListener('click', function () {
         CONFIG.tema = temaSel; guardarConfig(); aplicarTema();
-        try { localStorage.setItem('alma_visto', '1'); localStorage.setItem('alma_v30', '1'); } catch (e) {}
+        try { localStorage.setItem('alma_visto', '1'); localStorage.setItem('alma_v31', '1'); } catch (e) {}
         $('modalBienvenida').hidden = true;
       });
       return;
     }
-    if (!localStorage.getItem('alma_v30')) {
+    if (!localStorage.getItem('alma_v31')) {
       $('modalNovedades').hidden = false;
-      var cerrarNov = function () { try { localStorage.setItem('alma_v30', '1'); } catch (e) {} $('modalNovedades').hidden = true; };
+      var cerrarNov = function () { try { localStorage.setItem('alma_v31', '1'); } catch (e) {} $('modalNovedades').hidden = true; };
       $('cerrarNovedades').addEventListener('click', cerrarNov);
       $('modalNovedades').addEventListener('click', function (e) { if (e.target === this) cerrarNov(); });
     }
