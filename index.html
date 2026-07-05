@@ -378,6 +378,26 @@
   .candado-caja input:focus { outline: none; border-color: var(--trigo-osc); background: #fff; box-shadow: 0 0 0 3px rgba(184,154,106,0.18); }
   .candado-err { color: #a14f72; font-size: .88rem; min-height: 1.3em; margin: 8px 0 10px; }
   .boton-nuevo { border-color: #e2b7c8; color: #a14f72; background: #faf1f4; }
+  /* Alma Estudio: taller estilo programa de diseño (riel + lienzo grande + panel lateral) */
+  .taller { display: grid; grid-template-columns: 56px minmax(0, 1fr) 330px; gap: 12px; align-items: start; }
+  .taller-rail { display: flex; flex-direction: column; gap: 8px; position: sticky; top: 172px; }
+  .taller-rail .rbtn { width: 52px; height: 52px; border-radius: 13px; border: 1px solid var(--borde-fuerte); background: var(--superficie); font-size: 1.35rem; cursor: pointer; box-shadow: var(--sombra-sutil); display: grid; place-items: center; }
+  .taller-rail .rbtn small { font-size: .52rem; color: var(--tinta-suave); display: block; line-height: 1; }
+  .taller-rail .rbtn.activo { background: var(--acento-grad); color: #fff; }
+  .taller-rail .rbtn.activo small { color: #fff; }
+  .taller-rail .rbtn:disabled { opacity: .38; }
+  .taller-centro { min-width: 0; text-align: center; }
+  .taller-centro .lienzo-wrap { padding: 18px; }
+  .taller-lado { min-width: 0; display: flex; flex-direction: column; gap: 12px; position: sticky; top: 172px; max-height: calc(100vh - 190px); overflow-y: auto; }
+  .taller-lado .tarjeta { margin-bottom: 0; padding: 15px; }
+  .taller-lado .tarjeta h2 { font-size: 1.12rem; margin-bottom: 10px; }
+  @media (max-width: 999px) {
+    .taller { grid-template-columns: 1fr; }
+    .taller-rail { flex-direction: row; flex-wrap: wrap; position: static; }
+    .taller-lado { position: static; max-height: none; }
+    .taller-centro { order: -1; }
+    .taller-rail { order: -2; }
+  }
   /* Galería de motivos del Estudio */
   .motivos-grid { grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 8px; margin-bottom: 12px; padding: 10px; background: #faf5ea; border: 1px solid #e6d8b8; border-radius: 12px; }
   .motivo-btn { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 3px 6px; background: #fff; border: 1px solid var(--borde-fuerte); border-radius: 10px; cursor: pointer; font-family: inherit; transition: transform .1s; }
@@ -653,7 +673,7 @@
   <div class="marca">
     <svg class="logo" viewBox="0 0 80 80" aria-hidden="true"><use href="#logoMini"/></svg>
     <div style="min-width:0;">
-      <div class="fila-marca"><h1 id="tituloMarca">Alma bordado</h1><span class="ver-badge" title="AlmaApp 3.3 · Alma Estudio">3.3</span></div>
+      <div class="fila-marca"><h1 id="tituloMarca">Alma bordado</h1><span class="ver-badge" title="AlmaApp 3.4 · Alma Estudio">3.4</span></div>
       <p class="lema">Plantillas a tamaño real, listas para bordar</p>
     </div>
   </div>
@@ -683,97 +703,109 @@
     </div>
   </div>
 </nav>
-<!-- ============ ESTUDIO DE DISEÑO (único panel de creación) ============ -->
+<!-- ============ ALMA ESTUDIO (taller único de diseño) ============ -->
 <section id="panel-libre" class="panel activa">
-  <p class="intro"><strong>Alma Estudio</strong>, tu taller de diseño: elige el lienzo (bastidor circular o rectángulo), agrega <strong>fotos</strong> y <strong>palabras</strong>, y acomódalas con el dedo. Todo lo que imagines, en un solo lugar — y de aquí sale directo a PDF a tamaño real o a un kit. 🌸</p>
+  <p class="intro"><strong>Alma Estudio</strong>: tu taller de diseño. Herramientas a la izquierda, lienzo al centro y opciones a la derecha — toca un elemento para editarlo en vivo. 🌸</p>
   <svg class="divisor" viewBox="0 0 150 22"><use href="#divisorBot"/></svg>
-
-  <div class="tarjeta">
-    <svg class="flor-tarjeta" viewBox="0 0 80 80"><use href="#margarita" transform="translate(40,40)"/></svg>
-    <h2><span class="paso">1</span> Tu lienzo</h2>
-    <div class="radios radios-fila">
-      <label class="radio-opcion" id="opLienzoRect"><input type="radio" name="formaEstudio" value="rect"><span><strong>Rectángulo</strong><small>Ancho y alto a tu gusto.</small></span></label>
-      <label class="radio-opcion elegida" id="opLienzoCirc"><input type="radio" name="formaEstudio" value="circulo" checked><span><strong>Bastidor circular</strong><small>Con guía para bordar.</small></span></label>
-    </div>
-    <div class="fila" id="filaLienzoCirc" style="margin-top:12px;">
-      <div class="campo"><label for="presetEstudio">Tamaño de bastidor</label><select id="presetEstudio"></select></div>
-      <div class="campo"><label for="diametroEstudio">Diámetro (cm)</label><input type="number" id="diametroEstudio" min="4" max="60" step="0.5" value="18" inputmode="decimal"></div>
-    </div>
-    <div class="fila" id="filaLienzoRect" style="display:none; margin-top:12px;">
-      <div class="campo"><label for="anchoLibre">Ancho (cm)</label><input type="number" id="anchoLibre" min="3" max="60" step="0.5" value="18" inputmode="decimal"></div>
-      <div class="campo"><label for="altoLibre">Alto (cm)</label><input type="number" id="altoLibre" min="3" max="60" step="0.5" value="18" inputmode="decimal"></div>
-    </div>
-    <div class="fila" style="margin-top:12px;">
-      <div class="campo"><label for="hojaLibre">Hoja para imprimir</label><select id="hojaLibre"><option value="A4" selected>A4 (21 × 29,7 cm)</option><option value="Carta">Carta (21,6 × 27,9 cm)</option><option value="A3">A3 (29,7 × 42 cm)</option></select></div>
-      <div class="campo"><label for="copiasLibre">Copias por hoja</label><select id="copiasLibre"><option value="1" selected>1 (centrada)</option><option value="2">2</option><option value="4">4</option><option value="6">6</option><option value="9">9</option></select></div>
-      <div class="campo campo-color"><label for="colorFondoLibre">Fondo (tela)</label><input type="color" id="colorFondoLibre" value="#ffffff"></div>
-    </div>
-    <label class="check-fila" id="filaGuiaEstudio"><input type="checkbox" id="guiaEstudio" checked><span>Imprimir la guía del bastidor y marcas de centrado</span></label>
-  </div>
-
-  <div class="tarjeta">
-    <h2><span class="paso">2</span> Herramientas</h2>
-    <div class="controles-previa" style="justify-content:flex-start; margin-bottom:12px;">
-      <label class="boton-sec" id="btnFotoLibre" for="archivoLibre" style="cursor:pointer;">🖼️ Foto</label>
+  <div class="taller">
+    <div class="taller-rail" aria-label="Herramientas">
+      <label class="rbtn" for="archivoLibre" title="Añadir foto" style="cursor:pointer;"><span>🖼️<small>Foto</small></span></label>
       <input type="file" id="archivoLibre" accept="image/*" hidden>
-      <button class="boton-sec" id="btnMotivos" type="button" aria-pressed="false">🌿 Motivos</button>
-      <button class="boton-sec" id="undoLibre" type="button" disabled>↩️ Deshacer</button>
-      <button class="boton-sec" id="redoLibre" type="button" disabled>↪️ Rehacer</button>
+      <button class="rbtn activo" id="railTexto" type="button" title="Texto"><span>✍️<small>Texto</small></span></button>
+      <button class="rbtn" id="btnMotivos" type="button" title="Motivos"><span>🌿<small>Motivos</small></span></button>
+      <button class="rbtn" id="railLienzo" type="button" title="Lienzo"><span>🧵<small>Lienzo</small></span></button>
+      <button class="rbtn" id="undoLibre" type="button" disabled title="Deshacer"><span>↩️</span></button>
+      <button class="rbtn" id="redoLibre" type="button" disabled title="Rehacer"><span>↪️</span></button>
     </div>
-    <div class="motivos-grid" id="motivosGrid" style="display:none;" aria-label="Biblioteca de motivos"></div>
-    <div class="campo"><label for="textoLibre">Palabras</label><input type="text" id="textoLibre" placeholder="Escribe y toca «Añadir texto»" inputmode="text"></div>
-    <div class="fila" style="margin-top:12px;">
-      <div class="campo"><label for="fuenteLibre">Tipografía</label><select id="fuenteLibre"></select></div>
-      <div class="campo campo-color"><label for="colorLibre">Color</label><input type="color" id="colorLibre" value="#6f6151"></div>
-      <div class="campo"><label for="estiloLibre">Trazo</label><select id="estiloLibre"><option value="relleno" selected>Relleno</option><option value="contorno">Solo contorno — para calcar</option><option value="ambos">Relleno + contorno</option></select></div>
-    </div>
-    <button class="boton-anadir" id="btnTextoLibre" type="button" style="margin-top:12px;">➕ Añadir texto</button>
-    <p class="info-img" style="text-align:left; margin-top:10px;">Toca un elemento y <strong>edítalo en vivo</strong>: arrastra sus <strong>esquinas</strong> para cambiar el tamaño y la <strong>perilla superior</strong> para girarlo. ¿Ideas? Pídele un diseño a <strong>Alma</strong> y tócale «🎨 Usar en el Estudio».</p>
-  </div>
 
-  <div class="tarjeta vista-previa">
-    <h2><span class="paso">3</span> Acomoda tu diseño</h2>
-    <div class="lienzo-wrap"><canvas id="previaLibre" width="320" height="320"></canvas></div>
-    <p class="pie" id="ayudaLibre" style="display:none">👆 Toca un elemento para seleccionarlo y arrástralo con el dedo</p>
-    <div id="libreSelControles" class="libre-sel" style="display:none">
-      <div class="campo"><label for="tamanoLibre">Tamaño del elemento seleccionado <span id="tamanoLibreVal"></span></label><input type="range" id="tamanoLibre" min="1" max="30" step="0.5" value="6"></div>
-      <div class="campo" id="filaCurvaLibre" style="display:none; margin-top:8px;"><label for="curvaLibre">Curvar el texto · <span id="curvaLibreVal">recto</span></label><input type="range" id="curvaLibre" min="-100" max="100" step="5" value="0"></div>
-      <div class="campo" id="filaAlphaLibre" style="display:none; margin-top:8px;"><label for="alphaLibre">Transparencia de la foto (útil para calcar)</label><input type="range" id="alphaLibre" min="15" max="100" step="5" value="100"></div>
-      <div class="campo" id="filaFiltroLibre" style="display:none; margin-top:8px;"><label>Tono de la foto</label><div class="chips" id="chipsFiltro" style="margin-bottom:0;"></div></div>
-      <div class="campo" id="filaTamNum" style="margin-top:8px;"><label for="tamanoLibreNum">Tamaño exacto (cm)</label><input type="number" id="tamanoLibreNum" min="0.5" max="60" step="0.1" inputmode="decimal" style="max-width:130px;"></div>
-      <div id="masTextoOpc" style="display:none; margin-top:8px; padding:10px 12px; background:#fbf6ec; border:1px solid #e0cda3; border-radius:12px;">
-        <div class="fila">
-          <div class="campo campo-color"><label for="ctextoLibre">Color contorno</label><input type="color" id="ctextoLibre" value="#6f6151"></div>
-          <div class="campo"><label for="gtextoLibre">Grosor contorno</label><input type="range" id="gtextoLibre" min="5" max="100" value="40"></div>
-          <div class="campo"><label for="etextoLibre">Espaciado letras</label><input type="range" id="etextoLibre" min="0" max="60" value="0"></div>
+    <div class="taller-centro">
+      <div class="lienzo-wrap"><canvas id="previaLibre" width="320" height="320"></canvas></div>
+      <p class="pie" id="ayudaLibre" style="display:none">👆 Toca un elemento y arrástralo · esquinas = tamaño · perilla = girar · ✕ = quitar</p>
+      <div class="pie" id="pieLibre">Agrega una foto, un texto o un motivo para empezar</div>
+      <button class="boton-pdf" id="pdfLibre" disabled style="margin-top:12px;">📄 Generar PDF a tamaño real</button>
+      <button class="boton-sec boton-img" id="imgLibre" type="button" disabled>🖼️ Guardar imagen (para compartir)</button>
+      <button class="boton-sec boton-img boton-kit" id="btnKitLibre" type="button">🎁 Crear kit de bordado con este diseño</button>
+      <button class="boton-sec boton-img boton-nuevo" id="btnNuevoLibre" type="button">🧹 Nuevo diseño (borrar este)</button>
+    </div>
+
+    <div class="taller-lado">
+      <div id="libreSelControles" class="tarjeta" style="display:none">
+        <h2>🎯 Elemento seleccionado</h2>
+        <div class="campo"><label for="tamanoLibre">Tamaño <span id="tamanoLibreVal"></span></label><input type="range" id="tamanoLibre" min="1" max="30" step="0.5" value="6"></div>
+        <div class="campo" id="filaTamNum" style="margin-top:8px;"><label for="tamanoLibreNum">Tamaño exacto (cm)</label><input type="number" id="tamanoLibreNum" min="0.5" max="60" step="0.1" inputmode="decimal" style="max-width:130px;"></div>
+        <div class="campo" id="filaCurvaLibre" style="display:none; margin-top:8px;"><label for="curvaLibre">Curvar el texto · <span id="curvaLibreVal">recto</span></label><input type="range" id="curvaLibre" min="-100" max="100" step="5" value="0"></div>
+        <div class="campo" id="filaAlphaLibre" style="display:none; margin-top:8px;"><label for="alphaLibre">Transparencia (para calcar)</label><input type="range" id="alphaLibre" min="15" max="100" step="5" value="100"></div>
+        <div class="campo" id="filaFiltroLibre" style="display:none; margin-top:8px;"><label>Tono de la foto</label><div class="chips" id="chipsFiltro" style="margin-bottom:0;"></div></div>
+        <div class="controles-previa" style="justify-content:flex-start; margin-top:10px;">
+          <button class="boton-sec" id="girarLibre" type="button" title="Girar 15°">↻ Girar</button>
+          <button class="boton-sec" id="flipLibre" type="button">⇋ Espejo</button>
+          <button class="boton-sec" id="voltearLibre" type="button">⇅ Voltear</button>
+          <button class="boton-sec" id="recorteLibre" type="button" title="Recorta la foto en círculo">⭕ Redondear</button>
+          <button class="boton-sec" id="masTextoBtn" type="button" style="display:none;">🎀 Más estilo</button>
+          <button class="boton-sec" id="centrarLibre" type="button">🎯 Centrar</button>
+          <button class="boton-sec" id="llenarLibre" type="button">⛶ Llenar lienzo</button>
+          <button class="boton-sec" id="dupLibre" type="button">⧉ Duplicar</button>
+          <button class="boton-sec" id="frenteLibre" type="button">⬆️ Al frente</button>
+          <button class="boton-sec" id="fondoLibre" type="button">⬇️ Al fondo</button>
+          <button class="boton-sec gal-quitar" id="borrarLibre" type="button">🗑️ Quitar</button>
         </div>
-        <label class="check-fila" style="margin-top:8px;"><input type="checkbox" id="degTextoLibre"><span>Relleno degradado (dos colores)</span></label>
-        <div class="fila" id="filaDegLibre" style="display:none; margin-top:8px;">
-          <div class="campo campo-color"><label for="deg2Libre">2º color</label><input type="color" id="deg2Libre" value="#d8c4a0"></div>
-          <div class="campo"><label for="dirDegLibre">Dirección</label><select id="dirDegLibre"><option value="vertical" selected>Vertical</option><option value="horizontal">Horizontal</option><option value="diagonal">Diagonal</option></select></div>
+        <div id="masTextoOpc" style="display:none; margin-top:10px; padding:10px 12px; background:#fbf6ec; border:1px solid #e0cda3; border-radius:12px;">
+          <div class="fila">
+            <div class="campo campo-color"><label for="ctextoLibre">Color contorno</label><input type="color" id="ctextoLibre" value="#6f6151"></div>
+            <div class="campo"><label for="gtextoLibre">Grosor contorno</label><input type="range" id="gtextoLibre" min="5" max="100" value="40"></div>
+            <div class="campo"><label for="etextoLibre">Espaciado letras</label><input type="range" id="etextoLibre" min="0" max="60" value="0"></div>
+          </div>
+          <label class="check-fila" style="margin-top:8px;"><input type="checkbox" id="degTextoLibre"><span>Relleno degradado (dos colores)</span></label>
+          <div class="fila" id="filaDegLibre" style="display:none; margin-top:8px;">
+            <div class="campo campo-color"><label for="deg2Libre">2º color</label><input type="color" id="deg2Libre" value="#d8c4a0"></div>
+            <div class="campo"><label for="dirDegLibre">Dirección</label><select id="dirDegLibre"><option value="vertical" selected>Vertical</option><option value="horizontal">Horizontal</option><option value="diagonal">Diagonal</option></select></div>
+          </div>
+          <label class="check-fila" style="margin-top:8px;"><input type="checkbox" id="somTextoLibre"><span>Sombra suave</span></label>
         </div>
-        <label class="check-fila" style="margin-top:8px;"><input type="checkbox" id="somTextoLibre"><span>Sombra suave</span></label>
       </div>
-      <div class="controles-previa" style="justify-content:flex-start;">
-        <button class="boton-sec" id="girarLibre" type="button" title="Girar 15°">↻ Girar</button>
-        <button class="boton-sec" id="flipLibre" type="button">⇋ Espejo</button>
-        <button class="boton-sec" id="voltearLibre" type="button">⇅ Voltear</button>
-        <button class="boton-sec" id="masTextoBtn" type="button" style="display:none;">🎀 Más estilo</button>
-        <button class="boton-sec" id="recorteLibre" type="button" title="Recorta la foto en círculo">⭕ Redondear</button>
-        <button class="boton-sec" id="centrarLibre" type="button">🎯 Centrar</button>
-        <button class="boton-sec" id="dupLibre" type="button">⧉ Duplicar</button>
-        <button class="boton-sec" id="frenteLibre" type="button">⬆️ Al frente</button>
-        <button class="boton-sec" id="fondoLibre" type="button">⬇️ Al fondo</button>
-        <button class="boton-sec" id="borrarLibre" type="button">🗑️ Quitar</button>
+
+      <div class="tarjeta" id="grpTexto">
+        <h2>✍️ Texto</h2>
+        <div class="campo"><label for="textoLibre">Palabras</label><input type="text" id="textoLibre" placeholder="Escribe y toca «Añadir texto»" inputmode="text"></div>
+        <div class="fila" style="margin-top:12px;">
+          <div class="campo"><label for="fuenteLibre">Tipografía</label><select id="fuenteLibre"></select></div>
+          <div class="campo campo-color"><label for="colorLibre">Color</label><input type="color" id="colorLibre" value="#6f6151"></div>
+          <div class="campo"><label for="estiloLibre">Trazo</label><select id="estiloLibre"><option value="relleno" selected>Relleno</option><option value="contorno">Solo contorno — para calcar</option><option value="ambos">Relleno + contorno</option></select></div>
+        </div>
+        <button class="boton-anadir" id="btnTextoLibre" type="button" style="margin-top:12px;">➕ Añadir texto</button>
+        <p class="info-img" style="text-align:left; margin-top:8px;">Con un texto seleccionado, estos controles lo editan en vivo. ¿Ideas? Pídele un diseño a <strong>Alma</strong> en el Asistente.</p>
+      </div>
+
+      <div class="tarjeta" id="grpMotivos" style="display:none">
+        <h2>🌿 Motivos para bordar</h2>
+        <div class="motivos-grid" id="motivosGrid" style="display:grid;" aria-label="Biblioteca de motivos"></div>
+        <p class="info-img" style="text-align:left; margin-top:8px;">Se insertan al centro con el color elegido en «Texto» y se pueden girar, escalar y recolorear.</p>
+      </div>
+
+      <div class="tarjeta" id="grpLienzo" style="display:none">
+        <h2>🧵 Lienzo</h2>
+        <div class="radios radios-fila">
+          <label class="radio-opcion" id="opLienzoRect"><input type="radio" name="formaEstudio" value="rect"><span><strong>Rectángulo</strong><small>A tu medida.</small></span></label>
+          <label class="radio-opcion elegida" id="opLienzoCirc"><input type="radio" name="formaEstudio" value="circulo" checked><span><strong>Bastidor</strong><small>Con guía.</small></span></label>
+        </div>
+        <div class="fila" id="filaLienzoCirc" style="margin-top:12px;">
+          <div class="campo"><label for="presetEstudio">Tamaño de bastidor</label><select id="presetEstudio"></select></div>
+          <div class="campo"><label for="diametroEstudio">Diámetro (cm)</label><input type="number" id="diametroEstudio" min="4" max="60" step="0.5" value="18" inputmode="decimal"></div>
+        </div>
+        <div class="fila" id="filaLienzoRect" style="display:none; margin-top:12px;">
+          <div class="campo"><label for="anchoLibre">Ancho (cm)</label><input type="number" id="anchoLibre" min="3" max="60" step="0.5" value="18" inputmode="decimal"></div>
+          <div class="campo"><label for="altoLibre">Alto (cm)</label><input type="number" id="altoLibre" min="3" max="60" step="0.5" value="18" inputmode="decimal"></div>
+        </div>
+        <div class="fila" style="margin-top:12px;">
+          <div class="campo"><label for="hojaLibre">Hoja</label><select id="hojaLibre"><option value="A4" selected>A4 (21 × 29,7 cm)</option><option value="Carta">Carta (21,6 × 27,9 cm)</option><option value="A3">A3 (29,7 × 42 cm)</option></select></div>
+          <div class="campo"><label for="copiasLibre">Copias por hoja</label><select id="copiasLibre"><option value="1" selected>1 (centrada)</option><option value="2">2</option><option value="4">4</option><option value="6">6</option><option value="9">9</option></select></div>
+          <div class="campo campo-color"><label for="colorFondoLibre">Fondo (tela)</label><input type="color" id="colorFondoLibre" value="#ffffff"></div>
+        </div>
+        <label class="check-fila" id="filaGuiaEstudio"><input type="checkbox" id="guiaEstudio" checked><span>Imprimir la guía del bastidor y marcas de centrado</span></label>
+        <label class="check-fila"><input type="checkbox" id="espejoEstudio"><span>🪞 Exportar en espejo (para transferir con plancha)</span></label>
       </div>
     </div>
-    <div class="pie" id="pieLibre">Agrega una foto o un texto para empezar</div>
-    <label class="check-fila" style="justify-content:center;"><input type="checkbox" id="espejoEstudio"><span>🪞 Exportar en espejo (para transferir con plancha)</span></label>
   </div>
-  <button class="boton-pdf" id="pdfLibre" disabled>📄 Generar PDF a tamaño real</button>
-  <button class="boton-sec boton-img" id="imgLibre" type="button" disabled>🖼️ Guardar imagen (para compartir)</button>
-  <button class="boton-sec boton-img boton-kit" id="btnKitLibre" type="button">🎁 Crear kit de bordado con este diseño</button>
-  <button class="boton-sec boton-img boton-nuevo" id="btnNuevoLibre" type="button">🧹 Nuevo diseño (borrar este)</button>
 </section>
 
 <!-- ============ PUNTO DE CRUZ ============ -->
@@ -1613,7 +1645,7 @@
     if (libreForma() === 'circulo') { var d0 = Math.max(4, num('diametroEstudio') || 18); return { w: d0, h: d0 }; }
     return { w: Math.max(3, num('anchoLibre') || 18), h: Math.max(3, num('altoLibre') || 18) };
   }
-  function libreEscala() { var d = libreDim(); return Math.min(400 / d.w, 500 / d.h); }
+  function libreEscala() { var d = libreDim(), m = Math.max(d.w, d.h); return Math.min(560 / m, Math.max(24, 320 / m)); }
   function libreObj(id) { for (var i = 0; i < libreObjs.length; i++) if (libreObjs[i].id === id) return libreObjs[i]; return null; }
   // Punto → marco local del elemento (considera su rotación)
   function libreALocal(o, cx, cy) {
@@ -1839,6 +1871,12 @@
       x.beginPath(); x.arc(0, -sh / 2 - 28, 7, 0, 6.2832);
       x.fillStyle = '#fff'; x.fill(); x.stroke();
       x.beginPath(); x.arc(0, -sh / 2 - 28, 2.6, 0, 6.2832); x.fillStyle = '#7c6b57'; x.fill();
+      // manija ✕ = borrar el elemento
+      x.beginPath(); x.arc(sw / 2 + 18, -sh / 2 - 18, 9, 0, 6.2832);
+      x.fillStyle = '#fff'; x.fill(); x.strokeStyle = '#c47b8f'; x.lineWidth = 1.6; x.stroke();
+      x.strokeStyle = '#a14f72'; x.lineWidth = 2;
+      x.beginPath(); x.moveTo(sw / 2 + 14, -sh / 2 - 22); x.lineTo(sw / 2 + 22, -sh / 2 - 14);
+      x.moveTo(sw / 2 + 22, -sh / 2 - 22); x.lineTo(sw / 2 + 14, -sh / 2 - 14); x.stroke();
       x.restore();
     }
   }
@@ -1943,6 +1981,12 @@
       var s = libreSel ? libreObj(libreSel) : null;
       if (s) {
         var loc = libreALocal(s, cx, cy), tol = 14 / esc;
+        // manija ✕ = borrar
+        if (Math.abs(loc.x - (s.wCm / 2 + 18 / esc)) <= tol && Math.abs(loc.y - (-s.hCm / 2 - 18 / esc)) <= tol) {
+          libreObjs = libreObjs.filter(function (q) { return q.id !== s.id; });
+          libreSel = null; libreSync(); dibujarLibre(); libreActivarBotones(); histPush();
+          return;
+        }
         // perilla de giro (arriba del elemento)
         if (Math.abs(loc.x) <= tol && Math.abs(loc.y - (-s.hCm / 2 - 28 / esc)) <= tol) {
           dragModo = 'girar';
@@ -2022,12 +2066,18 @@
       b.addEventListener('click', function () { libreAddMotivo(m[0]); });
       grid.appendChild(b);
     });
-    $('btnMotivos').addEventListener('click', function () {
-      var v = grid.style.display !== 'grid';
-      grid.style.display = v ? 'grid' : 'none';
-      this.classList.toggle('activo', v);
-    });
   })();
+  // Riel de herramientas: qué sub-panel se ve a la derecha (estilo programa de diseño)
+  function railSel(cual) {
+    [['railTexto', 'grpTexto'], ['btnMotivos', 'grpMotivos'], ['railLienzo', 'grpLienzo']].forEach(function (p) {
+      var b = $(p[0]), g = $(p[1]);
+      if (g) g.style.display = (p[1] === cual) ? 'block' : 'none';
+      if (b) b.classList.toggle('activo', p[1] === cual);
+    });
+  }
+  $('railTexto').addEventListener('click', function () { railSel('grpTexto'); });
+  $('btnMotivos').addEventListener('click', function () { railSel('grpMotivos'); });
+  $('railLienzo').addEventListener('click', function () { railSel('grpLienzo'); });
   $('archivoLibre').addEventListener('change', function () { var f = this.files && this.files[0]; if (!f) return; cargarImagen(f, function (img) { libreAddFoto(img); }, function (msg) { toast(msg); }); this.value = ''; });
   $('btnTextoLibre').addEventListener('click', libreAddTexto);
   $('textoLibre').addEventListener('input', function () { var o = libreSel && libreObj(libreSel); if (o && o.tipo === 'texto') libreEditTextoSel(); });
@@ -2095,6 +2145,15 @@
   $('girarLibre').addEventListener('click', function () { var o = libreSel ? libreObj(libreSel) : null; if (!o) return; o.rot = ((o.rot || 0) + Math.PI / 12) % (Math.PI * 2); dibujarLibre(); histPush(); });
   $('flipLibre').addEventListener('click', function () { var o = libreSel ? libreObj(libreSel) : null; if (o && o.tipo !== 'texto') { o.flip = !o.flip; dibujarLibre(); histPush(); } });
   $('recorteLibre').addEventListener('click', function () { var o = libreSel ? libreObj(libreSel) : null; if (!o || o.tipo !== 'img') return; o.recorte = o.recorte === 'circ' ? null : 'circ'; libreSync(); dibujarLibre(); histPush(); });
+  $('llenarLibre').addEventListener('click', function () {
+    var o = libreSel ? libreObj(libreSel) : null; if (!o) return;
+    var d = libreDim(), pr = o.wCm / o.hCm, w0 = o.wCm;
+    if (pr >= d.w / d.h) { o.hCm = d.h; o.wCm = d.h * pr; } else { o.wCm = d.w; o.hCm = d.w / pr; }
+    if (o.tipo === 'texto') o.altoCm = o.altoCm * (o.wCm / w0);
+    o.xCm = d.w / 2; o.yCm = d.h / 2;
+    libreSync(); dibujarLibre(); histPush();
+    toast(libreForma() === 'circulo' ? 'Foto encuadrada al bastidor (lo que sobra se recorta al imprimir)' : 'Elemento encuadrado al lienzo');
+  });
   $('centrarLibre').addEventListener('click', function () { var o = libreSel ? libreObj(libreSel) : null; if (!o) return; var d = libreDim(); o.xCm = d.w / 2; o.yCm = d.h / 2; dibujarLibre(); histPush(); });
   $('dupLibre').addEventListener('click', function () {
     var o = libreSel ? libreObj(libreSel) : null; if (!o) return;
@@ -5203,7 +5262,7 @@
   // Editor a dos columnas (iPad horizontal / escritorio): agrupa controles a la izquierda
   // y vista previa + botones de exportar a la derecha. Los ids y listeners no cambian.
   document.querySelectorAll('section.panel').forEach(function (p) {
-    if (p.id === 'panel-asistente' || p.id === 'panel-galeria') return;   // chat y galería van a lo ancho
+    if (p.id === 'panel-asistente' || p.id === 'panel-galeria' || p.id === 'panel-libre') return;   // chat, galería y Alma Estudio tienen su propio layout
     var izq = document.createElement('div'); izq.className = 'col-izq';
     var der = document.createElement('div'); der.className = 'col-der';
     Array.prototype.slice.call(p.children).forEach(function (el) {
