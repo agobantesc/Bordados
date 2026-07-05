@@ -1,7 +1,7 @@
 // Service worker del Taller de Bordado: deja la app disponible sin internet.
 // Estrategia "cache primero, actualizar por detrás": abre al tiro desde el
 // caché y descarga la versión nueva en segundo plano para la próxima vez.
-var CACHE = 'bordados-v34';   // AlmaApp 3.5 · Alma Estudio: lienzo grande, margen de trabajo y encuadre automático al bastidor
+var CACHE = 'bordados-v35';   // AlmaApp 4.0 · Estudio profesional: capas, multi-bastidor por hoja, letras florales y boceto
 var ARCHIVOS = [
   './',
   './index.html',
