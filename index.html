@@ -45,6 +45,7 @@
     --acento-a: #7c6b57;
     --acento-b: #6f6151;
     --acento-grad: linear-gradient(135deg, var(--acento-a), var(--acento-b));
+    --anchoApp: 1080px;   /* ancho de trabajo del taller (barra, pestañas y Estudio) */
   }
   /* Temas pastel elegibles (Mi taller) — cambian el acento y el realce */
   html[data-tema="rosa"]    { --acento-a:#c07b96; --acento-b:#a14f72; --trigo-osc:#cf9bb0; --titulo:#a14f72; }
@@ -75,7 +76,7 @@
   .appbar {
     position: sticky; top: 0; z-index: 30; overflow: hidden;
     display: flex; align-items: center; gap: 12px;
-    max-width: 920px; margin: 0 auto; padding: 14px 6px 12px;
+    max-width: var(--anchoApp); margin: 0 auto; padding: 14px 6px 12px;
     background: linear-gradient(180deg, #fbfaf6 0%, #f6f1e7 72%, rgba(251,250,246,0));
   }
   .appbar .marca, .appbar .icono-btn { position: relative; z-index: 2; }
@@ -102,7 +103,7 @@
   .tabs {
     display: flex; gap: 12px; align-items: stretch;
     position: sticky; top: 74px; z-index: 20;
-    max-width: 920px; margin: 0 auto 16px; padding: 7px 9px 8px;
+    max-width: var(--anchoApp); margin: 0 auto 16px; padding: 7px 9px 8px;
     background: var(--superficie); border: 1px solid var(--borde); border-radius: 15px;
     box-shadow: var(--sombra-sutil);
   }
@@ -144,6 +145,8 @@
 
   .panel { display: none; max-width: 920px; margin: 0 auto; animation: aparecer .25s ease; }
   .panel.activa { display: block; }
+  /* El Estudio de diseño aprovecha todo el ancho de trabajo (lienzo grande + menús laterales) */
+  #panel-libre { max-width: var(--anchoApp); }
   @keyframes aparecer { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
   .intro { color: var(--tinta-suave); font-size: .95rem; margin: 0 4px 6px; }
@@ -387,7 +390,9 @@
   .taller-rail .rbtn.activo small { color: #fff; }
   .taller-rail .rbtn:disabled { opacity: .38; }
   .taller-centro { min-width: 0; text-align: center; }
-  .taller-centro .lienzo-wrap { padding: 18px; }
+  .taller-centro .lienzo-wrap { display: block; padding: 14px; background: none; }
+  /* El lienzo nunca desborda su columna: se adapta al ancho disponible (tablet y escritorio) */
+  #previaLibre { display: block; width: auto; max-width: 100%; height: auto; margin: 0 auto; border-radius: 14px; box-shadow: 0 10px 30px rgba(60,45,35,0.16); }
   .taller-lado { min-width: 0; display: flex; flex-direction: column; gap: 12px; position: sticky; top: 172px; max-height: calc(100vh - 190px); overflow-y: auto; }
   .taller-lado .tarjeta { margin-bottom: 0; padding: 15px; }
   .taller-lado .tarjeta h2 { font-size: 1.12rem; margin-bottom: 10px; }
@@ -673,7 +678,7 @@
   <div class="marca">
     <svg class="logo" viewBox="0 0 80 80" aria-hidden="true"><use href="#logoMini"/></svg>
     <div style="min-width:0;">
-      <div class="fila-marca"><h1 id="tituloMarca">Alma bordado</h1><span class="ver-badge" title="AlmaApp 3.4 · Alma Estudio">3.4</span></div>
+      <div class="fila-marca"><h1 id="tituloMarca">Alma bordado</h1><span class="ver-badge" title="AlmaApp 3.5 · Alma Estudio">3.5</span></div>
       <p class="lema">Plantillas a tamaño real, listas para bordar</p>
     </div>
   </div>
@@ -705,7 +710,7 @@
 </nav>
 <!-- ============ ALMA ESTUDIO (taller único de diseño) ============ -->
 <section id="panel-libre" class="panel activa">
-  <p class="intro"><strong>Alma Estudio</strong>: tu taller de diseño. Herramientas a la izquierda, lienzo al centro y opciones a la derecha — toca un elemento para editarlo en vivo. 🌸</p>
+  <p class="intro"><strong>Alma Estudio</strong>: tu taller de diseño. Herramientas a la izquierda, lienzo grande al centro y todas las opciones a la derecha — toca un elemento para editarlo en vivo. En bastidor, la primera foto se ajusta sola al aro. 🌸</p>
   <svg class="divisor" viewBox="0 0 150 22"><use href="#divisorBot"/></svg>
   <div class="taller">
     <div class="taller-rail" aria-label="Herramientas">
@@ -1067,13 +1072,13 @@
 <div class="modal" id="modalNovedades" hidden>
   <div class="modal-caja" role="dialog" aria-modal="true" aria-labelledby="tituloNovedades">
     <svg viewBox="0 0 240 175" aria-hidden="true" style="width:120px; height:auto; display:block; margin:0 auto 4px; opacity:.9;"><use href="#ramoAlma"/></svg>
-    <h2 id="tituloNovedades" style="font-family:'Cormorant Garamond',Georgia,serif; font-size:1.7rem; text-align:center;">Estudio PRO ✨</h2>
-    <p class="sub" style="text-align:center;">Tu Estudio de diseño subió de nivel:</p>
+    <h2 id="tituloNovedades" style="font-family:'Cormorant Garamond',Georgia,serif; font-size:1.7rem; text-align:center;">Alma Estudio más grande ✨</h2>
+    <p class="sub" style="text-align:center;">Tu taller de diseño se ve mejor que nunca:</p>
     <ul class="bienvenida-lista">
-      <li>✋ <strong>Manipulación directa</strong>: arrastra las esquinas para cambiar el tamaño y la perilla superior para girar — como en las apps profesionales.</li>
-      <li>🌿 <strong>Biblioteca de motivos</strong>: corazones, flores, hojas, mariposas, anclas, coronas y más — vectoriales, con tu color, listos para bordar.</li>
-      <li>🌙 <strong>Texto en arco</strong>: curva nombres y frases con un deslizador.</li>
-      <li>↩️ <strong>Deshacer y rehacer</strong>, guías de centrado magnéticas y transparencia de fotos para calcar.</li>
+      <li>🖼️ <strong>Lienzo grande</strong> que se adapta a tu pantalla, con margen de trabajo para que las manijas nunca se corten.</li>
+      <li>⭕ <strong>Bastidor circular automático</strong>: la primera foto se ajusta sola al diámetro del aro y queda redondeada — luego sigues diseñando encima.</li>
+      <li>🎛️ <strong>Menús laterales ordenados</strong>: herramientas a la izquierda, lienzo al centro y todas las opciones a la derecha.</li>
+      <li>✋ Todo lo de antes: arrastrar esquinas para el tamaño, perilla para girar, motivos, texto en arco, tonos de foto, deshacer/rehacer y ✕ para quitar.</li>
     </ul>
     <div class="modal-acciones"><button class="boton-primario" id="cerrarNovedades" type="button">¡A bordar! 🌸</button></div>
   </div>
@@ -1645,7 +1650,31 @@
     if (libreForma() === 'circulo') { var d0 = Math.max(4, num('diametroEstudio') || 18); return { w: d0, h: d0 }; }
     return { w: Math.max(3, num('anchoLibre') || 18), h: Math.max(3, num('altoLibre') || 18) };
   }
-  function libreEscala() { var d = libreDim(), m = Math.max(d.w, d.h); return Math.min(560 / m, Math.max(24, 320 / m)); }
+  // Margen de trabajo (en píxeles) alrededor del bordado dentro del lienzo: deja aire para
+  // las manijas de girar/estirar/borrar y da el aspecto de "mesa de diseño" tipo escritorio.
+  function librePad() { return 40; }
+  // Escala (px por cm) del lienzo en pantalla: se adapta al ancho de su columna y al alto de la
+  // ventana, así el lienzo es lo más grande posible SIN desbordar ni tapar el panel lateral.
+  function libreEscala() {
+    var d = libreDim(), pad = librePad();
+    var centro = document.querySelector('#panel-libre .taller-centro');
+    var anchoCol = (centro && centro.clientWidth > 40) ? centro.clientWidth : 540;
+    var dispW = anchoCol - 40 - pad * 2;   // 40 = padding del marco del lienzo
+    var dispH = Math.max(300, Math.min(780, (window.innerHeight || 900) - 300)) - pad * 2;
+    var e = Math.min(dispW / d.w, dispH / d.h);
+    return Math.max(14, Math.min(72, e));
+  }
+  // Posición (en píxeles del lienzo) de las manijas de girar (perilla) y borrar (✕) del elemento
+  // seleccionado. Se MANTIENEN dentro del lienzo aunque el elemento sea más grande que el bastidor
+  // (por ejemplo una foto encuadrada al aro), para que siempre se puedan tocar.
+  function libreHandlesPos(s, esc, pad, W, H) {
+    var cx = pad + s.xCm * esc, cy = pad + s.yCm * esc;
+    var sw = s.wCm * esc, sh = s.hCm * esc, rot = s.rot || 0;
+    var co = Math.cos(rot), si = Math.sin(rot);
+    function tc(lx, ly) { return { x: cx + lx * co - ly * si, y: cy + lx * si + ly * co }; }
+    function clamp(p, m) { return { x: Math.max(m, Math.min(W - m, p.x)), y: Math.max(m, Math.min(H - m, p.y)) }; }
+    return { cx: cx, cy: cy, knobBase: tc(0, -sh / 2), knob: clamp(tc(0, -sh / 2 - 28), 12), del: clamp(tc(sw / 2 + 18, -sh / 2 - 18), 13) };
+  }
   function libreObj(id) { for (var i = 0; i < libreObjs.length; i++) if (libreObjs[i].id === id) return libreObjs[i]; return null; }
   // Punto → marco local del elemento (considera su rotación)
   function libreALocal(o, cx, cy) {
@@ -1775,13 +1804,32 @@
     libreSel = null; libreSync(); dibujarLibre(); libreActivarBotones(); histBotones();
   }
 
+  // Encuadra un elemento para que CUBRA todo el lienzo/bastidor (lo que sobra se recorta al imprimir)
+  function libreEncuadrar(o) {
+    var d = libreDim(), pr = o.wCm / o.hCm, w0 = o.wCm;
+    if (!(pr > 0)) pr = 1;
+    if (pr >= d.w / d.h) { o.hCm = d.h; o.wCm = d.h * pr; } else { o.wCm = d.w; o.hCm = d.w / pr; }
+    if (o.tipo === 'texto') o.altoCm = o.altoCm * (o.wCm / w0);
+    o.xCm = d.w / 2; o.yCm = d.h / 2;
+  }
   function libreAddFoto(img) {
     var d = libreDim(), prop = (img.naturalWidth || img.width) / (img.naturalHeight || img.height);
     if (!(prop > 0)) prop = 1;
-    var w = Math.min(d.w * 0.6, d.h * 0.6 * prop), h = w / prop;
-    if (h > d.h * 0.9) { h = d.h * 0.9; w = h * prop; }
-    var o = { tipo: 'img', id: ++libreSeq, img: img, xCm: d.w / 2, yCm: d.h / 2, wCm: w, hCm: h, flip: false, prop: prop, rot: 0, recorte: null, alpha: 1 };
+    var circ = libreForma() === 'circulo';
+    // La PRIMERA foto se ajusta sola al lienzo/bastidor (y en bastidor queda recortada en círculo);
+    // así el bastidor circular encuadra la imagen a su diámetro y luego se sigue diseñando encima.
+    var primera = !libreObjs.some(function (q) { return q.tipo === 'img'; });
+    var o = { tipo: 'img', id: ++libreSeq, img: img, xCm: d.w / 2, yCm: d.h / 2, wCm: prop, hCm: 1, flip: false, prop: prop, rot: 0, recorte: null, alpha: 1 };
+    if (primera) {
+      libreEncuadrar(o);
+      if (circ) o.recorte = 'circ';
+    } else {
+      var w = Math.min(d.w * 0.6, d.h * 0.6 * prop), h = w / prop;
+      if (h > d.h * 0.9) { h = d.h * 0.9; w = h * prop; }
+      o.wCm = w; o.hCm = h;
+    }
     libreObjs.push(o); libreSel = o.id; libreSync(); dibujarLibre(); libreActivarBotones(); histPush();
+    if (primera) toast(circ ? 'Foto ajustada al bastidor ⌀' + d.w.toFixed(1).replace(/\.0$/, '') + ' cm · ya puedes seguir diseñando' : 'Foto ajustada al lienzo · ya puedes seguir diseñando');
   }
   function libreAddTexto() {
     var t = $('textoLibre').value.trim(); if (!t) { toast('Escribe las palabras primero'); return; }
@@ -1840,44 +1888,67 @@
   function dibujarLibre() {
     tocarEstado();
     var cv = $('previaLibre'); if (!cv) return;
-    var d = libreDim(), esc = libreEscala(), W = Math.round(d.w * esc), H = Math.round(d.h * esc);
+    var d = libreDim(), esc = libreEscala(), pad = librePad();
+    var dW = Math.round(d.w * esc), dH = Math.round(d.h * esc);
+    var W = dW + pad * 2, H = dH + pad * 2;
     cv.width = W; cv.height = H;
     var x = cv.getContext('2d');
-    x.fillStyle = ($('colorFondoLibre') && $('colorFondoLibre').value) || '#ffffff'; x.fillRect(0, 0, W, H);
+    var circ = libreForma() === 'circulo';
+    var fondo = ($('colorFondoLibre') && $('colorFondoLibre').value) || '#ffffff';
+    // Mesa de trabajo (marco alrededor del bordado, estilo programa de diseño)
+    x.fillStyle = '#eae3d5'; x.fillRect(0, 0, W, H);
+    x.save();
+    x.translate(pad, pad);
+    // Tela / área bordable
+    if (circ) {
+      x.beginPath(); x.arc(dW / 2, dH / 2, Math.min(dW, dH) / 2, 0, 6.2832);
+      x.fillStyle = fondo; x.fill();
+    } else {
+      x.fillStyle = fondo; x.fillRect(0, 0, dW, dH);
+    }
+    // Elementos del diseño
     libreObjs.forEach(function (o) { libreDibujaObj(x, o, esc, 0); });
-    if (libreForma() === 'circulo') {
+    if (circ) {
+      // Atenúa lo que queda FUERA del aro (no se bordará): así se ve claro el encuadre real
+      x.save();
+      x.beginPath();
+      x.rect(-pad, -pad, W, H);
+      x.arc(dW / 2, dH / 2, Math.min(dW, dH) / 2, 0, 6.2832);
+      x.fillStyle = 'rgba(234,227,213,0.80)'; x.fill('evenodd');
+      x.restore();
       x.strokeStyle = '#c9b17f'; x.lineWidth = 2; x.setLineDash([7, 5]);
-      x.beginPath(); x.arc(W / 2, H / 2, Math.min(W, H) / 2 - 1.5, 0, 6.2832); x.stroke(); x.setLineDash([]);
-    } else { x.strokeStyle = '#e0cda3'; x.lineWidth = 1; x.strokeRect(0.5, 0.5, W - 1, H - 1); }
+      x.beginPath(); x.arc(dW / 2, dH / 2, Math.min(dW, dH) / 2 - 1.5, 0, 6.2832); x.stroke(); x.setLineDash([]);
+    } else {
+      x.strokeStyle = '#caa96f'; x.lineWidth = 1.5; x.strokeRect(0.5, 0.5, dW - 1, dH - 1);
+    }
     // guías de centrado (aparecen al calzar con el centro mientras arrastras)
     if (libreGuiaSnap.x || libreGuiaSnap.y) {
       x.strokeStyle = '#c07b96'; x.lineWidth = 1; x.setLineDash([6, 5]);
-      if (libreGuiaSnap.x) { x.beginPath(); x.moveTo(W / 2 + 0.5, 0); x.lineTo(W / 2 + 0.5, H); x.stroke(); }
-      if (libreGuiaSnap.y) { x.beginPath(); x.moveTo(0, H / 2 + 0.5); x.lineTo(W, H / 2 + 0.5); x.stroke(); }
+      if (libreGuiaSnap.x) { x.beginPath(); x.moveTo(dW / 2 + 0.5, 0); x.lineTo(dW / 2 + 0.5, dH); x.stroke(); }
+      if (libreGuiaSnap.y) { x.beginPath(); x.moveTo(0, dH / 2 + 0.5); x.lineTo(dW, dH / 2 + 0.5); x.stroke(); }
       x.setLineDash([]);
     }
+    x.restore();   // cierra el desplazamiento del margen de trabajo (pad): las manijas van en píxeles del lienzo
     var s = libreSel ? libreObj(libreSel) : null;
     if (s) {
+      var h = libreHandlesPos(s, esc, pad, W, H), sw = s.wCm * esc, sh = s.hCm * esc;
+      // caja de selección + esquinas (estirar), en el marco girado del elemento
       x.save();
-      x.translate(s.xCm * esc, s.yCm * esc); if (s.rot) x.rotate(s.rot);
-      var sw = s.wCm * esc, sh = s.hCm * esc;
+      x.translate(h.cx, h.cy); if (s.rot) x.rotate(s.rot);
       x.strokeStyle = '#7c6b57'; x.lineWidth = 1.6; x.setLineDash([5, 4]); x.strokeRect(-sw / 2, -sh / 2, sw, sh); x.setLineDash([]);
-      // esquinas = estirar con el dedo
       x.fillStyle = '#7c6b57'; var hs = 6;
       [[-sw / 2, -sh / 2], [sw / 2, -sh / 2], [-sw / 2, sh / 2], [sw / 2, sh / 2]].forEach(function (p) { x.fillRect(p[0] - hs, p[1] - hs, hs * 2, hs * 2); });
-      // perilla superior = girar con el dedo
-      x.strokeStyle = '#7c6b57'; x.lineWidth = 1.4;
-      x.beginPath(); x.moveTo(0, -sh / 2); x.lineTo(0, -sh / 2 - 22); x.stroke();
-      x.beginPath(); x.arc(0, -sh / 2 - 28, 7, 0, 6.2832);
-      x.fillStyle = '#fff'; x.fill(); x.stroke();
-      x.beginPath(); x.arc(0, -sh / 2 - 28, 2.6, 0, 6.2832); x.fillStyle = '#7c6b57'; x.fill();
-      // manija ✕ = borrar el elemento
-      x.beginPath(); x.arc(sw / 2 + 18, -sh / 2 - 18, 9, 0, 6.2832);
-      x.fillStyle = '#fff'; x.fill(); x.strokeStyle = '#c47b8f'; x.lineWidth = 1.6; x.stroke();
-      x.strokeStyle = '#a14f72'; x.lineWidth = 2;
-      x.beginPath(); x.moveTo(sw / 2 + 14, -sh / 2 - 22); x.lineTo(sw / 2 + 22, -sh / 2 - 14);
-      x.moveTo(sw / 2 + 22, -sh / 2 - 22); x.lineTo(sw / 2 + 14, -sh / 2 - 14); x.stroke();
       x.restore();
+      // perilla (girar): siempre visible dentro del lienzo aunque el elemento se salga
+      x.strokeStyle = '#7c6b57'; x.lineWidth = 1.4;
+      x.beginPath(); x.moveTo(h.knobBase.x, h.knobBase.y); x.lineTo(h.knob.x, h.knob.y); x.stroke();
+      x.beginPath(); x.arc(h.knob.x, h.knob.y, 8, 0, 6.2832); x.fillStyle = '#fff'; x.fill(); x.stroke();
+      x.beginPath(); x.arc(h.knob.x, h.knob.y, 2.6, 0, 6.2832); x.fillStyle = '#7c6b57'; x.fill();
+      // manija ✕ (borrar): siempre visible dentro del lienzo
+      x.beginPath(); x.arc(h.del.x, h.del.y, 10, 0, 6.2832); x.fillStyle = '#fff'; x.fill(); x.strokeStyle = '#c47b8f'; x.lineWidth = 1.6; x.stroke();
+      x.strokeStyle = '#a14f72'; x.lineWidth = 2;
+      x.beginPath(); x.moveTo(h.del.x - 4, h.del.y - 4); x.lineTo(h.del.x + 4, h.del.y + 4);
+      x.moveTo(h.del.x + 4, h.del.y - 4); x.lineTo(h.del.x - 4, h.del.y + 4); x.stroke();
     }
   }
   function libreSync() {
@@ -1976,24 +2047,26 @@
   hacerArrastrable($('previaLibre'), {
     puede: function () { return libreObjs.length > 0; },
     onInicio: function (p) {
-      var esc = libreEscala(), cx = p.x / esc, cy = p.y / esc;
+      var esc = libreEscala(), pad = librePad(), cx = (p.x - pad) / esc, cy = (p.y - pad) / esc;
       dragModo = null; dragDatos = null; dragCambio = false;
       var s = libreSel ? libreObj(libreSel) : null;
       if (s) {
-        var loc = libreALocal(s, cx, cy), tol = 14 / esc;
-        // manija ✕ = borrar
-        if (Math.abs(loc.x - (s.wCm / 2 + 18 / esc)) <= tol && Math.abs(loc.y - (-s.hCm / 2 - 18 / esc)) <= tol) {
+        var dm = libreDim(), W = Math.round(dm.w * esc) + pad * 2, H = Math.round(dm.h * esc) + pad * 2;
+        var hnd = libreHandlesPos(s, esc, pad, W, H);
+        // manija ✕ = borrar (posición fija dentro del lienzo, en píxeles)
+        if (Math.hypot(p.x - hnd.del.x, p.y - hnd.del.y) <= 16) {
           libreObjs = libreObjs.filter(function (q) { return q.id !== s.id; });
           libreSel = null; libreSync(); dibujarLibre(); libreActivarBotones(); histPush();
           return;
         }
-        // perilla de giro (arriba del elemento)
-        if (Math.abs(loc.x) <= tol && Math.abs(loc.y - (-s.hCm / 2 - 28 / esc)) <= tol) {
+        // perilla de giro
+        if (Math.hypot(p.x - hnd.knob.x, p.y - hnd.knob.y) <= 16) {
           dragModo = 'girar';
           dragDatos = { iniX: cx, iniY: cy, rot0: s.rot || 0, a0: Math.atan2(cy - s.yCm, cx - s.xCm) };
           return;
         }
-        // esquinas (estirar)
+        // esquinas (estirar) — en el marco local del elemento
+        var loc = libreALocal(s, cx, cy), tol = 15 / esc;
         var esquinas = [[-1, -1], [1, -1], [-1, 1], [1, 1]], enEsquina = false;
         esquinas.forEach(function (e) { if (Math.abs(loc.x - e[0] * s.wCm / 2) <= tol && Math.abs(loc.y - e[1] * s.hCm / 2) <= tol) enEsquina = true; });
         if (enEsquina) {
@@ -2147,10 +2220,8 @@
   $('recorteLibre').addEventListener('click', function () { var o = libreSel ? libreObj(libreSel) : null; if (!o || o.tipo !== 'img') return; o.recorte = o.recorte === 'circ' ? null : 'circ'; libreSync(); dibujarLibre(); histPush(); });
   $('llenarLibre').addEventListener('click', function () {
     var o = libreSel ? libreObj(libreSel) : null; if (!o) return;
-    var d = libreDim(), pr = o.wCm / o.hCm, w0 = o.wCm;
-    if (pr >= d.w / d.h) { o.hCm = d.h; o.wCm = d.h * pr; } else { o.wCm = d.w; o.hCm = d.w / pr; }
-    if (o.tipo === 'texto') o.altoCm = o.altoCm * (o.wCm / w0);
-    o.xCm = d.w / 2; o.yCm = d.h / 2;
+    libreEncuadrar(o);
+    if (o.tipo === 'img' && libreForma() === 'circulo') o.recorte = 'circ';
     libreSync(); dibujarLibre(); histPush();
     toast(libreForma() === 'circulo' ? 'Foto encuadrada al bastidor (lo que sobra se recorta al imprimir)' : 'Elemento encuadrado al lienzo');
   });
@@ -2185,6 +2256,17 @@
   $('presetEstudio').addEventListener('change', function () { var v = parseFloat(this.value); if (v > 0) { $('diametroEstudio').value = v; reescalarLienzo(); } });
   document.querySelectorAll('input[name="formaEstudio"]').forEach(function (r) { r.addEventListener('change', function () { aplicarFormaUI(); _dimPrev = libreDim(); libreAcotarObjs(); dibujarLibre(); libreActivarBotones(); }); });
   $('hojaLibre').addEventListener('change', function () {});
+  // Reajusta el lienzo del Estudio al cambiar el tamaño de la ventana (girar la tablet, etc.)
+  (function () {
+    var t = null;
+    window.addEventListener('resize', function () {
+      if (t) clearTimeout(t);
+      t = setTimeout(function () {
+        var p = $('panel-libre');
+        if (p && p.classList.contains('activa')) { try { dibujarLibre(); } catch (e) {} }
+      }, 160);
+    });
+  })();
   $('pdfLibre').addEventListener('click', function () {
     if (!libreObjs.length) return;
     generarPdf(function () {
@@ -3644,7 +3726,7 @@
       document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('activa'); b.setAttribute('aria-selected', 'false'); });
       document.querySelectorAll('.panel').forEach(function (p) { p.classList.remove('activa'); });
       btn.classList.add('activa'); btn.setAttribute('aria-selected', 'true'); $(btn.dataset.panel).classList.add('activa');
-      if (btn.dataset.panel === 'panel-libre') inyectarFuentes();   // asegura tipografías al usarlas
+      if (btn.dataset.panel === 'panel-libre') { inyectarFuentes(); requestAnimationFrame(function () { try { dibujarLibre(); } catch (e) {} }); }   // asegura tipografías y reajusta el lienzo al ancho real
       if (btn.dataset.panel === 'panel-asistente') actualizarEstadoAsistente();
       else if (btn.dataset.panel === 'panel-galeria') { renderProyectos(); renderGaleria(); }
       else if (btn.dataset.panel === 'panel-kits') aplicarKitAFormulario();
@@ -5301,14 +5383,14 @@
       $('modalBienvenida').hidden = false;
       $('empezarBienvenida').addEventListener('click', function () {
         CONFIG.tema = temaSel; guardarConfig(); aplicarTema();
-        try { localStorage.setItem('alma_visto', '1'); localStorage.setItem('alma_v31', '1'); } catch (e) {}
+        try { localStorage.setItem('alma_visto', '1'); localStorage.setItem('alma_v35', '1'); } catch (e) {}
         $('modalBienvenida').hidden = true;
       });
       return;
     }
-    if (!localStorage.getItem('alma_v31')) {
+    if (!localStorage.getItem('alma_v35')) {
       $('modalNovedades').hidden = false;
-      var cerrarNov = function () { try { localStorage.setItem('alma_v31', '1'); } catch (e) {} $('modalNovedades').hidden = true; };
+      var cerrarNov = function () { try { localStorage.setItem('alma_v35', '1'); } catch (e) {} $('modalNovedades').hidden = true; };
       $('cerrarNovedades').addEventListener('click', cerrarNov);
       $('modalNovedades').addEventListener('click', function (e) { if (e.target === this) cerrarNov(); });
     }
