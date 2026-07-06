@@ -397,9 +397,11 @@
   .taller-rail .rbtn.activo small { color: #fff; }
   .taller-rail .rbtn:disabled { opacity: .38; }
   .taller-centro { min-width: 0; text-align: center; }
-  /* El lienzo vive en un marco que se puede desplazar cuando se hace zoom (se acerca/aleja) */
-  .taller-centro .lienzo-wrap { display: block; padding: 12px; background: #f3eee3; border: 1px solid var(--borde); border-radius: 16px; overflow: auto; max-height: calc(100vh - 210px); text-align: center; }
-  #previaLibre { display: inline-block; vertical-align: middle; border-radius: 12px; box-shadow: 0 10px 30px rgba(60,45,35,0.16); }
+  /* El lienzo vive en un marco que se puede desplazar cuando se hace zoom (se acerca/aleja).
+     El canvas es block con margin:auto: se centra cuando cabe, y cuando el zoom lo hace más
+     ancho que el marco los márgenes automáticos pasan a 0 y se puede desplazar a AMBOS lados. */
+  .taller-centro .lienzo-wrap { display: block; padding: 12px; background: #f3eee3; border: 1px solid var(--borde); border-radius: 16px; overflow: auto; max-height: calc(100vh - 210px); }
+  #previaLibre { display: block; margin: 0 auto; border-radius: 12px; box-shadow: 0 10px 30px rgba(60,45,35,0.16); }
   .zoom-bar { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
   .zoom-bar #zoomNivel { min-width: 46px; text-align: center; font-weight: 700; font-size: .82rem; color: var(--tinta-suave); }
   .zoom-btn { width: 38px; height: 34px; border-radius: 10px; border: 1px solid var(--borde-fuerte); background: var(--superficie); color: var(--tinta); font-size: 1.1rem; font-weight: 700; cursor: pointer; box-shadow: var(--sombra-sutil); }
@@ -2474,8 +2476,13 @@
   })();
   // Pinta las miniaturas de cada efecto con la foto seleccionada (cacheadas por foto)
   function pintarEfectosFoto(o) {
-    if (!o || o.tipo !== 'img' || !o.img) return;
-    var cont = $('chipsFiltro'); if (cont.dataset.imgid === String(o.id)) return;   // ya pintadas para esta foto
+    if (!o || o.tipo !== 'img') return;
+    var cont = $('chipsFiltro');
+    if (!o.img) {   // foto aún sin decodificar: limpia miniaturas viejas y deja que se repinten al cargar
+      if (cont.dataset.imgid !== '') { cont.dataset.imgid = ''; document.querySelectorAll('#chipsFiltro .efecto-chip canvas').forEach(function (cv) { cv.getContext('2d').clearRect(0, 0, cv.width, cv.height); }); }
+      return;
+    }
+    if (cont.dataset.imgid === String(o.id)) return;   // ya pintadas para esta foto
     cont.dataset.imgid = String(o.id);
     document.querySelectorAll('#chipsFiltro .efecto-chip').forEach(function (b) {
       var cv = b.querySelector('canvas'); if (!cv) return;
@@ -2626,6 +2633,16 @@
       var cols2 = Math.min(cols, n), rows2 = Math.ceil(n / cols2);
       var x0 = (pagina.w - (cols2 * lado.w + (cols2 - 1) * gap)) / 2, y0 = (pagina.h - (rows2 * lado.h + (rows2 - 1) * gap)) / 2;
       for (var i = 0; i < n; i++) { var px = x0 + (i % cols2) * (lado.w + gap), py = y0 + ((i / cols2) | 0) * (lado.h + gap); x.drawImage(cvD, px * sc, py * sc, lado.w * sc, lado.h * sc); }
+    }
+    // Regla de 10 cm abajo-izquierda (igual que el PDF de 1 copia, si está activada en Ajustes)
+    if (nCop <= 1 && CONFIG.regla) {
+      var rx = 1.2 * sc, ry = (pagina.h - 1.0) * sc, rlen = 10 * sc, cm = sc;
+      x.fillStyle = '#ffffff'; x.fillRect(rx - 0.25 * cm, ry - 0.78 * cm, rlen + 0.5 * cm, 1.08 * cm);
+      x.strokeStyle = '#736a5a'; x.lineWidth = Math.max(1, 0.02 * cm);
+      x.beginPath(); x.moveTo(rx, ry); x.lineTo(rx + rlen, ry); x.stroke();
+      for (var t = 0; t <= 10; t++) { var tx = rx + t * cm, th = (t % 5 === 0 ? 0.24 : 0.14) * cm; x.beginPath(); x.moveTo(tx, ry); x.lineTo(tx, ry - th); x.stroke(); }
+      x.fillStyle = '#6b6154'; x.font = Math.max(7, Math.round(0.26 * cm)) + 'px sans-serif'; x.textAlign = 'left'; x.textBaseline = 'alphabetic';
+      x.fillText('10 cm', rx, ry - 0.36 * cm);
     }
     x.strokeStyle = '#c9b8a0'; x.lineWidth = 1; x.strokeRect(0.5, 0.5, W - 1, H - 1);
     return { canvas: pg, pagina: pagina, cabe: cabe, copias: nColoc, pedidas: nCop };
