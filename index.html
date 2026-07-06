@@ -702,7 +702,7 @@
   <div class="marca">
     <svg class="logo" viewBox="0 0 80 80" aria-hidden="true"><use href="#logoMini"/></svg>
     <div style="min-width:0;">
-      <div class="fila-marca"><h1 id="tituloMarca">Alma bordado</h1><span class="ver-badge" title="AlmaApp 4.1 · Alma Estudio profesional">4.1</span></div>
+      <div class="fila-marca"><h1 id="tituloMarca">Alma bordado</h1><span class="ver-badge" title="AlmaApp 4.2 · Alma Estudio profesional">4.2</span></div>
       <p class="lema">Plantillas a tamaño real, listas para bordar</p>
     </div>
   </div>
@@ -734,7 +734,7 @@
 </nav>
 <!-- ============ ALMA ESTUDIO (taller único de diseño) ============ -->
 <section id="panel-libre" class="panel activa">
-  <p class="intro"><strong>Alma Estudio</strong>: define primero tu lienzo (bastidor u hoja), agrega fotos, textos y motivos, y edítalos en vivo. Usa el <strong>zoom</strong> para los detalles, aplica <strong>efectos</strong> a tus fotos y toca <strong>«👁️ Ver la hoja»</strong> para comprobar cómo saldrá impresa. 🌸</p>
+  <p class="intro"><strong>Alma Estudio</strong>: define tu lienzo (bastidor u hoja), agrega fotos, textos y motivos, o crea un <strong>árbol genealógico</strong> y otras plantillas desde 🌳 <strong>Plantillas</strong>. Aplica <strong>efectos</strong> a tus fotos, usa el <strong>zoom</strong> y toca <strong>«👁️ Ver la hoja»</strong> para ver cómo saldrá impresa. 🌸</p>
   <svg class="divisor" viewBox="0 0 150 22"><use href="#divisorBot"/></svg>
   <div class="taller">
     <div class="taller-rail" aria-label="Herramientas">
@@ -743,6 +743,7 @@
       <input type="file" id="archivoLibre" accept="image/*" hidden>
       <button class="rbtn" id="railTexto" type="button" title="Texto"><span>✍️<small>Texto</small></span></button>
       <button class="rbtn" id="btnMotivos" type="button" title="Motivos"><span>🌿<small>Motivos</small></span></button>
+      <button class="rbtn" id="railPlantillas" type="button" title="Plantillas: árbol genealógico y más"><span>🌳<small>Plantillas</small></span></button>
       <button class="rbtn" id="railCapas" type="button" title="Capas del diseño"><span>🗂️<small>Capas</small></span></button>
       <button class="rbtn" id="undoLibre" type="button" disabled title="Deshacer"><span>↩️</span></button>
       <button class="rbtn" id="redoLibre" type="button" disabled title="Rehacer"><span>↪️</span></button>
@@ -854,6 +855,22 @@
         <h2>🌿 Motivos para bordar</h2>
         <div class="motivos-grid" id="motivosGrid" style="display:grid;" aria-label="Biblioteca de motivos"></div>
         <p class="info-img" style="text-align:left; margin-top:8px;">Se insertan al centro con el color elegido en «Texto» y se pueden girar, escalar y recolorear.</p>
+      </div>
+
+      <div class="tarjeta" id="grpPlantillas" style="display:none">
+        <h2>🌳 Árbol genealógico</h2>
+        <div class="campo"><label for="arbolTitulo">Título</label><input type="text" id="arbolTitulo" value="Nuestra Familia" inputmode="text"></div>
+        <div class="campo" style="margin-top:10px;"><label for="arbolNombres">Nombres — uno por línea (deja una línea en blanco para separar generaciones)</label><textarea id="arbolNombres" rows="6" placeholder="Abuelo &amp; Abuela&#10;&#10;Papá &amp; Mamá&#10;&#10;Sofía&#10;Mateo" style="width:100%; resize:vertical; font-family:inherit; font-size:.95rem; padding:10px; border:1px solid var(--borde-fuerte); border-radius:10px;"></textarea></div>
+        <div class="fila" style="margin-top:10px;">
+          <div class="campo"><label for="arbolEstilo">Estilo</label><select id="arbolEstilo"><option value="corazon" selected>Árbol en corazón</option><option value="ramas">Ramas por generación</option></select></div>
+          <div class="campo campo-color"><label for="arbolColor">Color del hilo</label><input type="color" id="arbolColor" value="#6f6151"></div>
+          <div class="campo"><label for="arbolFuente">Tipografía nombres</label><select id="arbolFuente"></select></div>
+        </div>
+        <button class="boton-anadir" id="btnGenerarArbol" type="button" style="margin-top:12px;">🌳 Generar árbol genealógico</button>
+        <p class="info-img" style="text-align:left; margin-top:8px;">Se crea con los nombres, ramas y adornos como elementos sueltos: puedes mover, cambiar el tamaño, el color y la tipografía de cada uno.</p>
+        <h2 style="margin-top:16px;">✨ Plantillas rápidas</h2>
+        <div class="chips" id="chipsPlantillas" style="margin-bottom:0;"></div>
+        <p class="info-img" style="text-align:left; margin-top:8px;">Un toque crea un diseño de inicio (monograma, boda, bebé, marco) que luego editas a tu gusto.</p>
       </div>
 
       <div class="tarjeta" id="grpCapas" style="display:none">
@@ -1124,14 +1141,13 @@
 <div class="modal" id="modalNovedades" hidden>
   <div class="modal-caja" role="dialog" aria-modal="true" aria-labelledby="tituloNovedades">
     <svg viewBox="0 0 240 175" aria-hidden="true" style="width:120px; height:auto; display:block; margin:0 auto 4px; opacity:.9;"><use href="#ramoAlma"/></svg>
-    <h2 id="tituloNovedades" style="font-family:'Cormorant Garamond',Georgia,serif; font-size:1.7rem; text-align:center;">Estudio aún más pro ✨</h2>
-    <p class="sub" style="text-align:center;">Más control y más claro que nunca:</p>
+    <h2 id="tituloNovedades" style="font-family:'Cormorant Garamond',Georgia,serif; font-size:1.7rem; text-align:center;">Árboles genealógicos 🌳</h2>
+    <p class="sub" style="text-align:center;">Y más formas de crear diseños preciosos:</p>
     <ul class="bienvenida-lista">
-      <li>🔍 <strong>Zoom</strong> para acercarte y trabajar los detalles, y «⤢ Ajustar» para ver todo.</li>
-      <li>👁️ <strong>Ver la hoja</strong>: mira exactamente cómo saldrá impresa (con sus copias) antes de generar el PDF.</li>
-      <li>🎨 <strong>Efectos de foto con miniatura</strong>: B/N, cálido, frío, oscuro, contraste, vintage, boceto… ¡ahora los ves aplicados antes de elegir!</li>
-      <li>⭕ En bastidor, lo que sobra de la foto se <strong>oculta limpio</strong>; en hoja rectangular las fotos entran a tamaño normal.</li>
-      <li>✨ PDF más prolijo (guías consistentes) y varias mejoras de calidad.</li>
+      <li>🌳 <strong>Árbol genealógico</strong>: escribe los nombres y la app arma el árbol (en corazón o por generaciones). Cada nombre, rama y adorno queda editable.</li>
+      <li>✨ <strong>Plantillas rápidas</strong> de un toque: monograma, boda, bebé y marco con nombre.</li>
+      <li>🌿 <strong>Motivos nuevos</strong>: casita, anillos, piecitos de bebé, marco oval, rama con hojas, listón y dos corazones.</li>
+      <li>💡 Todo se crea como elementos sueltos: mueve, cambia tamaño, color y tipografía a tu gusto.</li>
     </ul>
     <div class="modal-acciones"><button class="boton-primario" id="cerrarNovedades" type="button">¡A bordar! 🌸</button></div>
   </div>
@@ -1792,7 +1808,23 @@
     ['banderin', 'Banderines', function (x) { x.beginPath(); x.moveTo(-46, -22); x.quadraticCurveTo(0, -2, 46, -22); x.stroke(); for (var i = 0; i < 4; i++) { var t = -0.75 + i * 0.5, bx = t * 60, by = -20 + 16 * (1 - Math.abs(t) * 0.8) - 12; x.beginPath(); x.moveTo(bx - 9, by + 10); x.lineTo(bx, by + 34); x.lineTo(bx + 9, by + 12); x.stroke(); } }],
     ['guirnalda', 'Guirnalda laurel', function (x) { x.beginPath(); x.arc(0, -8, 42, 0.5, 2.64); x.stroke(); for (var i = 0; i < 7; i++) { var a = 0.62 + i * (2.52 - 0.62) / 6, px = 42 * Math.cos(a), py = -8 + 42 * Math.sin(a); x.save(); x.translate(px, py); x.rotate(a + Math.PI / 2); x.beginPath(); x.ellipse(-6, -3, 3.4, 7.5, 0.55, 0, 6.2832); x.stroke(); x.beginPath(); x.ellipse(6, -3, 3.4, 7.5, -0.55, 0, 6.2832); x.stroke(); x.restore(); } x.beginPath(); x.ellipse(-40, -21, 3.4, 7.5, 1.1, 0, 6.2832); x.stroke(); x.beginPath(); x.ellipse(40, -21, 3.4, 7.5, -1.1, 0, 6.2832); x.stroke(); }],
     ['coronaflor', 'Corona con flores', function (x) { x.beginPath(); x.arc(0, 0, 36, 0, 6.2832); x.stroke(); for (var i = 0; i < 6; i++) { var a = i * Math.PI / 3 + 0.26; x.save(); x.translate(36 * Math.cos(a), 36 * Math.sin(a)); for (var p = 0; p < 5; p++) { x.rotate(6.2832 / 5); x.beginPath(); x.ellipse(0, -5.5, 2.6, 5.2, 0, 0, 6.2832); x.stroke(); } x.beginPath(); x.arc(0, 0, 2.2, 0, 6.2832); x.stroke(); x.restore(); var b = a + Math.PI / 6; x.save(); x.translate(36 * Math.cos(b), 36 * Math.sin(b)); x.rotate(b + Math.PI / 2); x.beginPath(); x.ellipse(0, 0, 2.6, 5.8, 0.4, 0, 6.2832); x.stroke(); x.restore(); } }],
-    ['filigrana', 'Filigrana', function (x) { [1, -1].forEach(function (s) { x.beginPath(); x.moveTo(0, 26); x.bezierCurveTo(s * 30, 28, s * 46, 8, s * 30, -10); x.bezierCurveTo(s * 20, -21, s * 5, -15, s * 10, -5); x.stroke(); x.beginPath(); x.arc(s * 17, -9, 5, s > 0 ? 0.8 : 2.4, s > 0 ? 5.5 : 7.1); x.stroke(); x.beginPath(); x.moveTo(s * 8, 20); x.quadraticCurveTo(s * 16, 14, s * 14, 6); x.stroke(); }); x.beginPath(); x.moveTo(0, 28); x.lineTo(0, -14); x.stroke(); x.beginPath(); x.arc(0, -20, 3.2, 0, 6.2832); x.stroke(); x.beginPath(); x.arc(0, -29, 1.8, 0, 6.2832); x.stroke(); }]
+    ['filigrana', 'Filigrana', function (x) { [1, -1].forEach(function (s) { x.beginPath(); x.moveTo(0, 26); x.bezierCurveTo(s * 30, 28, s * 46, 8, s * 30, -10); x.bezierCurveTo(s * 20, -21, s * 5, -15, s * 10, -5); x.stroke(); x.beginPath(); x.arc(s * 17, -9, 5, s > 0 ? 0.8 : 2.4, s > 0 ? 5.5 : 7.1); x.stroke(); x.beginPath(); x.moveTo(s * 8, 20); x.quadraticCurveTo(s * 16, 14, s * 14, 6); x.stroke(); }); x.beginPath(); x.moveTo(0, 28); x.lineTo(0, -14); x.stroke(); x.beginPath(); x.arc(0, -20, 3.2, 0, 6.2832); x.stroke(); x.beginPath(); x.arc(0, -29, 1.8, 0, 6.2832); x.stroke(); }],
+    // ---- Familia, boda, bebé, marcos y adornos (para árboles genealógicos y plantillas) ----
+    ['arbolcorazon', 'Árbol familiar', function (x) {
+      x.save(); x.translate(0, -20); x.scale(0.66, 0.62);
+      x.beginPath(); x.moveTo(0, 38); x.bezierCurveTo(-55, 2, -34, -42, 0, -14); x.bezierCurveTo(34, -42, 55, 2, 0, 38); x.stroke();
+      x.restore();
+      x.beginPath(); x.moveTo(-3.5, 44); x.quadraticCurveTo(-3, 20, -2.5, 6); x.lineTo(2.5, 6); x.quadraticCurveTo(3, 20, 3.5, 44); x.stroke();
+      x.beginPath(); x.moveTo(-3.5, 44); x.quadraticCurveTo(-12, 47, -18, 44); x.moveTo(3.5, 44); x.quadraticCurveTo(12, 47, 18, 44); x.stroke();
+      [-1, 1].forEach(function (s) { x.beginPath(); x.ellipse(s * 9, 30, 3.4, 7, s * 0.6, 0, 6.2832); x.stroke(); x.beginPath(); x.ellipse(s * 13, 38, 3.4, 7, s * 0.7, 0, 6.2832); x.stroke(); });
+    }],
+    ['casa', 'Casita', function (x) { x.beginPath(); x.moveTo(-26, -2); x.lineTo(-26, 36); x.lineTo(26, 36); x.lineTo(26, -2); x.stroke(); x.beginPath(); x.moveTo(-32, -2); x.lineTo(0, -30); x.lineTo(32, -2); x.stroke(); x.beginPath(); x.rect(-9, 14, 18, 22); x.stroke(); x.beginPath(); x.arc(4, 25, 1.3, 0, 6.2832); x.stroke(); x.beginPath(); x.rect(-21, 2, 13, 13); x.stroke(); x.beginPath(); x.moveTo(-14.5, 2); x.lineTo(-14.5, 15); x.moveTo(-21, 8.5); x.lineTo(-8, 8.5); x.stroke(); x.beginPath(); x.moveTo(0, -6); x.bezierCurveTo(-6, -12, -4, -19, 0, -15); x.bezierCurveTo(4, -19, 6, -12, 0, -6); x.stroke(); }],
+    ['anillos', 'Anillos', function (x) { x.beginPath(); x.arc(-13, 6, 18, 0, 6.2832); x.stroke(); x.beginPath(); x.arc(13, 6, 18, 0, 6.2832); x.stroke(); [[-13, -12], [13, -12]].forEach(function (p) { x.beginPath(); x.moveTo(p[0] - 4, p[1]); x.lineTo(p[0], p[1] - 6); x.lineTo(p[0] + 4, p[1]); x.lineTo(p[0], p[1] + 4); x.closePath(); x.stroke(); }); }],
+    ['piecitos', 'Piecitos', function (x) { [-1, 1].forEach(function (s) { x.save(); x.translate(s * 13, 0); x.scale(s, 1); x.beginPath(); x.ellipse(0, 8, 9, 14, -0.2, 0, 6.2832); x.stroke(); [[-5, -8, 2.3], [-1, -11, 2.7], [3, -11, 2.5], [6, -9, 2.1], [9, -6, 1.8]].forEach(function (d) { x.beginPath(); x.arc(d[0], d[1], d[2], 0, 6.2832); x.stroke(); }); x.restore(); }); }],
+    ['marcooval', 'Marco oval', function (x) { x.beginPath(); x.ellipse(0, 0, 46, 34, 0, 0, 6.2832); x.stroke(); x.beginPath(); x.ellipse(0, 0, 42, 30, 0, 0, 6.2832); x.stroke(); [[0, -34], [0, 34], [-46, 0], [46, 0]].forEach(function (p) { x.save(); x.translate(p[0], p[1]); for (var k = 0; k < 5; k++) { x.rotate(6.2832 / 5); x.beginPath(); x.ellipse(0, -4, 2, 4, 0, 0, 6.2832); x.stroke(); } x.restore(); }); }],
+    ['ramahojas', 'Rama con hojas', function (x) { x.beginPath(); x.moveTo(-46, 0); x.lineTo(46, 0); x.stroke(); for (var i = -4; i <= 4; i++) { if (i === 0) continue; var bx = i * 10; x.beginPath(); x.ellipse(bx, -7, 3.2, 7, 0.5, 0, 6.2832); x.stroke(); x.beginPath(); x.ellipse(bx + 4, 7, 3.2, 7, -0.5, 0, 6.2832); x.stroke(); } x.beginPath(); x.ellipse(-49, 0, 3, 7, 1.4, 0, 6.2832); x.stroke(); x.beginPath(); x.ellipse(49, 0, 3, 7, -1.4, 0, 6.2832); x.stroke(); }],
+    ['liston', 'Listón', function (x) { x.beginPath(); x.moveTo(-40, -10); x.lineTo(30, -10); x.lineTo(30, 12); x.lineTo(-40, 12); x.closePath(); x.stroke(); x.beginPath(); x.moveTo(-40, -10); x.lineTo(-50, -16); x.lineTo(-46, 1); x.lineTo(-50, 18); x.lineTo(-40, 12); x.stroke(); x.beginPath(); x.moveTo(30, -10); x.lineTo(48, -16); x.lineTo(44, 1); x.lineTo(48, 18); x.lineTo(30, 12); x.stroke(); }],
+    ['corazondoble', 'Dos corazones', function (x) { [[-11, 0, 0.82], [12, 6, 1.0]].forEach(function (c) { x.save(); x.translate(c[0], c[1]); x.scale(c[2] * 0.62, c[2] * 0.62); x.beginPath(); x.moveTo(0, 38); x.bezierCurveTo(-55, 2, -34, -42, 0, -14); x.bezierCurveTo(34, -42, 55, 2, 0, 38); x.stroke(); x.restore(); }); }]
   ];
   // Filtros de tono para fotos (se procesan una vez y quedan en caché por foto)
   var FILTROS_FOTO = [['original', 'Original'], ['bn', 'B/N'], ['sepia', 'Sepia'], ['calido', 'Cálido'], ['frio', 'Frío'], ['luminoso', 'Luminoso'], ['oscuro', 'Oscuro'], ['contraste', 'Contraste'], ['vivido', 'Vívido'], ['suave', 'Suave'], ['vintage', 'Vintage'], ['boceto', 'Boceto ✏️']];
@@ -2020,6 +2052,109 @@
     var d = libreDim(), lado = Math.min(d.w, d.h) * 0.42;
     var o = { tipo: 'motivo', id: ++libreSeq, clave: clave, color: $('colorLibre').value || '#6f6151', xCm: d.w / 2, yCm: d.h / 2, wCm: lado, hCm: lado, rot: 0, flip: false };
     libreObjs.push(o); libreSel = o.id; libreSync(); dibujarLibre(); libreActivarBotones(); histPush();
+  }
+
+  // ---------- Plantillas: árbol genealógico y diseños de inicio (todo queda editable) ----------
+  function fuentePorNombre(nom) { for (var i = 0; i < FUENTES.length; i++) if (FUENTES[i].fam === nom) return cssDe(FUENTES[i]); return cssDe(FUENTES[0]); }
+  // Prepara un lienzo limpio del tamaño pedido, SIN reescalar (para colocar la plantilla desde cero)
+  function plantillaLienzo(forma, w, h) {
+    setRadio('formaEstudio', forma);
+    if (forma === 'circulo') setVal('diametroEstudio', w);
+    else { setVal('anchoLibre', w); setVal('altoLibre', h); }
+    aplicarFormaUI(); try { marcarChipsLienzo(); } catch (e) {}
+    libreObjs = []; libreSel = null; libreZoom = 1; var zn = $('zoomNivel'); if (zn) zn.textContent = '100%';
+    _dimPrev = libreDim();
+  }
+  function plantillaTexto(texto, fontCss, color, estilo, altoCm, xCm, yCm, extra) {
+    var o = { tipo: 'texto', id: ++libreSeq, texto: String(texto == null ? ' ' : texto), fontCss: fontCss, color: color, estilo: estilo || 'relleno', altoCm: altoCm, curva: 0, xCm: xCm, yCm: yCm, wCm: 4, hCm: 2, rot: 0 };
+    if (extra) for (var k in extra) o[k] = extra[k];
+    libreObjs.push(o); return o;
+  }
+  function plantillaMotivo(clave, color, xCm, yCm, wCm, hCm, rot) {
+    var o = { tipo: 'motivo', id: ++libreSeq, clave: clave, color: color, xCm: xCm, yCm: yCm, wCm: wCm, hCm: hCm, rot: rot || 0, flip: false };
+    libreObjs.push(o); return o;
+  }
+  function plantillaCierre(msg) {
+    dibujarLibre(); estudioRefrescaTextos(); libreActivarBotones(); histPila = []; histIdx = -1; histPush();
+    railSel('grpCapas'); if (msg) toast(msg);
+  }
+  // Ancho aproximado de un texto en cm (para encajar nombres sin que se salgan)
+  function anchoTextoCm(texto, fontCss, altoCm) {
+    try { ctxMedicion.font = (altoCm * 40).toFixed(1) + 'px ' + fontCss; return ctxMedicion.measureText(String(texto || ' ')).width / 40; } catch (e) { return String(texto || '').length * altoCm * 0.5; }
+  }
+  function altoQueEncaja(texto, fontCss, anchoMaxCm, altoIdeal, altoMin) {
+    var a = altoIdeal, w = anchoTextoCm(texto, fontCss, a);
+    if (w > anchoMaxCm) a = Math.max(altoMin, a * anchoMaxCm / w);
+    return a;
+  }
+  function generarArbol() {
+    var titulo = ($('arbolTitulo').value || '').trim();
+    var raw = ($('arbolNombres').value || '').replace(/\r/g, '').trim();
+    var color = $('arbolColor').value || '#6f6151';
+    var estilo = $('arbolEstilo').value;
+    var fontN = $('arbolFuente').value || fuentePorNombre('Cormorant Garamond');
+    var fontT = cssDe(FUENTES[0]);
+    if (!raw) { toast('Escribe al menos un nombre (uno por línea) 🌸'); return; }
+    if (libreObjs.length && !confirm('¿Crear el árbol genealógico? Se reemplazará el diseño que tienes ahora.')) return;
+    if (estilo === 'ramas') {
+      var gens = raw.split(/\n\s*\n/).map(function (g) { return g.split('\n').map(function (s) { return s.trim(); }).filter(Boolean); }).filter(function (a) { return a.length; });
+      var W = 26, H = 30; plantillaLienzo('rect', W, H);
+      if (titulo) plantillaTexto(titulo, fontT, color, 'relleno', 2.6, W / 2, 3.4);
+      plantillaMotivo('ramahojas', color, W / 2, 6.4, 20, 4.6, 0);
+      var top = 9.5, bot = H - 2.2, filas = Math.max(1, gens.length), rowH = (bot - top) / filas;
+      gens.forEach(function (gen, gi) {
+        var y = top + rowH * (gi + 0.5), n = gen.length, colW = (W - 3) / n;
+        gen.forEach(function (nom, j) {
+          var x = 1.5 + colW * (j + 0.5);
+          var a = altoQueEncaja(nom, fontN, colW - 0.6, Math.min(1.7, rowH * 0.42), 0.8);
+          plantillaMotivo('corazon', color, x, y - a * 1.15, a * 1.1, a * 1.1, 0);
+          plantillaTexto(nom, fontN, color, 'relleno', a, x, y + a * 0.15);
+        });
+      });
+    } else {
+      var Wc = 24, Hc = 32; plantillaLienzo('rect', Wc, Hc);
+      plantillaMotivo('arbolcorazon', color, 12, 16.5, 22.5, 28, 0);
+      if (titulo) plantillaTexto(titulo, fontT, color, 'relleno', 2.4, 12, 3.6);
+      // Un nombre por fila, centrados dentro del corazón (nunca se pisan); el ancho se angosta
+      // hacia la punta del corazón para que ninguno se salga.
+      var nombres = raw.split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
+      var N = nombres.length, top = 7.6, bot = 15.2, cx = 12;
+      var rowH = (bot - top) / N, y0 = top + rowH / 2;
+      nombres.forEach(function (nom, i) {
+        var y = y0 + i * rowH;
+        var wmax = Math.max(4, 10 - Math.max(0, y - 11) * 0.95);
+        var a = altoQueEncaja(nom, fontN, wmax, Math.min(1.9, rowH * 0.72), 0.7);
+        plantillaTexto(nom, fontN, color, 'relleno', a, cx, y);
+      });
+    }
+    plantillaCierre('Árbol genealógico listo 🌳 · toca cada nombre para editarlo');
+  }
+  // Plantillas rápidas de un toque (diseños de inicio editables)
+  function plantillaRapida(clave) {
+    if (libreObjs.length && !confirm('¿Crear esta plantilla? Se reemplazará el diseño actual.')) return;
+    var col = $('arbolColor').value || '#6f6151', fontT = cssDe(FUENTES[0]), fontS = fuentePorNombre('Cormorant Garamond');
+    if (clave === 'monograma') {
+      plantillaLienzo('circulo', 20, 20);
+      plantillaMotivo('coronaflor', col, 10, 10, 17, 17, 0);
+      plantillaTexto('A', cssDe(FUENTES[18]), col, 'relleno', 6, 10, 10.4);
+    } else if (clave === 'boda') {
+      plantillaLienzo('rect', 22, 22);
+      plantillaMotivo('anillos', col, 11, 8.5, 9, 7, 0);
+      plantillaTexto('Ana & Diego', fontT, col, 'relleno', 2.6, 11, 14);
+      plantillaTexto('12 · 10 · 2026', fontS, col, 'relleno', 1.3, 11, 17.5);
+      plantillaMotivo('ramita', col, 11, 20, 10, 3, 0);
+    } else if (clave === 'bebe') {
+      plantillaLienzo('rect', 20, 24);
+      plantillaMotivo('piecitos', col, 10, 7, 8, 7, 0);
+      plantillaTexto('Bienvenida', fontS, col, 'relleno', 1.6, 10, 13);
+      plantillaTexto('Emma', fontT, col, 'relleno', 3.4, 10, 16.6);
+      plantillaTexto('nació el 05 · 07 · 2026', fontS, col, 'relleno', 1.1, 10, 20);
+    } else if (clave === 'marco') {
+      plantillaLienzo('rect', 22, 18);
+      plantillaMotivo('marcooval', col, 11, 9, 20, 15.5, 0);
+      plantillaTexto('Tu texto', fontT, col, 'relleno', 2.4, 11, 9.4);
+    } else return;
+    plantillaCierre('Plantilla lista ✨ · edita cada elemento a tu gusto');
   }
 
   // Dibuja un elemento (rotación, espejo, transparencia, recorte circular) en cualquier contexto.
@@ -2327,6 +2462,17 @@
     programarRetardo('histTxt', histPush, 900);
   }
   llenarSelectFuentes($('fuenteLibre'));
+  // Plantillas: tipografía de nombres + árbol genealógico + plantillas rápidas
+  (function () {
+    var sel = $('arbolFuente'); if (sel) { llenarSelectFuentes(sel); sel.value = fuentePorNombre('Cormorant Garamond'); }
+    if ($('btnGenerarArbol')) $('btnGenerarArbol').addEventListener('click', generarArbol);
+    var cp = $('chipsPlantillas');
+    if (cp) [['monograma', '🅰️ Monograma'], ['boda', '💍 Boda'], ['bebe', '👶 Bebé'], ['marco', '🖼️ Marco con nombre']].forEach(function (p) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = p[1];
+      b.addEventListener('click', function () { plantillaRapida(p[0]); });
+      cp.appendChild(b);
+    });
+  })();
   // Galería de motivos: miniaturas vectoriales
   (function () {
     var grid = $('motivosGrid'); if (!grid) return;
@@ -2395,7 +2541,7 @@
   }
   // Riel de herramientas: qué sub-panel se ve a la derecha (estilo programa de diseño)
   function railSel(cual) {
-    [['railLienzo', 'grpLienzo'], ['railTexto', 'grpTexto'], ['btnMotivos', 'grpMotivos'], ['railCapas', 'grpCapas']].forEach(function (p) {
+    [['railLienzo', 'grpLienzo'], ['railTexto', 'grpTexto'], ['btnMotivos', 'grpMotivos'], ['railPlantillas', 'grpPlantillas'], ['railCapas', 'grpCapas']].forEach(function (p) {
       var b = $(p[0]), g = $(p[1]);
       if (g) g.style.display = (p[1] === cual) ? 'block' : 'none';
       if (b) b.classList.toggle('activo', p[1] === cual);
@@ -2405,6 +2551,7 @@
   $('railLienzo').addEventListener('click', function () { railSel('grpLienzo'); });
   $('railTexto').addEventListener('click', function () { railSel('grpTexto'); });
   $('btnMotivos').addEventListener('click', function () { railSel('grpMotivos'); });
+  $('railPlantillas').addEventListener('click', function () { railSel('grpPlantillas'); });
   $('railCapas').addEventListener('click', function () { railSel('grpCapas'); });
   // Chips de tamaños de bastidor: un toque = diámetro listo (sin campos duplicados)
   function marcarChipsLienzo() {
@@ -5780,14 +5927,14 @@
       $('modalBienvenida').hidden = false;
       $('empezarBienvenida').addEventListener('click', function () {
         CONFIG.tema = temaSel; guardarConfig(); aplicarTema();
-        try { localStorage.setItem('alma_visto', '1'); localStorage.setItem('alma_v41', '1'); } catch (e) {}
+        try { localStorage.setItem('alma_visto', '1'); localStorage.setItem('alma_v42', '1'); } catch (e) {}
         $('modalBienvenida').hidden = true;
       });
       return;
     }
-    if (!localStorage.getItem('alma_v41')) {
+    if (!localStorage.getItem('alma_v42')) {
       $('modalNovedades').hidden = false;
-      var cerrarNov = function () { try { localStorage.setItem('alma_v41', '1'); } catch (e) {} $('modalNovedades').hidden = true; };
+      var cerrarNov = function () { try { localStorage.setItem('alma_v42', '1'); } catch (e) {} $('modalNovedades').hidden = true; };
       $('cerrarNovedades').addEventListener('click', cerrarNov);
       $('modalNovedades').addEventListener('click', function (e) { if (e.target === this) cerrarNov(); });
     }
