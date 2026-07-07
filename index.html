@@ -397,11 +397,12 @@
   .taller-rail .rbtn.activo small { color: #fff; }
   .taller-rail .rbtn:disabled { opacity: .38; }
   .taller-centro { min-width: 0; text-align: center; }
-  /* El lienzo vive en un marco que se puede desplazar cuando se hace zoom (se acerca/aleja).
-     El canvas es block con margin:auto: se centra cuando cabe, y cuando el zoom lo hace más
-     ancho que el marco los márgenes automáticos pasan a 0 y se puede desplazar a AMBOS lados. */
-  .taller-centro .lienzo-wrap { display: block; padding: 12px; background: #f3eee3; border: 1px solid var(--borde); border-radius: 16px; overflow: auto; max-height: calc(100vh - 210px); }
-  #previaLibre { display: block; margin: 0 auto; border-radius: 12px; box-shadow: 0 10px 30px rgba(60,45,35,0.16); }
+  /* El lienzo vive en un marco de ALTURA FIJA (no crece ni encoge con el diseño): así el resto de
+     la página nunca se mueve al hacer zoom, cambiar de tamaño o volver al Estudio. El canvas usa
+     margin:auto dentro de un flex: se centra cuando cabe y, al acercar el zoom, los márgenes pasan
+     a 0 y se puede desplazar a AMBOS lados sin perder nada. */
+  .taller-centro .lienzo-wrap { display: flex; padding: 12px; background: #f3eee3; border: 1px solid var(--borde); border-radius: 16px; overflow: auto; height: calc(100vh - 220px); min-height: 340px; }
+  #previaLibre { flex: none; margin: auto; border-radius: 12px; box-shadow: 0 10px 30px rgba(60,45,35,0.16); }
   .zoom-bar { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
   .zoom-bar #zoomNivel { min-width: 46px; text-align: center; font-weight: 700; font-size: .82rem; color: var(--tinta-suave); }
   .zoom-btn { width: 38px; height: 34px; border-radius: 10px; border: 1px solid var(--borde-fuerte); background: var(--superficie); color: var(--tinta); font-size: 1.1rem; font-weight: 700; cursor: pointer; box-shadow: var(--sombra-sutil); }
@@ -426,6 +427,7 @@
     .taller-lado { position: static; max-height: none; }
     .taller-centro { order: -1; }
     .taller-rail { order: -2; }
+    .taller-centro .lienzo-wrap { height: 58vh; min-height: 300px; }
   }
   /* Galería de motivos del Estudio */
   .motivos-grid { grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 8px; margin-bottom: 12px; padding: 10px; background: #faf5ea; border: 1px solid #e6d8b8; border-radius: 12px; }
@@ -702,7 +704,7 @@
   <div class="marca">
     <svg class="logo" viewBox="0 0 80 80" aria-hidden="true"><use href="#logoMini"/></svg>
     <div style="min-width:0;">
-      <div class="fila-marca"><h1 id="tituloMarca">Alma bordado</h1><span class="ver-badge" title="AlmaApp 4.2 · Alma Estudio profesional">4.2</span></div>
+      <div class="fila-marca"><h1 id="tituloMarca">Alma bordado</h1><span class="ver-badge" title="AlmaApp 4.3 · Alma Estudio profesional">4.3</span></div>
       <p class="lema">Plantillas a tamaño real, listas para bordar</p>
     </div>
   </div>
@@ -1742,9 +1744,13 @@
   function libreFit() {
     var d = libreDim(), pad = librePad();
     var centro = document.querySelector('#panel-libre .taller-centro');
+    var wrap = document.querySelector('#panel-libre .lienzo-wrap');
     var anchoCol = (centro && centro.clientWidth > 40) ? centro.clientWidth : 540;
-    var dispW = anchoCol - 40 - pad * 2;   // 40 = padding del marco del lienzo
-    var dispH = Math.max(320, Math.min(900, (window.innerHeight || 900) - 240)) - pad * 2;
+    // El alto se toma del marco de altura FIJA (estable): así el ajuste no depende de la barra del
+    // navegador (que aparece/desaparece al hacer scroll) y el lienzo no salta ni cambia de tamaño.
+    var altoBox = (wrap && wrap.clientHeight > 80) ? wrap.clientHeight : Math.min(760, (window.innerHeight || 900) - 260);
+    var dispW = anchoCol - 40 - pad * 2;   // 24 padding del marco + holgura
+    var dispH = altoBox - 28 - pad * 2;
     var e = Math.min(dispW / d.w, dispH / d.h);
     return Math.max(14, Math.min(80, e));
   }
@@ -2258,9 +2264,7 @@
     var o = libreSel ? libreObj(libreSel) : null, box = $('libreSelControles');
     try { capasMarcar(); } catch (eC) {}
     if (!o) { box.style.display = 'none'; return; }
-    var recien = box.style.display === 'none';
-    box.style.display = 'block';
-    if (recien) { try { box.scrollIntoView({ block: 'nearest' }); } catch (eS) {} }
+    box.style.display = 'block';   // NO movemos el scroll al seleccionar: el lienzo se queda quieto
     var d = libreDim(), sl = $('tamanoLibre');
     sl.min = 1; sl.max = Math.ceil(Math.max(d.w, d.h)); sl.step = 0.5;
     sl.value = o.tipo === 'texto' ? o.altoCm : o.wCm;
@@ -2279,7 +2283,9 @@
     var ff = $('filaFiltroLibre'); if (ff) {
       ff.style.display = o.tipo === 'img' ? 'block' : 'none';
       if (o.tipo === 'img') {
-        pintarEfectosFoto(o);
+        // Las miniaturas de efecto (incluye un pase Sobel) se pintan DESPUÉS del cuadro actual,
+        // para no retrasar el inicio del arrastre al tocar una foto.
+        setTimeout(function () { if (libreSel && libreObj(libreSel) === o) pintarEfectosFoto(o); }, 0);
         document.querySelectorAll('#chipsFiltro .efecto-chip').forEach(function (c) { c.classList.toggle('activo', (o.filtro || 'original') === c.dataset.f); });
       }
     }
@@ -2589,7 +2595,7 @@
   $('redoLibre').addEventListener('click', function () { histIr(histIdx + 1); });
   $('tamanoLibre').addEventListener('input', function () {
     var o = libreSel ? libreObj(libreSel) : null; if (!o) return; var v = parseFloat(this.value) || 1;
-    if (o.tipo === 'texto') { o.altoCm = v; $('tamanoLibreVal').textContent = '· letra ' + v.toFixed(1) + ' cm'; conFuenteLista(o.fontCss, function () { libreRenderTexto(o); dibujarLibre(); }); }
+    if (o.tipo === 'texto') { o.altoCm = v; $('tamanoLibreVal').textContent = '· letra ' + v.toFixed(1) + ' cm'; programar('libre', function () { conFuenteLista(o.fontCss, function () { libreRenderTexto(o); dibujarLibre(); }); }); }
     else { var pr = o.wCm / o.hCm; o.wCm = v; o.hCm = v / pr; $('tamanoLibreVal').textContent = '· ancho ' + v.toFixed(1) + ' cm'; programar('libre', dibujarLibre); }
   });
   $('tamanoLibre').addEventListener('change', histPush);
@@ -2644,7 +2650,7 @@
   }
   $('tamanoLibreNum').addEventListener('input', function () {
     var o = libreSel ? libreObj(libreSel) : null; if (!o) return; var v = parseFloat(this.value); if (!(v > 0)) return;
-    if (o.tipo === 'texto') { o.altoCm = v; conFuenteLista(o.fontCss, function () { libreRenderTexto(o); dibujarLibre(); }); }
+    if (o.tipo === 'texto') { o.altoCm = v; programar('libre', function () { conFuenteLista(o.fontCss, function () { libreRenderTexto(o); dibujarLibre(); }); }); }
     else { var pr = o.wCm / o.hCm; o.wCm = v; o.hCm = v / pr; programar('libre', dibujarLibre); }
     $('tamanoLibre').value = v;
     programarRetardo('histNum', histPush, 800);
@@ -2736,7 +2742,9 @@
         if (o.tipo === 'texto') o.altoCm *= f;
         if (o.aroCm > 0) o.aroCm *= f;
       });
-      estudioRefrescaTextos();
+      // Durante el arrastre del deslizador dibujarLibre ya escala el texto cacheado; el re-render
+      // nítido de las tipografías se hace UNA vez al soltar (evita tirones al redimensionar).
+      programarRetardo('reescTxt', estudioRefrescaTextos, 180);
     }
     _dimPrev = d;
     libreAcotarObjs(); dibujarLibre(); libreActivarBotones(); libreSync();
@@ -2744,10 +2752,14 @@
   ['anchoLibre', 'altoLibre', 'diametroEstudio'].forEach(function (id) { $(id).addEventListener('input', function () { marcarChipsLienzo(); programar('libre', reescalarLienzo); }); });
   document.querySelectorAll('input[name="formaEstudio"]').forEach(function (r) { r.addEventListener('change', function () { aplicarFormaUI(); _dimPrev = libreDim(); libreAcotarObjs(); dibujarLibre(); libreActivarBotones(); }); });
   $('hojaLibre').addEventListener('change', function () {});
-  // Reajusta el lienzo del Estudio al cambiar el tamaño de la ventana (girar la tablet, etc.)
+  // Reajusta el lienzo del Estudio al cambiar el ANCHO de la ventana (girar la tablet, etc.).
+  // En móvil/tablet, mostrar u ocultar la barra del navegador dispara 'resize' cambiando SOLO el
+  // alto: eso lo ignoramos para que el lienzo NO salte ni cambie de tamaño al hacer scroll.
   (function () {
-    var t = null;
+    var t = null, lastW = window.innerWidth;
     window.addEventListener('resize', function () {
+      if (window.innerWidth === lastW) return;
+      lastW = window.innerWidth;
       if (t) clearTimeout(t);
       t = setTimeout(function () {
         var p = $('panel-libre');
@@ -4267,6 +4279,7 @@
     btn.setAttribute('role', 'tab');
     btn.setAttribute('aria-selected', btn.classList.contains('activa') ? 'true' : 'false');
     btn.addEventListener('click', function () {
+      var yaActiva = btn.classList.contains('activa');   // volver a tocar la pestaña actual NO debe mover la vista
       document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('activa'); b.setAttribute('aria-selected', 'false'); });
       document.querySelectorAll('.panel').forEach(function (p) { p.classList.remove('activa'); });
       btn.classList.add('activa'); btn.setAttribute('aria-selected', 'true'); $(btn.dataset.panel).classList.add('activa');
@@ -4275,7 +4288,7 @@
       else if (btn.dataset.panel === 'panel-galeria') { renderProyectos(); renderGaleria(); }
       else if (btn.dataset.panel === 'panel-kits') aplicarKitAFormulario();
       else ultimoPanelDiseno = btn.dataset.panel;   // solo paneles con lienzo para "analizar"
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (!yaActiva) window.scrollTo({ top: 0, behavior: 'smooth' });   // solo al cambiar de módulo
     });
   });
   // Fila de chips de tema (acentos pastel); aplica el tema en vivo al tocar
