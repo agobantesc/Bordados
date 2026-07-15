@@ -242,6 +242,16 @@
   .efecto-chip canvas { width: 100%; height: 42px; object-fit: cover; border-radius: 6px; background: #eee; display: block; }
   .efecto-chip.activo { border-color: var(--trigo-osc); background: var(--trigo); color: #fff; box-shadow: 0 2px 8px rgba(111,97,81,0.28); }
   .efecto-chip:active { transform: scale(.96); }
+  /* Selector de hilos DMC */
+  .dmc-sw { display: flex; flex-direction: column; align-items: center; gap: 2px; border: 1px solid var(--borde); border-radius: 8px; padding: 4px 2px 3px; cursor: pointer; font-size: .62rem; font-weight: 700; color: var(--tinta); background: var(--superficie); }
+  .dmc-sw .sw { width: 100%; height: 30px; border-radius: 5px; border: 1px solid rgba(0,0,0,.12); }
+  .dmc-sw small { color: var(--tinta-suave); font-weight: 600; font-size: .56rem; }
+  .dmc-sw:active { transform: scale(.95); }
+  /* Botón 🧵 DMC junto a un color */
+  .btn-dmc { margin-left: 4px; padding: 0 7px; height: 30px; border: 1px solid var(--borde-fuerte); border-radius: 8px; background: var(--superficie); cursor: pointer; font-size: .9rem; vertical-align: middle; }
+  .btn-dmc:active { transform: scale(.94); }
+  .fila-color { display: flex; align-items: center; gap: 3px; }
+  .fila-color input[type="color"] { flex: 0 0 auto; }
 
   /* ---------- Vista previa ---------- */
   .vista-previa { text-align: center; }
@@ -704,7 +714,7 @@
   <div class="marca">
     <svg class="logo" viewBox="0 0 80 80" aria-hidden="true"><use href="#logoMini"/></svg>
     <div style="min-width:0;">
-      <div class="fila-marca"><h1 id="tituloMarca">Alma bordado</h1><span class="ver-badge" title="AlmaApp 4.3 · Alma Estudio profesional">4.3</span></div>
+      <div class="fila-marca"><h1 id="tituloMarca">Alma bordado</h1><span class="ver-badge" title="AlmaApp 5.0 · Alma Estudio profesional">5.0</span></div>
       <p class="lema">Plantillas a tamaño real, listas para bordar</p>
     </div>
   </div>
@@ -736,7 +746,7 @@
 </nav>
 <!-- ============ ALMA ESTUDIO (taller único de diseño) ============ -->
 <section id="panel-libre" class="panel activa">
-  <p class="intro"><strong>Alma Estudio</strong>: define tu lienzo (bastidor u hoja), agrega fotos, textos y motivos, o crea un <strong>árbol genealógico</strong> y otras plantillas desde 🌳 <strong>Plantillas</strong>. Aplica <strong>efectos</strong> a tus fotos, usa el <strong>zoom</strong> y toca <strong>«👁️ Ver la hoja»</strong> para ver cómo saldrá impresa. 🌸</p>
+  <p class="intro"><strong>Alma Estudio</strong>: agrega fotos, textos, motivos y <strong>formas</strong> ◆, o crea un <strong>árbol genealógico</strong> y otras plantillas. Elige <strong>colores de hilo DMC</strong> 🧵, <strong>repite en patrón</strong> 🔁, aplica <strong>efectos</strong> a tus fotos y toca <strong>«👁️ Ver la hoja»</strong> para ver cómo saldrá impresa. 🌸</p>
   <svg class="divisor" viewBox="0 0 150 22"><use href="#divisorBot"/></svg>
   <div class="taller">
     <div class="taller-rail" aria-label="Herramientas">
@@ -745,6 +755,7 @@
       <input type="file" id="archivoLibre" accept="image/*" hidden>
       <button class="rbtn" id="railTexto" type="button" title="Texto"><span>✍️<small>Texto</small></span></button>
       <button class="rbtn" id="btnMotivos" type="button" title="Motivos"><span>🌿<small>Motivos</small></span></button>
+      <button class="rbtn" id="railFormas" type="button" title="Formas: rectángulo, círculo, corazón…"><span>◆<small>Formas</small></span></button>
       <button class="rbtn" id="railPlantillas" type="button" title="Plantillas: árbol genealógico y más"><span>🌳<small>Plantillas</small></span></button>
       <button class="rbtn" id="railCapas" type="button" title="Capas del diseño"><span>🗂️<small>Capas</small></span></button>
       <button class="rbtn" id="undoLibre" type="button" disabled title="Deshacer"><span>↩️</span></button>
@@ -803,7 +814,7 @@
         <div class="campo" id="filaAroLibre" style="display:none; margin-top:8px;"><label for="aroLibre">⭕ Ajustar a un bastidor (queda circular, a tamaño real)</label><select id="aroLibre"><option value="0" selected>Sin ajuste — libre</option><option value="10">Bastidor ⌀ 10 cm</option><option value="13">Bastidor ⌀ 13 cm</option><option value="15">Bastidor ⌀ 15 cm</option><option value="18">Bastidor ⌀ 18 cm</option><option value="20">Bastidor ⌀ 20 cm</option><option value="23">Bastidor ⌀ 23 cm</option><option value="26">Bastidor ⌀ 26 cm</option></select></div>
         <div class="campo" id="filaRotLibre" style="margin-top:8px;"><label for="rotLibre">Giro exacto · <span id="rotLibreVal">0°</span></label><input type="range" id="rotLibre" min="-180" max="180" step="5" value="0"></div>
         <div class="campo" id="filaCurvaLibre" style="display:none; margin-top:8px;"><label for="curvaLibre">Curvar el texto · <span id="curvaLibreVal">recto</span></label><input type="range" id="curvaLibre" min="-100" max="100" step="5" value="0"></div>
-        <div class="campo" id="filaAlphaLibre" style="display:none; margin-top:8px;"><label for="alphaLibre">Transparencia (para calcar)</label><input type="range" id="alphaLibre" min="15" max="100" step="5" value="100"></div>
+        <div class="campo" id="filaAlphaLibre" style="display:none; margin-top:8px;"><label for="alphaLibre">Opacidad · <span id="alphaLibreVal">100%</span> <span class="h2-sub">(baja para calcar)</span></label><input type="range" id="alphaLibre" min="15" max="100" step="5" value="100"></div>
         <div class="campo bloque-efectos" id="filaFiltroLibre" style="display:none; margin-top:10px;"><label>🎨 Efecto de color de la foto <span class="h2-sub">— toca uno para aplicarlo</span></label><div class="efectos-grid" id="chipsFiltro"></div></div>
         <div class="controles-previa" style="justify-content:flex-start; margin-top:10px;">
           <button class="boton-sec" id="girarLibre" type="button" title="Girar 15°">↻ Girar</button>
@@ -821,6 +832,25 @@
           <button class="boton-sec" id="frenteLibre" type="button">⬆️ Al frente</button>
           <button class="boton-sec" id="fondoLibre" type="button">⬇️ Al fondo</button>
           <button class="boton-sec gal-quitar" id="borrarLibre" type="button">🗑️ Quitar</button>
+        </div>
+        <div id="formaOpc" style="display:none; margin-top:10px; padding:10px 12px; background:#fbf6ec; border:1px solid #e0cda3; border-radius:12px;">
+          <label class="check-fila" style="margin-bottom:6px;"><input type="checkbox" id="formaRelleno" checked><span>Relleno (relleno macizo). Sin marcar: solo contorno.</span></label>
+          <div class="fila">
+            <div class="campo campo-color"><label for="formaColor">Color relleno</label><input type="color" id="formaColor" value="#b89a6a"></div>
+            <div class="campo campo-color"><label for="formaColorLinea">Color contorno</label><input type="color" id="formaColorLinea" value="#6f6151"></div>
+            <div class="campo"><label for="formaGrosor">Grosor contorno · <span id="formaGrosorVal">0.2 cm</span></label><input type="range" id="formaGrosor" min="0" max="80" step="1" value="20"></div>
+          </div>
+          <div class="campo" id="filaRadioForma" style="display:none; margin-top:8px;"><label for="formaRadio">Esquinas redondeadas</label><input type="range" id="formaRadio" min="5" max="50" step="1" value="28"></div>
+        </div>
+        <div id="repetirOpc" style="margin-top:10px; padding:10px 12px; background:#f4f0e6; border:1px solid #e0d6bd; border-radius:12px;">
+          <label style="font-size:.82rem; font-weight:700; color:var(--tinta);">🔁 Repetir en patrón <span class="h2-sub">(crea copias editables)</span></label>
+          <div class="controles-previa" style="justify-content:flex-start; margin-top:8px;">
+            <button class="boton-sec" id="repCirc6" type="button" title="6 copias en círculo">⭘ Círculo ×6</button>
+            <button class="boton-sec" id="repCirc8" type="button">⭘ Círculo ×8</button>
+            <button class="boton-sec" id="repCirc12" type="button">⭘ Círculo ×12</button>
+            <button class="boton-sec" id="repFila" type="button">▭ Fila ×3</button>
+            <button class="boton-sec" id="repRejilla" type="button">▦ Cuadrícula 3×3</button>
+          </div>
         </div>
         <div id="masTextoOpc" style="display:none; margin-top:10px; padding:10px 12px; background:#fbf6ec; border:1px solid #e0cda3; border-radius:12px;">
           <div class="fila">
@@ -857,6 +887,12 @@
         <h2>🌿 Motivos para bordar</h2>
         <div class="motivos-grid" id="motivosGrid" style="display:grid;" aria-label="Biblioteca de motivos"></div>
         <p class="info-img" style="text-align:left; margin-top:8px;">Se insertan al centro con el color elegido en «Texto» y se pueden girar, escalar y recolorear.</p>
+      </div>
+
+      <div class="tarjeta" id="grpFormas" style="display:none">
+        <h2>◆ Formas</h2>
+        <div class="motivos-grid" id="formasGrid" style="display:grid;" aria-label="Formas"></div>
+        <p class="info-img" style="text-align:left; margin-top:8px;">Añade rectángulos, círculos, corazones, estrellas o líneas. Al tocar la forma eliges <strong>relleno</strong> o solo <strong>contorno</strong>, colores y grosor.</p>
       </div>
 
       <div class="tarjeta" id="grpPlantillas" style="display:none">
@@ -1143,13 +1179,13 @@
 <div class="modal" id="modalNovedades" hidden>
   <div class="modal-caja" role="dialog" aria-modal="true" aria-labelledby="tituloNovedades">
     <svg viewBox="0 0 240 175" aria-hidden="true" style="width:120px; height:auto; display:block; margin:0 auto 4px; opacity:.9;"><use href="#ramoAlma"/></svg>
-    <h2 id="tituloNovedades" style="font-family:'Cormorant Garamond',Georgia,serif; font-size:1.7rem; text-align:center;">Árboles genealógicos 🌳</h2>
-    <p class="sub" style="text-align:center;">Y más formas de crear diseños preciosos:</p>
+    <h2 id="tituloNovedades" style="font-family:'Cormorant Garamond',Georgia,serif; font-size:1.7rem; text-align:center;">Herramientas de diseño ◆</h2>
+    <p class="sub" style="text-align:center;">Tu taller ahora es todo un programa de diseño:</p>
     <ul class="bienvenida-lista">
-      <li>🌳 <strong>Árbol genealógico</strong>: escribe los nombres y la app arma el árbol (en corazón o por generaciones). Cada nombre, rama y adorno queda editable.</li>
-      <li>✨ <strong>Plantillas rápidas</strong> de un toque: monograma, boda, bebé y marco con nombre.</li>
-      <li>🌿 <strong>Motivos nuevos</strong>: casita, anillos, piecitos de bebé, marco oval, rama con hojas, listón y dos corazones.</li>
-      <li>💡 Todo se crea como elementos sueltos: mueve, cambia tamaño, color y tipografía a tu gusto.</li>
+      <li>◆ <strong>Formas</strong>: rectángulos, círculos, corazones, estrellas, rombos y líneas — con relleno o solo contorno, colores y grosor a tu gusto.</li>
+      <li>🧵 <strong>Colores de hilo DMC reales</strong>: elige el color desde la paleta de hilos (con su código) para el texto, los motivos y las formas.</li>
+      <li>🔁 <strong>Repetir en patrón</strong>: convierte un elemento en un patrón en círculo (mandala), fila o cuadrícula con un toque.</li>
+      <li>🌫️ <strong>Opacidad</strong> para todos los elementos (perfecta para calcar o dar profundidad).</li>
     </ul>
     <div class="modal-acciones"><button class="boton-primario" id="cerrarNovedades" type="button">¡A bordar! 🌸</button></div>
   </div>
@@ -1167,6 +1203,16 @@
       <button class="boton-sec" id="cerrarHoja" type="button">Cerrar</button>
       <button class="boton-primario" id="hojaPdf" type="button">📄 Descargar PDF</button>
     </div>
+  </div>
+</div>
+
+<div class="modal" id="modalDmc" hidden>
+  <div class="modal-caja" role="dialog" aria-modal="true" aria-label="Colores de hilo DMC" style="max-width:560px;">
+    <h2 style="font-family:'Cormorant Garamond',Georgia,serif; font-size:1.5rem; text-align:center; margin-bottom:2px;">Colores de hilo 🧵</h2>
+    <p class="sub" style="text-align:center; margin-bottom:10px;">Elige un color de hilo DMC real para tu diseño.</p>
+    <input type="search" id="dmcBuscar" placeholder="Buscar por código o nombre (ej. 321, rosa)…" style="width:100%; padding:10px; border:1px solid var(--borde-fuerte); border-radius:10px; font-family:inherit; font-size:.95rem; margin-bottom:10px;">
+    <div id="dmcGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(72px, 1fr)); gap:8px; max-height:52vh; overflow-y:auto; padding:2px;"></div>
+    <div class="modal-acciones"><button class="boton-sec" id="cerrarDmc" type="button">Cerrar</button></div>
   </div>
 </div>
 
@@ -2059,6 +2105,14 @@
     var o = { tipo: 'motivo', id: ++libreSeq, clave: clave, color: $('colorLibre').value || '#6f6151', xCm: d.w / 2, yCm: d.h / 2, wCm: lado, hCm: lado, rot: 0, flip: false };
     libreObjs.push(o); libreSel = o.id; libreSync(); dibujarLibre(); libreActivarBotones(); histPush();
   }
+  function libreAddForma(clave) {
+    var d = libreDim(), lado = Math.min(d.w, d.h) * 0.5;
+    var w = lado, h = lado;
+    if (clave === 'rect' || clave === 'redondo') h = lado * 0.66;
+    if (clave === 'linea') { w = lado; h = 1; }
+    var o = { tipo: 'forma', id: ++libreSeq, clave: clave, xCm: d.w / 2, yCm: d.h / 2, wCm: w, hCm: h, rot: 0, flip: false, flipY: false, relleno: clave !== 'linea', color: $('colorLibre').value || '#b89a6a', colorLinea: '#6f6151', grosor: 0.2, radio: 0.28, alpha: 1 };
+    libreObjs.push(o); libreSel = o.id; libreSync(); dibujarLibre(); libreActivarBotones(); histPush();
+  }
 
   // ---------- Plantillas: árbol genealógico y diseños de inicio (todo queda editable) ----------
   function fuentePorNombre(nom) { for (var i = 0; i < FUENTES.length; i++) if (FUENTES[i].fam === nom) return cssDe(FUENTES[i]); return cssDe(FUENTES[0]); }
@@ -2164,12 +2218,47 @@
   }
 
   // Dibuja un elemento (rotación, espejo, transparencia, recorte circular) en cualquier contexto.
+  // ---------- Formas básicas (rellenables o solo contorno) ----------
+  var FORMAS = [['rect', 'Rectángulo'], ['redondo', 'Redondeado'], ['circulo', 'Círculo / óvalo'], ['triangulo', 'Triángulo'], ['diamante', 'Rombo'], ['corazon', 'Corazón'], ['estrella', 'Estrella'], ['linea', 'Línea']];
+  function formaPath(x, clave, w, h, radio) {
+    var hw = w / 2, hh = h / 2;
+    x.beginPath();
+    if (clave === 'circulo') { x.ellipse(0, 0, hw, hh, 0, 0, 6.2832); }
+    else if (clave === 'rect') { x.rect(-hw, -hh, w, h); }
+    else if (clave === 'redondo') {
+      var r = Math.min(hw, hh) * Math.max(0.05, Math.min(0.5, radio == null ? 0.28 : radio));
+      x.moveTo(-hw + r, -hh); x.arcTo(hw, -hh, hw, -hh + r, r); x.arcTo(hw, hh, hw - r, hh, r);
+      x.arcTo(-hw, hh, -hw, hh - r, r); x.arcTo(-hw, -hh, -hw + r, -hh, r); x.closePath();
+    }
+    else if (clave === 'triangulo') { x.moveTo(0, -hh); x.lineTo(hw, hh); x.lineTo(-hw, hh); x.closePath(); }
+    else if (clave === 'diamante') { x.moveTo(0, -hh); x.lineTo(hw, 0); x.lineTo(0, hh); x.lineTo(-hw, 0); x.closePath(); }
+    else if (clave === 'corazon') {
+      x.moveTo(0, hh * 0.78);
+      x.bezierCurveTo(-hw * 1.12, -hh * 0.05, -hw * 0.66, -hh * 1.12, 0, -hh * 0.36);
+      x.bezierCurveTo(hw * 0.66, -hh * 1.12, hw * 1.12, -hh * 0.05, 0, hh * 0.78); x.closePath();
+    }
+    else if (clave === 'estrella') {
+      for (var i = 0; i < 10; i++) { var f = i % 2 ? 0.42 : 1, a = -Math.PI / 2 + i * Math.PI / 5, px = f * hw * Math.cos(a), py = f * hh * Math.sin(a); if (i) x.lineTo(px, py); else x.moveTo(px, py); } x.closePath();
+    }
+    else if (clave === 'linea') { x.moveTo(-hw, 0); x.lineTo(hw, 0); }
+  }
   function libreDibujaObj(x, o, esc, dpi) {
     var ow = o.wCm * esc, oh = o.hCm * esc;
     x.save();
     x.translate(o.xCm * esc, o.yCm * esc);
     if (o.rot) x.rotate(o.rot);
     if (o.alpha != null && o.alpha < 1) x.globalAlpha = Math.max(0.15, o.alpha);
+    if (o.tipo === 'forma') {
+      if (o.flip || o.flipY) x.scale(o.flip ? -1 : 1, o.flipY ? -1 : 1);
+      var esLinea = o.clave === 'linea', gr = (o.grosor == null ? 0.2 : o.grosor);
+      formaPath(x, o.clave, ow, oh, o.radio);
+      if (o.relleno && !esLinea) { x.fillStyle = o.color || '#b89a6a'; x.fill(); }
+      if (esLinea || !o.relleno || gr > 0) {
+        x.strokeStyle = (esLinea ? (o.color || '#6f6151') : (o.colorLinea || o.color || '#6f6151'));
+        x.lineWidth = Math.max(1, gr * esc); x.lineJoin = 'round'; x.lineCap = 'round'; x.stroke();
+      }
+      x.restore(); return;
+    }
     if (o.tipo === 'img') {
       if (!o.img) { x.restore(); return; }
       if (o.aroCm > 0) { x.beginPath(); x.arc(0, 0, o.aroCm / 2 * esc, 0, 6.2832); x.clip(); }   // ajustada a bastidor: círculo exacto a tamaño real
@@ -2279,7 +2368,7 @@
       gr = ((gr + 180) % 360 + 360) % 360 - 180;   // normaliza a [-180, 180)
       rSl.value = gr; $('rotLibreVal').textContent = gr + '°';
     }
-    var fa = $('filaAlphaLibre'); if (fa) { fa.style.display = o.tipo === 'img' ? 'block' : 'none'; if (o.tipo === 'img') $('alphaLibre').value = Math.round((o.alpha == null ? 1 : o.alpha) * 100); }
+    var fa = $('filaAlphaLibre'); if (fa) { fa.style.display = 'block'; var av = Math.round((o.alpha == null ? 1 : o.alpha) * 100); $('alphaLibre').value = av; if ($('alphaLibreVal')) $('alphaLibreVal').textContent = av + '%'; }
     var ff = $('filaFiltroLibre'); if (ff) {
       ff.style.display = o.tipo === 'img' ? 'block' : 'none';
       if (o.tipo === 'img') {
@@ -2308,6 +2397,23 @@
     var fc = $('filaCurvaLibre'); if (fc) { fc.style.display = o.tipo === 'texto' ? 'block' : 'none'; if (o.tipo === 'texto') { $('curvaLibre').value = o.curva || 0; $('curvaLibreVal').textContent = (o.curva || 0) === 0 ? 'recto' : ((o.curva > 0 ? 'arco ↑ ' : 'arco ↓ ') + Math.abs(o.curva) + '%'); } }
     if (o.tipo === 'texto') { $('textoLibre').value = o.texto; $('fuenteLibre').value = o.fontCss; $('colorLibre').value = colorSeguro(o.color); $('estiloLibre').value = o.estilo; }
     if (o.tipo === 'motivo') { $('colorLibre').value = colorSeguro(o.color); }
+    var fo = $('formaOpc'); if (fo) {
+      var esForma = o.tipo === 'forma';
+      fo.style.display = esForma ? 'block' : 'none';
+      if (esForma) {
+        var esLinea = o.clave === 'linea', lblRell = $('formaRelleno').closest('.check-fila');
+        if (lblRell) lblRell.style.display = esLinea ? 'none' : 'flex';
+        $('formaRelleno').checked = !!o.relleno;
+        $('formaColor').value = colorSeguro(o.color || '#b89a6a');
+        $('formaColorLinea').parentNode.style.display = esLinea ? 'none' : '';
+        $('formaColorLinea').value = colorSeguro(o.colorLinea || '#6f6151');
+        var gcm = (o.grosor == null ? 0.2 : o.grosor);
+        $('formaGrosor').value = Math.round(gcm * 100);
+        $('formaGrosorVal').textContent = gcm.toFixed(2) + ' cm';
+        $('filaRadioForma').style.display = o.clave === 'redondo' ? 'block' : 'none';
+        if (o.clave === 'redondo') $('formaRadio').value = Math.round((o.radio == null ? 0.28 : o.radio) * 100);
+      }
+    }
   }
   function libreActivarBotones() {
     var hay = libreObjs.length > 0;
@@ -2499,6 +2605,7 @@
   function capaNombre(o) {
     if (o.tipo === 'texto') return '✍️ “' + String(o.texto || '').slice(0, 16) + (String(o.texto || '').length > 16 ? '…' : '') + '”';
     if (o.tipo === 'motivo') return '🌿 ' + motivoDef(o.clave)[1];
+    if (o.tipo === 'forma') { for (var i = 0; i < FORMAS.length; i++) if (FORMAS[i][0] === o.clave) return '◆ ' + FORMAS[i][1]; return '◆ Forma'; }
     return '🖼️ Foto' + (o.aroCm > 0 ? ' · bastidor ⌀' + (+o.aroCm.toFixed(1)) : '');
   }
   function capasMarcar() {
@@ -2525,6 +2632,11 @@
           tx.scale(o.wCm * e2 / 100, o.hCm * e2 / 100);
           tx.strokeStyle = o.color || '#6f6151'; tx.lineWidth = 5; tx.lineCap = 'round'; tx.lineJoin = 'round';
           motivoDef(o.clave)[2](tx);
+        } else if (o.tipo === 'forma') {
+          var fw = o.wCm * e2, fh = o.hCm * e2;
+          formaPath(tx, o.clave, fw, fh, o.radio);
+          if (o.relleno && o.clave !== 'linea') { tx.fillStyle = o.color || '#b89a6a'; tx.fill(); }
+          tx.strokeStyle = (o.clave === 'linea' ? o.color : o.colorLinea) || '#6f6151'; tx.lineWidth = 2; tx.lineJoin = 'round'; tx.lineCap = 'round'; tx.stroke();
         } else if (o._cv) {
           var tw2 = o.wCm * e2, th2 = o.hCm * e2; tx.drawImage(o._cv, -tw2 / 2, -th2 / 2, tw2, th2);
         }
@@ -2547,7 +2659,7 @@
   }
   // Riel de herramientas: qué sub-panel se ve a la derecha (estilo programa de diseño)
   function railSel(cual) {
-    [['railLienzo', 'grpLienzo'], ['railTexto', 'grpTexto'], ['btnMotivos', 'grpMotivos'], ['railPlantillas', 'grpPlantillas'], ['railCapas', 'grpCapas']].forEach(function (p) {
+    [['railLienzo', 'grpLienzo'], ['railTexto', 'grpTexto'], ['btnMotivos', 'grpMotivos'], ['railFormas', 'grpFormas'], ['railPlantillas', 'grpPlantillas'], ['railCapas', 'grpCapas']].forEach(function (p) {
       var b = $(p[0]), g = $(p[1]);
       if (g) g.style.display = (p[1] === cual) ? 'block' : 'none';
       if (b) b.classList.toggle('activo', p[1] === cual);
@@ -2557,8 +2669,26 @@
   $('railLienzo').addEventListener('click', function () { railSel('grpLienzo'); });
   $('railTexto').addEventListener('click', function () { railSel('grpTexto'); });
   $('btnMotivos').addEventListener('click', function () { railSel('grpMotivos'); });
+  $('railFormas').addEventListener('click', function () { railSel('grpFormas'); });
   $('railPlantillas').addEventListener('click', function () { railSel('grpPlantillas'); });
   $('railCapas').addEventListener('click', function () { railSel('grpCapas'); });
+  // Galería de formas: miniaturas
+  (function () {
+    var grid = $('formasGrid'); if (!grid) return;
+    FORMAS.forEach(function (fm) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'motivo-btn'; b.title = fm[1];
+      var c = document.createElement('canvas'); c.width = 64; c.height = 64; var x = c.getContext('2d');
+      x.translate(32, 32); x.strokeStyle = '#7c6b57'; x.fillStyle = '#e7dcc4'; x.lineWidth = 3; x.lineJoin = 'round'; x.lineCap = 'round';
+      var lado = fm[0] === 'rect' || fm[0] === 'redondo' ? [46, 30] : (fm[0] === 'linea' ? [48, 0] : [42, 42]);
+      formaPath(x, fm[0], lado[0], lado[1] || 42, 0.28);
+      if (fm[0] !== 'linea') x.fill();
+      x.stroke();
+      b.appendChild(c);
+      var eti = document.createElement('span'); eti.textContent = fm[1]; b.appendChild(eti);
+      b.addEventListener('click', function () { libreAddForma(fm[0]); });
+      grid.appendChild(b);
+    });
+  })();
   // Chips de tamaños de bastidor: un toque = diámetro listo (sin campos duplicados)
   function marcarChipsLienzo() {
     var v = parseFloat($('diametroEstudio').value);
@@ -2607,11 +2737,99 @@
   });
   $('curvaLibre').addEventListener('change', histPush);
   $('alphaLibre').addEventListener('input', function () {
-    var o = libreSel ? libreObj(libreSel) : null; if (!o || o.tipo !== 'img') return;
-    o.alpha = Math.max(15, Math.min(100, parseInt(this.value, 10) || 100)) / 100;
+    var o = libreSel ? libreObj(libreSel) : null; if (!o) return;
+    var v = Math.max(15, Math.min(100, parseInt(this.value, 10) || 100));
+    o.alpha = v / 100; if ($('alphaLibreVal')) $('alphaLibreVal').textContent = v + '%';
     programar('libre', dibujarLibre);
   });
   $('alphaLibre').addEventListener('change', histPush);
+  // Estilo de formas (relleno / contornos / grosor / esquinas)
+  function estiloForma() {
+    var o = libreSel ? libreObj(libreSel) : null; if (!o || o.tipo !== 'forma') return;
+    o.relleno = $('formaRelleno').checked;
+    o.color = $('formaColor').value;
+    o.colorLinea = $('formaColorLinea').value;
+    o.grosor = Math.max(0, Math.min(0.8, (parseInt($('formaGrosor').value, 10) || 0) / 100));
+    $('formaGrosorVal').textContent = o.grosor.toFixed(2) + ' cm';
+    if (o.clave === 'redondo') o.radio = Math.max(0.05, Math.min(0.5, (parseInt($('formaRadio').value, 10) || 28) / 100));
+    programar('libre', dibujarLibre);
+    programarRetardo('histForma', histPush, 700);
+  }
+  ['formaColor', 'formaColorLinea', 'formaGrosor', 'formaRadio'].forEach(function (id) { var e = $(id); if (e) e.addEventListener('input', estiloForma); });
+  var frl = $('formaRelleno'); if (frl) frl.addEventListener('change', estiloForma);
+  // Repetir en patrón: crea copias editables (mandala radial, fila o cuadrícula)
+  function repetirPatron(modo, n, cols) {
+    var o = libreSel ? libreObj(libreSel) : null; if (!o) return;
+    var d = libreDim(), nuevos = [];
+    function clon(dx, dy, drot) {
+      var c = {}; for (var k in o) c[k] = o[k];
+      c.id = ++libreSeq; c.xCm = dx; c.yCm = dy; if (drot != null) c.rot = drot;
+      delete c._cv; delete c._fCv; delete c._fKey; delete c._thumbs;
+      return c;
+    }
+    if (modo === 'circulo') {
+      var cx = d.w / 2, cy = d.h / 2, rx = o.xCm - cx, ry = o.yCm - cy;
+      var rad = Math.hypot(rx, ry); if (rad < 0.4) { rad = Math.min(d.w, d.h) * 0.32; rx = 0; ry = -rad; }
+      var a0 = Math.atan2(ry, rx), base = o.rot || 0;
+      for (var i = 1; i < n; i++) {
+        var a = a0 + i * 2 * Math.PI / n;
+        nuevos.push(clon(cx + rad * Math.cos(a), cy + rad * Math.sin(a), base + i * 2 * Math.PI / n));
+      }
+    } else if (modo === 'fila') {
+      var paso = Math.min(o.wCm * 1.15, (d.w - o.wCm) / Math.max(1, n - 1));
+      var x0 = d.w / 2 - paso * (n - 1) / 2;
+      o.xCm = x0; o.yCm = o.yCm;
+      for (var j = 1; j < n; j++) nuevos.push(clon(x0 + j * paso, o.yCm, o.rot || 0));
+    } else if (modo === 'rejilla') {
+      var rows = Math.ceil(n / cols), px = Math.min(o.wCm * 1.15, (d.w - o.wCm) / Math.max(1, cols - 1)), py = Math.min(o.hCm * 1.15, (d.h - o.hCm) / Math.max(1, rows - 1));
+      var gx0 = d.w / 2 - px * (cols - 1) / 2, gy0 = d.h / 2 - py * (rows - 1) / 2, k2 = 0;
+      o.xCm = gx0; o.yCm = gy0;
+      for (var r = 0; r < rows; r++) for (var c = 0; c < cols; c++) { if (r === 0 && c === 0) { k2++; continue; } if (k2 >= n) break; nuevos.push(clon(gx0 + c * px, gy0 + r * py, o.rot || 0)); k2++; }
+    }
+    nuevos.forEach(function (c) { if (c.tipo === 'texto') { try { libreRenderTexto(c); } catch (e) {} } libreObjs.push(c); });
+    libreAcotarObjs(); dibujarLibre(); libreActivarBotones(); histPush();
+    toast('¡Patrón creado! ' + (nuevos.length + 1) + ' copias · edítalas o muévelas');
+  }
+  $('repCirc6').addEventListener('click', function () { repetirPatron('circulo', 6); });
+  $('repCirc8').addEventListener('click', function () { repetirPatron('circulo', 8); });
+  $('repCirc12').addEventListener('click', function () { repetirPatron('circulo', 12); });
+  $('repFila').addEventListener('click', function () { repetirPatron('fila', 3); });
+  $('repRejilla').addEventListener('click', function () { repetirPatron('rejilla', 9, 3); });
+  // Selector de hilos DMC reutilizable: pone un botón 🧵 junto a cada color y aplica el hilo elegido
+  (function () {
+    var grid = $('dmcGrid'), buscar = $('dmcBuscar'), modal = $('modalDmc'); if (!grid || !modal) return;
+    var objetivo = null;
+    function pinta(filtro) {
+      grid.innerHTML = ''; var f = (filtro || '').trim().toLowerCase(), n = 0;
+      for (var i = 0; i < DMC_RAW.length; i++) {
+        var c = DMC_RAW[i];
+        if (f && (c[0] + ' ' + c[2]).toLowerCase().indexOf(f) < 0) continue;
+        if (++n > 260) break;
+        var b = document.createElement('button'); b.type = 'button'; b.className = 'dmc-sw'; b.title = 'DMC ' + c[0] + ' · ' + c[2];
+        var sw = document.createElement('div'); sw.className = 'sw'; sw.style.background = c[1];
+        var cod = document.createElement('span'); cod.textContent = c[0];
+        var nom = document.createElement('small'); nom.textContent = c[2];
+        b.appendChild(sw); b.appendChild(cod); b.appendChild(nom);
+        (function (col) { b.addEventListener('click', function () {
+          if (objetivo) { objetivo.value = col[1]; objetivo.dispatchEvent(new Event('input', { bubbles: true })); objetivo.dispatchEvent(new Event('change', { bubbles: true })); }
+          modal.hidden = true; toast('Hilo DMC ' + col[0] + ' · ' + col[2]);
+        }); })(c);
+        grid.appendChild(b);
+      }
+    }
+    function abrir(input) { objetivo = input; buscar.value = ''; pinta(''); modal.hidden = false; setTimeout(function () { try { buscar.focus(); } catch (e) {} }, 40); }
+    buscar.addEventListener('input', function () { pinta(this.value); });
+    $('cerrarDmc').addEventListener('click', function () { modal.hidden = true; });
+    modal.addEventListener('click', function (e) { if (e.target === modal) modal.hidden = true; });
+    ['colorLibre', 'formaColor', 'formaColorLinea', 'arbolColor', 'colorFondoLibre', 'ctextoLibre', 'deg2Libre', 'decorColorLibre'].forEach(function (id) {
+      var inp = $(id); if (!inp || !inp.parentNode) return;
+      var wrap = document.createElement('span'); wrap.className = 'fila-color';
+      inp.parentNode.insertBefore(wrap, inp); wrap.appendChild(inp);
+      var btn = document.createElement('button'); btn.type = 'button'; btn.className = 'btn-dmc'; btn.textContent = '🧵'; btn.title = 'Elegir un hilo DMC';
+      btn.addEventListener('click', function () { abrir(inp); });
+      wrap.appendChild(btn);
+    });
+  })();
   // Efectos de color de la foto: cada opción muestra una MINIATURA en vivo de la foto seleccionada
   (function () {
     var cont = $('chipsFiltro'); if (!cont) return;
@@ -4411,8 +4629,9 @@
     s.libre.forma = libreForma();
     s.libre.objs = libreObjs.map(function (o) {
       if (o.tipo === 'img') return { tipo: 'img', xCm: o.xCm, yCm: o.yCm, wCm: o.wCm, hCm: o.hCm, flip: o.flip, flipY: !!o.flipY, prop: o.prop, rot: o.rot || 0, recorte: o.recorte || null, alpha: o.alpha == null ? 1 : o.alpha, filtro: o.filtro || 'original', aroCm: o.aroCm > 0 ? o.aroCm : null, oculto: !!o.oculto, img: conFotos ? imgAJpeg(o.img) : null };
-      if (o.tipo === 'motivo') return { tipo: 'motivo', clave: o.clave, color: o.color, xCm: o.xCm, yCm: o.yCm, wCm: o.wCm, hCm: o.hCm, rot: o.rot || 0, flip: !!o.flip, flipY: !!o.flipY, oculto: !!o.oculto };
-      return { tipo: 'texto', xCm: o.xCm, yCm: o.yCm, wCm: o.wCm, hCm: o.hCm, rot: o.rot || 0, curva: o.curva || 0, texto: o.texto, fontCss: o.fontCss, color: o.color, estilo: o.estilo, altoCm: o.altoCm, color2c: o.color2c || null, grosor: o.grosor == null ? 0.4 : o.grosor, espaciado: o.espaciado || 0, degradado: !!o.degradado, colorDeg: o.colorDeg || null, dirDeg: o.dirDeg || 'vertical', sombra: !!o.sombra, decor: o.decor || 'no', decorColor: o.decorColor || null, oculto: !!o.oculto };
+      if (o.tipo === 'motivo') return { tipo: 'motivo', clave: o.clave, color: o.color, xCm: o.xCm, yCm: o.yCm, wCm: o.wCm, hCm: o.hCm, rot: o.rot || 0, flip: !!o.flip, flipY: !!o.flipY, oculto: !!o.oculto, alpha: o.alpha == null ? 1 : o.alpha };
+      if (o.tipo === 'forma') return { tipo: 'forma', clave: o.clave, xCm: o.xCm, yCm: o.yCm, wCm: o.wCm, hCm: o.hCm, rot: o.rot || 0, flip: !!o.flip, flipY: !!o.flipY, relleno: !!o.relleno, color: o.color, colorLinea: o.colorLinea || null, grosor: o.grosor == null ? 0.2 : o.grosor, radio: o.radio == null ? 0.28 : o.radio, alpha: o.alpha == null ? 1 : o.alpha, oculto: !!o.oculto };
+      return { tipo: 'texto', xCm: o.xCm, yCm: o.yCm, wCm: o.wCm, hCm: o.hCm, rot: o.rot || 0, curva: o.curva || 0, texto: o.texto, fontCss: o.fontCss, color: o.color, estilo: o.estilo, altoCm: o.altoCm, color2c: o.color2c || null, grosor: o.grosor == null ? 0.4 : o.grosor, espaciado: o.espaciado || 0, degradado: !!o.degradado, colorDeg: o.colorDeg || null, dirDeg: o.dirDeg || 'vertical', sombra: !!o.sombra, decor: o.decor || 'no', decorColor: o.decorColor || null, oculto: !!o.oculto, alpha: o.alpha == null ? 1 : o.alpha };
     });
     s.cruz = capIn(['anchoCruz', 'telaCruz', 'coloresCruz', 'telaColorCruz', 'hojaCruz']);
     s.cruz.simbolos = mostrarSimbolosCruz; s.cruz.fondo = quitarFondoCruz; s.cruz.limpiar = limpiarCruz; s.cruz.bn = bnCruz; s.cruz.img = conFotos ? imgAJpeg(imgCruz) : null; s.cruz.recorte = recorteCruz;
@@ -4484,8 +4703,9 @@
     try { if (s.libre) { resIn(s.libre); setRadio('formaEstudio', s.libre.forma === 'rect' ? 'rect' : 'circulo'); aplicarFormaUI();
       libreObjs = []; libreSel = null; (s.libre.objs || []).forEach(function (d) {
       if (d.tipo === 'img') { var o = { tipo: 'img', id: ++libreSeq, img: null, xCm: +d.xCm || 0, yCm: +d.yCm || 0, wCm: +d.wCm || 1, hCm: +d.hCm || 1, flip: !!d.flip, prop: d.prop || 1, rot: +d.rot || 0, recorte: d.recorte === 'circ' ? 'circ' : null, alpha: d.alpha == null ? 1 : +d.alpha, filtro: d.filtro || 'original', flipY: !!d.flipY, aroCm: +d.aroCm > 0 ? +d.aroCm : null, oculto: !!d.oculto }; libreObjs.push(o); cargarFoto(d.img, function (im) { o.img = im; }, dibujarLibre); }
-      else if (d.tipo === 'motivo') { libreObjs.push({ tipo: 'motivo', id: ++libreSeq, clave: d.clave, color: d.color || '#6f6151', xCm: +d.xCm || 0, yCm: +d.yCm || 0, wCm: +d.wCm || 4, hCm: +d.hCm || 4, rot: +d.rot || 0, flip: !!d.flip, flipY: !!d.flipY, oculto: !!d.oculto }); }
-      else { var t = { tipo: 'texto', id: ++libreSeq, texto: d.texto, fontCss: d.fontCss, color: d.color, estilo: d.estilo, altoCm: d.altoCm, curva: +d.curva || 0, color2c: d.color2c || null, grosor: d.grosor == null ? 0.4 : +d.grosor, espaciado: +d.espaciado || 0, degradado: !!d.degradado, colorDeg: d.colorDeg || null, dirDeg: d.dirDeg || 'vertical', sombra: !!d.sombra, decor: d.decor || 'no', decorColor: d.decorColor || null, oculto: !!d.oculto, xCm: +d.xCm || 0, yCm: +d.yCm || 0, wCm: +d.wCm || 2, hCm: +d.hCm || 1, rot: +d.rot || 0 }; try { libreRenderTexto(t); } catch (e3) {} libreObjs.push(t); } });
+      else if (d.tipo === 'motivo') { libreObjs.push({ tipo: 'motivo', id: ++libreSeq, clave: d.clave, color: d.color || '#6f6151', xCm: +d.xCm || 0, yCm: +d.yCm || 0, wCm: +d.wCm || 4, hCm: +d.hCm || 4, rot: +d.rot || 0, flip: !!d.flip, flipY: !!d.flipY, oculto: !!d.oculto, alpha: d.alpha == null ? 1 : +d.alpha }); }
+      else if (d.tipo === 'forma') { libreObjs.push({ tipo: 'forma', id: ++libreSeq, clave: d.clave || 'rect', xCm: +d.xCm || 0, yCm: +d.yCm || 0, wCm: +d.wCm || 4, hCm: +d.hCm || 4, rot: +d.rot || 0, flip: !!d.flip, flipY: !!d.flipY, relleno: d.relleno !== false, color: d.color || '#b89a6a', colorLinea: d.colorLinea || '#6f6151', grosor: d.grosor == null ? 0.2 : +d.grosor, radio: d.radio == null ? 0.28 : +d.radio, alpha: d.alpha == null ? 1 : +d.alpha, oculto: !!d.oculto }); }
+      else { var t = { tipo: 'texto', id: ++libreSeq, texto: d.texto, fontCss: d.fontCss, color: d.color, estilo: d.estilo, altoCm: d.altoCm, curva: +d.curva || 0, color2c: d.color2c || null, grosor: d.grosor == null ? 0.4 : +d.grosor, espaciado: +d.espaciado || 0, degradado: !!d.degradado, colorDeg: d.colorDeg || null, dirDeg: d.dirDeg || 'vertical', sombra: !!d.sombra, decor: d.decor || 'no', decorColor: d.decorColor || null, oculto: !!d.oculto, alpha: d.alpha == null ? 1 : +d.alpha, xCm: +d.xCm || 0, yCm: +d.yCm || 0, wCm: +d.wCm || 2, hCm: +d.hCm || 1, rot: +d.rot || 0 }; try { libreRenderTexto(t); } catch (e3) {} libreObjs.push(t); } });
       dibujarLibre(); libreActivarBotones(); estudioRefrescaTextos(); try { _dimPrev = libreDim(); } catch (e4) {} histPila = []; histIdx = -1; histPush(); } } catch (e) {}
     // PUNTO DE CRUZ
     try { if (s.cruz) { resIn(s.cruz); mostrarSimbolosCruz = !!s.cruz.simbolos; quitarFondoCruz = !!s.cruz.fondo; limpiarCruz = !!s.cruz.limpiar; bnCruz = !!s.cruz.bn;
@@ -5940,14 +6160,14 @@
       $('modalBienvenida').hidden = false;
       $('empezarBienvenida').addEventListener('click', function () {
         CONFIG.tema = temaSel; guardarConfig(); aplicarTema();
-        try { localStorage.setItem('alma_visto', '1'); localStorage.setItem('alma_v42', '1'); } catch (e) {}
+        try { localStorage.setItem('alma_visto', '1'); localStorage.setItem('alma_v50', '1'); } catch (e) {}
         $('modalBienvenida').hidden = true;
       });
       return;
     }
-    if (!localStorage.getItem('alma_v42')) {
+    if (!localStorage.getItem('alma_v50')) {
       $('modalNovedades').hidden = false;
-      var cerrarNov = function () { try { localStorage.setItem('alma_v42', '1'); } catch (e) {} $('modalNovedades').hidden = true; };
+      var cerrarNov = function () { try { localStorage.setItem('alma_v50', '1'); } catch (e) {} $('modalNovedades').hidden = true; };
       $('cerrarNovedades').addEventListener('click', cerrarNov);
       $('modalNovedades').addEventListener('click', function (e) { if (e.target === this) cerrarNov(); });
     }
