@@ -714,7 +714,7 @@
   <div class="marca">
     <svg class="logo" viewBox="0 0 80 80" aria-hidden="true"><use href="#logoMini"/></svg>
     <div style="min-width:0;">
-      <div class="fila-marca"><h1 id="tituloMarca">Alma bordado</h1><span class="ver-badge" title="AlmaApp 5.0 · Alma Estudio profesional">5.0</span></div>
+      <div class="fila-marca"><h1 id="tituloMarca">Alma bordado</h1><span class="ver-badge" title="AlmaApp 5.1 · Alma Estudio profesional">5.1</span></div>
       <p class="lema">Plantillas a tamaño real, listas para bordar</p>
     </div>
   </div>
@@ -746,7 +746,7 @@
 </nav>
 <!-- ============ ALMA ESTUDIO (taller único de diseño) ============ -->
 <section id="panel-libre" class="panel activa">
-  <p class="intro"><strong>Alma Estudio</strong>: agrega fotos, textos, motivos y <strong>formas</strong> ◆, o crea un <strong>árbol genealógico</strong> y otras plantillas. Elige <strong>colores de hilo DMC</strong> 🧵, <strong>repite en patrón</strong> 🔁, aplica <strong>efectos</strong> a tus fotos y toca <strong>«👁️ Ver la hoja»</strong> para ver cómo saldrá impresa. 🌸</p>
+  <p class="intro"><strong>Alma Estudio</strong>: fotos, textos, motivos, <strong>formas</strong> ◆ y ahora <strong>lápiz a mano alzada</strong> ✏️. Selecciona <strong>varios a la vez</strong> (⇧), agrupa, pellizca para el <strong>zoom</strong>, elige <strong>hilos DMC</strong> 🧵 y mira la <strong>vista bordado</strong> 🪡 o <strong>«👁️ la hoja»</strong> antes de imprimir. 🌸</p>
   <svg class="divisor" viewBox="0 0 150 22"><use href="#divisorBot"/></svg>
   <div class="taller">
     <div class="taller-rail" aria-label="Herramientas">
@@ -756,6 +756,7 @@
       <button class="rbtn" id="railTexto" type="button" title="Texto"><span>✍️<small>Texto</small></span></button>
       <button class="rbtn" id="btnMotivos" type="button" title="Motivos"><span>🌿<small>Motivos</small></span></button>
       <button class="rbtn" id="railFormas" type="button" title="Formas: rectángulo, círculo, corazón…"><span>◆<small>Formas</small></span></button>
+      <button class="rbtn" id="railDibujo" type="button" title="Lápiz: dibuja a mano alzada"><span>✏️<small>Dibujo</small></span></button>
       <button class="rbtn" id="railPlantillas" type="button" title="Plantillas: árbol genealógico y más"><span>🌳<small>Plantillas</small></span></button>
       <button class="rbtn" id="railCapas" type="button" title="Capas del diseño"><span>🗂️<small>Capas</small></span></button>
       <button class="rbtn" id="undoLibre" type="button" disabled title="Deshacer"><span>↩️</span></button>
@@ -768,6 +769,8 @@
         <span id="zoomNivel">100%</span>
         <button class="zoom-btn" id="zoomMas" type="button" title="Acercar" aria-label="Acercar">+</button>
         <button class="zoom-btn zoom-fit" id="zoomAjustar" type="button" title="Ajustar a la pantalla">⤢ Ajustar</button>
+        <button class="zoom-btn zoom-fit" id="selVarios" type="button" title="Modo seleccionar varios: cada toque agrega o quita de la selección" aria-pressed="false">⇧ Varios</button>
+        <button class="zoom-btn zoom-fit" id="vistaBordadoBtn" type="button" title="Vista previa aproximada como bordado (tela y puntadas); no cambia la impresión" aria-pressed="false">🪡 Bordado</button>
         <button class="zoom-btn zoom-fit" id="verHoja" type="button" title="Ver la hoja tal como saldrá impresa">👁️ Ver la hoja</button>
       </div>
       <div class="lienzo-wrap"><canvas id="previaLibre" width="320" height="320"></canvas></div>
@@ -809,6 +812,12 @@
 
       <div id="libreSelControles" class="tarjeta" style="display:none">
         <h2>🎯 Elemento seleccionado</h2>
+        <div id="multiBar" style="display:none; align-items:center; gap:7px; flex-wrap:wrap; margin-bottom:10px; padding:8px 10px; background:#f0ead9; border:1px solid #ddcfae; border-radius:10px;">
+          <strong id="multiCuenta" style="font-size:.84rem; color:var(--tinta);">2 elementos</strong>
+          <button class="boton-sec" id="agruparBtn" type="button" title="Los agrupados se seleccionan y mueven juntos">🔗 Agrupar</button>
+          <button class="boton-sec" id="desagruparBtn" type="button" style="display:none;">Desagrupar</button>
+          <button class="boton-sec" id="deselBtn" type="button">✕ Deseleccionar</button>
+        </div>
         <div class="campo"><label for="tamanoLibre">Tamaño <span id="tamanoLibreVal"></span></label><input type="range" id="tamanoLibre" min="1" max="30" step="0.5" value="6"></div>
         <div class="campo" id="filaTamNum" style="margin-top:8px;"><label for="tamanoLibreNum">Tamaño exacto (cm)</label><input type="number" id="tamanoLibreNum" min="0.5" max="60" step="0.1" inputmode="decimal" style="max-width:130px;"></div>
         <div class="campo" id="filaAroLibre" style="display:none; margin-top:8px;"><label for="aroLibre">⭕ Ajustar a un bastidor (queda circular, a tamaño real)</label><select id="aroLibre"><option value="0" selected>Sin ajuste — libre</option><option value="10">Bastidor ⌀ 10 cm</option><option value="13">Bastidor ⌀ 13 cm</option><option value="15">Bastidor ⌀ 15 cm</option><option value="18">Bastidor ⌀ 18 cm</option><option value="20">Bastidor ⌀ 20 cm</option><option value="23">Bastidor ⌀ 23 cm</option><option value="26">Bastidor ⌀ 26 cm</option></select></div>
@@ -821,6 +830,7 @@
           <button class="boton-sec" id="flipLibre" type="button">⇋ Espejo</button>
           <button class="boton-sec" id="voltearLibre" type="button">⇅ Voltear</button>
           <button class="boton-sec" id="recorteLibre" type="button" title="Recorta la foto en círculo">⭕ Redondear</button>
+          <button class="boton-sec" id="trazarFotoBtn" type="button" title="Convierte la foto en solo líneas para calcar (la original queda oculta en Capas)" style="display:none;">✏️ Solo líneas</button>
           <button class="boton-sec" id="masTextoBtn" type="button" style="display:none;">🎀 Más estilo</button>
           <button class="boton-sec" id="centrarLibre" type="button">🎯 Centrar</button>
           <button class="boton-sec" id="alinIzq" type="button" title="Alinear al borde izquierdo">⇤</button>
@@ -873,7 +883,7 @@
 
       <div class="tarjeta" id="grpTexto" style="display:none">
         <h2>✍️ Texto</h2>
-        <div class="campo"><label for="textoLibre">Palabras</label><input type="text" id="textoLibre" placeholder="Escribe y toca «Añadir texto»" inputmode="text"></div>
+        <div class="campo"><label for="textoLibre">Palabras <span class="h2-sub">— Enter = otra línea</span></label><textarea id="textoLibre" rows="2" placeholder="Escribe y toca «Añadir texto»" style="width:100%; resize:vertical; font-family:inherit; font-size:1rem; padding:10px; border:1px solid var(--borde-fuerte); border-radius:10px;"></textarea></div>
         <div class="fila" style="margin-top:12px;">
           <div class="campo"><label for="fuenteLibre">Tipografía</label><select id="fuenteLibre"></select></div>
           <div class="campo campo-color"><label for="colorLibre">Color</label><input type="color" id="colorLibre" value="#6f6151"></div>
@@ -893,6 +903,20 @@
         <h2>◆ Formas</h2>
         <div class="motivos-grid" id="formasGrid" style="display:grid;" aria-label="Formas"></div>
         <p class="info-img" style="text-align:left; margin-top:8px;">Añade rectángulos, círculos, corazones, estrellas o líneas. Al tocar la forma eliges <strong>relleno</strong> o solo <strong>contorno</strong>, colores y grosor.</p>
+      </div>
+
+      <div class="tarjeta" id="grpDibujo" style="display:none">
+        <h2>✏️ Dibujo a mano alzada</h2>
+        <p class="info-img" style="text-align:left; margin:0 0 10px;">Dibuja con el dedo (o el mouse) directo sobre el lienzo. Cuando termines, toca <strong>«Listo»</strong> y tus trazos se convierten en un elemento que puedes mover, escalar y girar.</p>
+        <div class="fila">
+          <div class="campo campo-color"><label for="dibujoColor">Color del trazo</label><input type="color" id="dibujoColor" value="#6f6151"></div>
+          <div class="campo"><label for="dibujoGrosor">Grosor · <span id="dibujoGrosorVal">1,5 mm</span></label><input type="range" id="dibujoGrosor" min="5" max="60" step="1" value="15"></div>
+        </div>
+        <div class="controles-previa" style="justify-content:flex-start; margin-top:10px;">
+          <button class="boton-anadir" id="dibujoListo" type="button" style="margin:0; width:auto; padding:10px 16px;" disabled>✔️ Listo — crear elemento</button>
+          <button class="boton-sec" id="dibujoDeshacer" type="button" disabled>↩️ Borrar último trazo</button>
+          <button class="boton-sec" id="dibujoCancelar" type="button" disabled>✖️ Cancelar</button>
+        </div>
       </div>
 
       <div class="tarjeta" id="grpPlantillas" style="display:none">
@@ -1114,6 +1138,16 @@
     </div>
     <div id="galeriaGrid" class="galeria-grid"></div>
   </div>
+  <div class="tarjeta">
+    <h2><span class="paso">💾</span> Respaldo y traspaso</h2>
+    <p class="info-img" style="text-align:left; margin:-2px 0 10px;">Guarda TODOS tus proyectos y el diseño actual en un archivo <strong>.alma</strong> (para respaldar o pasar a otro equipo), o carga un respaldo hecho antes.</p>
+    <div class="controles-previa" style="justify-content:flex-start;">
+      <button class="boton-sec" id="exportarRespaldo" type="button">💾 Guardar respaldo (.alma)</button>
+      <label class="boton-sec" for="importarRespaldo" style="cursor:pointer; display:inline-block;">📂 Cargar respaldo…</label>
+      <input type="file" id="importarRespaldo" accept=".alma,application/json" hidden>
+    </div>
+    <p class="info-img" id="respaldoInfo" style="text-align:left; margin-top:8px;"></p>
+  </div>
 </section>
 
 <footer>Hecho con cariño · Alma bordado</footer>
@@ -1179,13 +1213,15 @@
 <div class="modal" id="modalNovedades" hidden>
   <div class="modal-caja" role="dialog" aria-modal="true" aria-labelledby="tituloNovedades">
     <svg viewBox="0 0 240 175" aria-hidden="true" style="width:120px; height:auto; display:block; margin:0 auto 4px; opacity:.9;"><use href="#ramoAlma"/></svg>
-    <h2 id="tituloNovedades" style="font-family:'Cormorant Garamond',Georgia,serif; font-size:1.7rem; text-align:center;">Herramientas de diseño ◆</h2>
-    <p class="sub" style="text-align:center;">Tu taller ahora es todo un programa de diseño:</p>
+    <h2 id="tituloNovedades" style="font-family:'Cormorant Garamond',Georgia,serif; font-size:1.7rem; text-align:center;">Estudio Pro Max ✏️</h2>
+    <p class="sub" style="text-align:center;">El salto más grande hasta ahora:</p>
     <ul class="bienvenida-lista">
-      <li>◆ <strong>Formas</strong>: rectángulos, círculos, corazones, estrellas, rombos y líneas — con relleno o solo contorno, colores y grosor a tu gusto.</li>
-      <li>🧵 <strong>Colores de hilo DMC reales</strong>: elige el color desde la paleta de hilos (con su código) para el texto, los motivos y las formas.</li>
-      <li>🔁 <strong>Repetir en patrón</strong>: convierte un elemento en un patrón en círculo (mandala), fila o cuadrícula con un toque.</li>
-      <li>🌫️ <strong>Opacidad</strong> para todos los elementos (perfecta para calcar o dar profundidad).</li>
+      <li>✏️ <strong>Lápiz a mano alzada</strong>: dibuja directo sobre el lienzo con trazo suavizado; tus trazos se vuelven un elemento editable.</li>
+      <li>🔗 <strong>Selecciona varios y agrupa</strong>: toca «⇧ Varios» (o Shift+clic), mueve todo junto, agrupa y duplica en bloque. Flechas/Supr/Ctrl+Z en el computador.</li>
+      <li>🤏 <strong>Pellizca para acercarte</strong> con dos dedos en la tablet, y desplázate sin soltar.</li>
+      <li>💾 <strong>Respaldo .alma</strong> (en Favoritos): guarda TODOS tus proyectos en un archivo y pásalos a otro equipo.</li>
+      <li>✂️ <strong>«Solo líneas»</strong> convierte una foto en contorno transparente para calcar, 🪡 <strong>vista bordado</strong> (tela y puntadas) y <strong>texto de varias líneas</strong>.</li>
+      <li>🗂️ Capas con <strong>nombre propio</strong> y reordenables arrastrando.</li>
     </ul>
     <div class="modal-acciones"><button class="boton-primario" id="cerrarNovedades" type="button">¡A bordar! 🌸</button></div>
   </div>
@@ -1353,7 +1389,7 @@
       if (activo) return; if (opts.puede && !opts.puede()) return;
       activo = true; idPuntero = e.pointerId; ini = aLienzo(e);
       try { if (canvas.setPointerCapture && e.pointerId != null) canvas.setPointerCapture(e.pointerId); } catch (err) {}
-      if (opts.onInicio) opts.onInicio(ini);   // ini = punto inicial en píxeles del lienzo (para selección por toque)
+      if (opts.onInicio) opts.onInicio(ini, e);   // ini = punto inicial en píxeles del lienzo; e = evento (shift/ctrl para multi-selección)
       if (e.cancelable) e.preventDefault();
     }
     function mover(e) {
@@ -1787,6 +1823,7 @@
   // Escala (px por cm) del lienzo en pantalla: se adapta al ancho de su columna y al alto de la
   // ventana, así el lienzo es lo más grande posible SIN desbordar ni tapar el panel lateral.
   var libreZoom = 1;   // 1 = "ajustado"; el usuario acerca/aleja con la barra de zoom
+  var vistaBordado = false;   // 🪡 vista previa "como bordado": tela + puntadas (solo en pantalla)
   function libreFit() {
     var d = libreDim(), pad = librePad();
     var centro = document.querySelector('#panel-libre .taller-centro');
@@ -1804,7 +1841,7 @@
   function fijarZoom(z) {
     libreZoom = Math.max(0.4, Math.min(4, z));
     var et = $('zoomNivel'); if (et) et.textContent = Math.round(libreZoom * 100) + '%';
-    dibujarLibre();
+    programar('libre', dibujarLibre);   // rAF: pellizcar queda suave (un redibujo por cuadro)
   }
   // Posición (en píxeles del lienzo) de las manijas de girar (perilla) y borrar (✕) del elemento
   // seleccionado. Se MANTIENEN dentro del lienzo aunque el elemento sea más grande que el bastidor
@@ -1994,7 +2031,25 @@
   // ---------- Texto (recto o EN ARCO) ----------
   function libreTextoCanvas(o, dpi) {
     var curva = Math.max(-100, Math.min(100, +o.curva || 0));
-    if (!curva) return decorarTextoCanvas(o, dibujarTexto(o.texto || ' ', { fontCss: o.fontCss, altoLineaCm: o.altoCm, estilo: o.estilo, grosor: o.grosor == null ? 0.4 : o.grosor, espaciado: o.espaciado || 0, align: 'centro', colorRelleno: o.color, colorContorno: o.color2c || o.color, gradiente: !!o.degradado, color2: o.colorDeg || '#d8c4a0', dir: o.dirDeg || 'vertical', sombra: !!o.sombra, transparente: true }, dpi), dpi);
+    var opsTxt = { fontCss: o.fontCss, altoLineaCm: o.altoCm, estilo: o.estilo, grosor: o.grosor == null ? 0.4 : o.grosor, espaciado: o.espaciado || 0, align: 'centro', colorRelleno: o.color, colorContorno: o.color2c || o.color, gradiente: !!o.degradado, color2: o.colorDeg || '#d8c4a0', dir: o.dirDeg || 'vertical', sombra: !!o.sombra, transparente: true };
+    // Varias líneas en UN solo elemento (Enter = otra línea); el arco aplica solo a una línea
+    if (String(o.texto || '').indexOf('\n') >= 0) {
+      var lineas = String(o.texto).split('\n').map(function (l) { return l.trim() || ' '; });
+      var rl = lineas.map(function (l) { return dibujarTexto(l, opsTxt, dpi); });
+      var interCm = o.altoCm * 1.28;
+      var wMaxCm = 0; rl.forEach(function (r2) { if (r2.wCm > wMaxCm) wMaxCm = r2.wCm; });
+      var altoTotCm = interCm * (rl.length - 1) + rl.reduce(function (m, r2) { return Math.max(m, r2.hCm); }, 0);
+      var escPx = dpi / 2.54;
+      var cvM = document.createElement('canvas');
+      cvM.width = Math.max(1, Math.ceil(wMaxCm * escPx)); cvM.height = Math.max(1, Math.ceil(altoTotCm * escPx));
+      var xm = cvM.getContext('2d'), yA = 0;
+      rl.forEach(function (r2) {
+        xm.drawImage(r2.canvas, (cvM.width - r2.canvas.width) / 2, yA);
+        yA += interCm * escPx;
+      });
+      return decorarTextoCanvas(o, { canvas: cvM, wCm: wMaxCm, hCm: altoTotCm }, dpi);
+    }
+    if (!curva) return decorarTextoCanvas(o, dibujarTexto(o.texto || ' ', opsTxt, dpi), dpi);
     var altoPx = Math.max(6, o.altoCm / 2.54 * dpi), font = altoPx.toFixed(1) + 'px ' + o.fontCss;
     ctxMedicion.font = font;
     var t = String(o.texto || ' '), anchos = [], W = 0;
@@ -2046,7 +2101,8 @@
     if (idx < 0 || idx >= histPila.length) return;
     histIdx = idx;
     libreObjs = histClon(histPila[idx]);
-    libreSel = null; libreSync(); dibujarLibre(); libreActivarBotones(); histBotones();
+    libreSel = null; libreSelExtra = []; try { actualizarBarraMulti(); } catch (e) {}
+    libreSync(); dibujarLibre(); libreActivarBotones(); histBotones();
   }
 
   // Encuadra un elemento para que CUBRA todo el lienzo/bastidor (lo que sobra se recorta al imprimir)
@@ -2074,7 +2130,7 @@
       if (h > d.h * 0.9) { h = d.h * 0.9; w = h * prop; }
       o.wCm = w; o.hCm = h;
     }
-    libreObjs.push(o); libreSel = o.id; libreSync(); dibujarLibre(); libreActivarBotones(); histPush();
+    libreObjs.push(o); libreSel = o.id; libreSelExtra = []; libreSync(); dibujarLibre(); libreActivarBotones(); histPush();
     if (encuadraAlAro) toast('Foto ajustada al bastidor ⌀' + d.w.toFixed(1).replace(/\.0$/, '') + ' cm · ya puedes seguir diseñando 🌸');
     else if (!circ && primeraImg) toast('Foto agregada · ¿la quieres circular? usa «⭕ Ajustar a un bastidor». Y con «🎨 color» le cambias el tono.');
   }
@@ -2085,7 +2141,7 @@
     conFuenteLista(o.fontCss, function () {
       libreRenderTexto(o);
       if (o.wCm > d.w * 0.92) { o.altoCm = Math.max(0.8, o.altoCm * (d.w * 0.92) / o.wCm); libreRenderTexto(o); }
-      libreObjs.push(o); libreSel = o.id; libreSync(); dibujarLibre(); libreActivarBotones(); histPush();
+      libreObjs.push(o); libreSel = o.id; libreSelExtra = []; libreSync(); dibujarLibre(); libreActivarBotones(); histPush();
     });
   }
   function libreAddTextoProg(texto, fontCss, color, estilo, altoCm, fx, fy, cb) {
@@ -2103,7 +2159,7 @@
   function libreAddMotivo(clave) {
     var d = libreDim(), lado = Math.min(d.w, d.h) * 0.42;
     var o = { tipo: 'motivo', id: ++libreSeq, clave: clave, color: $('colorLibre').value || '#6f6151', xCm: d.w / 2, yCm: d.h / 2, wCm: lado, hCm: lado, rot: 0, flip: false };
-    libreObjs.push(o); libreSel = o.id; libreSync(); dibujarLibre(); libreActivarBotones(); histPush();
+    libreObjs.push(o); libreSel = o.id; libreSelExtra = []; libreSync(); dibujarLibre(); libreActivarBotones(); histPush();
   }
   function libreAddForma(clave) {
     var d = libreDim(), lado = Math.min(d.w, d.h) * 0.5;
@@ -2111,7 +2167,7 @@
     if (clave === 'rect' || clave === 'redondo') h = lado * 0.66;
     if (clave === 'linea') { w = lado; h = 1; }
     var o = { tipo: 'forma', id: ++libreSeq, clave: clave, xCm: d.w / 2, yCm: d.h / 2, wCm: w, hCm: h, rot: 0, flip: false, flipY: false, relleno: clave !== 'linea', color: $('colorLibre').value || '#b89a6a', colorLinea: '#6f6151', grosor: 0.2, radio: 0.28, alpha: 1 };
-    libreObjs.push(o); libreSel = o.id; libreSync(); dibujarLibre(); libreActivarBotones(); histPush();
+    libreObjs.push(o); libreSel = o.id; libreSelExtra = []; libreSync(); dibujarLibre(); libreActivarBotones(); histPush();
   }
 
   // ---------- Plantillas: árbol genealógico y diseños de inicio (todo queda editable) ----------
@@ -2122,7 +2178,9 @@
     if (forma === 'circulo') setVal('diametroEstudio', w);
     else { setVal('anchoLibre', w); setVal('altoLibre', h); }
     aplicarFormaUI(); try { marcarChipsLienzo(); } catch (e) {}
-    libreObjs = []; libreSel = null; libreZoom = 1; var zn = $('zoomNivel'); if (zn) zn.textContent = '100%';
+    libreObjs = []; libreSel = null; libreSelExtra = []; trazosTmp = []; trazoVivo = null;
+    try { actualizarBarraMulti(); } catch (e2) {}
+    libreZoom = 1; var zn = $('zoomNivel'); if (zn) zn.textContent = '100%';
     _dimPrev = libreDim();
   }
   function plantillaTexto(texto, fontCss, color, estilo, altoCm, xCm, yCm, extra) {
@@ -2242,20 +2300,56 @@
     }
     else if (clave === 'linea') { x.moveTo(-hw, 0); x.lineTo(hw, 0); }
   }
+  // Pinta una polilínea SUAVIZADA (curvas por puntos medios): así el lápiz se ve fluido, no dentado
+  function trazoSuave(x, pts, ex, ey) {
+    if (!pts || !pts.length) return;
+    if (pts.length === 1) { x.beginPath(); x.arc(pts[0][0] * ex, pts[0][1] * ey, Math.max(0.5, x.lineWidth / 2), 0, 6.2832); x.fill(); return; }
+    x.beginPath(); x.moveTo(pts[0][0] * ex, pts[0][1] * ey);
+    for (var i = 1; i < pts.length - 1; i++) {
+      var mx = (pts[i][0] + pts[i + 1][0]) / 2 * ex, my = (pts[i][1] + pts[i + 1][1]) / 2 * ey;
+      x.quadraticCurveTo(pts[i][0] * ex, pts[i][1] * ey, mx, my);
+    }
+    var u = pts[pts.length - 1]; x.lineTo(u[0] * ex, u[1] * ey);
+    x.stroke();
+  }
   function libreDibujaObj(x, o, esc, dpi) {
     var ow = o.wCm * esc, oh = o.hCm * esc;
     x.save();
     x.translate(o.xCm * esc, o.yCm * esc);
     if (o.rot) x.rotate(o.rot);
     if (o.alpha != null && o.alpha < 1) x.globalAlpha = Math.max(0.15, o.alpha);
+    if (o.tipo === 'trazo') {
+      // dibujo a mano alzada: puntos normalizados al alto/ancho del elemento; el grosor escala con él
+      if (o.flip || o.flipY) x.scale(o.flip ? -1 : 1, o.flipY ? -1 : 1);
+      x.strokeStyle = o.color || '#6f6151'; x.fillStyle = x.strokeStyle;
+      x.lineWidth = Math.max(1, (o.grosorCm || 0.15) * esc * (o.wCm / (o.wCm0 || o.wCm)));
+      x.lineCap = 'round'; x.lineJoin = 'round';
+      if (vistaBordado && !dpi) x.setLineDash([0.3 * esc, 0.1 * esc]);
+      (o.puntos || []).forEach(function (tr) { trazoSuave(x, tr, ow, oh); });
+      x.restore(); return;
+    }
     if (o.tipo === 'forma') {
       if (o.flip || o.flipY) x.scale(o.flip ? -1 : 1, o.flipY ? -1 : 1);
       var esLinea = o.clave === 'linea', gr = (o.grosor == null ? 0.2 : o.grosor);
       formaPath(x, o.clave, ow, oh, o.radio);
-      if (o.relleno && !esLinea) { x.fillStyle = o.color || '#b89a6a'; x.fill(); }
+      if (o.relleno && !esLinea) {
+        x.fillStyle = o.color || '#b89a6a'; x.fill();
+        if (vistaBordado && !dpi) {
+          // "satín": rayitas diagonales dentro de la forma, como puntada de relleno
+          x.save(); x.clip();
+          x.strokeStyle = 'rgba(255,255,255,0.30)'; x.lineWidth = Math.max(1, 0.03 * esc); x.setLineDash([]);
+          var pasoSat = Math.max(3, 0.14 * esc), diag = ow + oh;
+          x.beginPath();
+          for (var sy = -diag; sy < diag; sy += pasoSat) { x.moveTo(-ow, sy); x.lineTo(ow, sy + ow * 0.55); }
+          x.stroke(); x.restore();
+          formaPath(x, o.clave, ow, oh, o.radio);
+        }
+      }
       if (esLinea || !o.relleno || gr > 0) {
         x.strokeStyle = (esLinea ? (o.color || '#6f6151') : (o.colorLinea || o.color || '#6f6151'));
-        x.lineWidth = Math.max(1, gr * esc); x.lineJoin = 'round'; x.lineCap = 'round'; x.stroke();
+        x.lineWidth = Math.max(1, gr * esc); x.lineJoin = 'round'; x.lineCap = 'round';
+        if (vistaBordado && !dpi) x.setLineDash([0.3 * esc, 0.1 * esc]);
+        x.stroke(); x.setLineDash([]);
       }
       x.restore(); return;
     }
@@ -2271,14 +2365,35 @@
       x.scale(ow / 100, oh / 100);
       x.strokeStyle = o.color || '#6f6151'; x.fillStyle = o.color || '#6f6151';
       x.lineWidth = 3.4; x.lineCap = 'round'; x.lineJoin = 'round';
+      if (vistaBordado && !dpi) x.setLineDash([Math.max(4, 0.3 * esc * 100 / Math.max(ow, 1)), Math.max(2, 0.1 * esc * 100 / Math.max(ow, 1))]);
       try { motivoDef(o.clave)[2](x); } catch (e) {}
+      x.setLineDash([]);
     } else if (dpi) {
       var r = libreTextoCanvas(o, dpi);
       x.drawImage(r.canvas, -ow / 2, -oh / 2, ow, oh);
-    } else if (o._cv) x.drawImage(o._cv, -ow / 2, -oh / 2, ow, oh);
+    } else if (o._cv) {
+      if (vistaBordado) {   // leve relieve de hilo en los textos (solo vista)
+        x.shadowColor = 'rgba(90,70,50,0.5)'; x.shadowBlur = 1;
+        x.shadowOffsetX = Math.max(1, 0.02 * esc); x.shadowOffsetY = Math.max(1, 0.02 * esc);
+      }
+      x.drawImage(o._cv, -ow / 2, -oh / 2, ow, oh);
+    }
     x.restore();
   }
   var libreGuiaSnap = { x: false, y: false };
+  // Patrón de trama de tela (se crea una sola vez) para la vista bordado
+  var _telaPat = null;
+  function telaPatron(x) {
+    if (_telaPat) return _telaPat;
+    var c = document.createElement('canvas'); c.width = 8; c.height = 8;
+    var t = c.getContext('2d');
+    t.strokeStyle = 'rgba(120,100,80,0.10)'; t.lineWidth = 1;
+    t.beginPath(); t.moveTo(0, 2.5); t.lineTo(8, 2.5); t.moveTo(0, 6.5); t.lineTo(8, 6.5); t.stroke();
+    t.strokeStyle = 'rgba(120,100,80,0.07)';
+    t.beginPath(); t.moveTo(2.5, 0); t.lineTo(2.5, 8); t.moveTo(6.5, 0); t.lineTo(6.5, 8); t.stroke();
+    _telaPat = x.createPattern(c, 'repeat');
+    return _telaPat;
+  }
   function dibujarLibre() {
     tocarEstado();
     var cv = $('previaLibre'); if (!cv) return;
@@ -2299,6 +2414,15 @@
       x.fillStyle = fondo; x.fill();
     } else {
       x.fillStyle = fondo; x.fillRect(0, 0, dW, dH);
+    }
+    if (vistaBordado) {
+      // textura de tela (trama de lino sutil) sobre el área bordable
+      x.save();
+      if (circ) { x.beginPath(); x.arc(dW / 2, dH / 2, Math.min(dW, dH) / 2, 0, 6.2832); x.clip(); }
+      else { x.beginPath(); x.rect(0, 0, dW, dH); x.clip(); }
+      x.fillStyle = telaPatron(x);
+      x.fillRect(0, 0, dW, dH);
+      x.restore();
     }
     // Elementos del diseño (las capas ocultas no se dibujan). En bastidor, RECORTAMOS todo al aro:
     // lo que sobra queda fuera del lienzo y no ensucia la vista (igual que saldrá impreso).
@@ -2326,7 +2450,27 @@
       if (libreGuiaSnap.y) { x.beginPath(); x.moveTo(0, dH / 2 + 0.5); x.lineTo(dW, dH / 2 + 0.5); x.stroke(); }
       x.setLineDash([]);
     }
+    // trazos del modo dibujo aún sin convertir en elemento (se ven en vivo mientras dibujas)
+    if ((typeof trazosTmp !== 'undefined' && trazosTmp.length) || (typeof trazoVivo !== 'undefined' && trazoVivo)) {
+      x.strokeStyle = ($('dibujoColor') && $('dibujoColor').value) || '#6f6151';
+      x.fillStyle = x.strokeStyle;
+      x.lineWidth = Math.max(1, dibujoGrosorCm() * esc); x.lineCap = 'round'; x.lineJoin = 'round';
+      trazosTmp.concat(trazoVivo ? [trazoVivo] : []).forEach(function (t) { trazoSuave(x, t.pts, esc, esc); });
+    }
     x.restore();   // cierra el desplazamiento del margen de trabajo (pad): las manijas van en píxeles del lienzo
+    var selTodos = seleccionActual();
+    if (selTodos.length > 1) {
+      // varios seleccionados: caja punteada en cada uno (se mueven juntos; sin manijas individuales)
+      selTodos.forEach(function (s2) {
+        x.save();
+        x.translate(pad + s2.xCm * esc, pad + s2.yCm * esc); if (s2.rot) x.rotate(s2.rot);
+        var sw2 = s2.wCm * esc, sh2 = s2.hCm * esc;
+        x.strokeStyle = '#a14f72'; x.lineWidth = 1.6; x.setLineDash([5, 4]);
+        x.strokeRect(-sw2 / 2, -sh2 / 2, sw2, sh2); x.setLineDash([]);
+        x.restore();
+      });
+      return;
+    }
     var s = libreSel ? libreObj(libreSel) : null;
     if (s) {
       var h = libreHandlesPos(s, esc, pad, W, H), sw = s.wCm * esc, sh = s.hCm * esc;
@@ -2361,6 +2505,7 @@
     $('flipLibre').style.display = o.tipo !== 'texto' ? 'inline-block' : 'none';
     var rc = $('recorteLibre');
     if (rc) { rc.style.display = o.tipo === 'img' ? 'inline-block' : 'none'; rc.classList.toggle('activo', o.recorte === 'circ'); rc.setAttribute('aria-pressed', o.recorte === 'circ' ? 'true' : 'false'); }
+    var tf = $('trazarFotoBtn'); if (tf) tf.style.display = (o.tipo === 'img' && !o.esPng) ? 'inline-block' : 'none';
     var fAro = $('filaAroLibre'); if (fAro) { fAro.style.display = o.tipo === 'img' ? 'block' : 'none'; if (o.tipo === 'img') { var sAro = $('aroLibre'); sAro.value = o.aroCm > 0 ? String(o.aroCm) : '0'; if (sAro.selectedIndex < 0) sAro.value = '0'; } }
     var rSl = $('rotLibre');
     if (rSl) {
@@ -2394,7 +2539,7 @@
       $('decorColorLibre').value = colorSeguro(o.decorColor || '#d98fa6');
       $('filaDecorColor').style.display = (o.decor && o.decor !== 'no') ? 'block' : 'none';
     }
-    var fc = $('filaCurvaLibre'); if (fc) { fc.style.display = o.tipo === 'texto' ? 'block' : 'none'; if (o.tipo === 'texto') { $('curvaLibre').value = o.curva || 0; $('curvaLibreVal').textContent = (o.curva || 0) === 0 ? 'recto' : ((o.curva > 0 ? 'arco ↑ ' : 'arco ↓ ') + Math.abs(o.curva) + '%'); } }
+    var fc = $('filaCurvaLibre'); if (fc) { var esTxt1L = o.tipo === 'texto' && String(o.texto || '').indexOf('\n') < 0; fc.style.display = esTxt1L ? 'block' : 'none'; if (esTxt1L) { $('curvaLibre').value = o.curva || 0; $('curvaLibreVal').textContent = (o.curva || 0) === 0 ? 'recto' : ((o.curva > 0 ? 'arco ↑ ' : 'arco ↓ ') + Math.abs(o.curva) + '%'); } }
     if (o.tipo === 'texto') { $('textoLibre').value = o.texto; $('fuenteLibre').value = o.fontCss; $('colorLibre').value = colorSeguro(o.color); $('estiloLibre').value = o.estilo; }
     if (o.tipo === 'motivo') { $('colorLibre').value = colorSeguro(o.color); }
     var fo = $('formaOpc'); if (fo) {
@@ -2495,19 +2640,56 @@
 
   // ---------- Manipulación directa: mover, estirar (esquinas) y girar (perilla) ----------
   var dragModo = null, dragDatos = null, dragCambio = false;
+  // ---------- Multi-selección y grupos ----------
+  var libreSelExtra = [];        // ids seleccionados ADEMÁS del principal
+  var modoVarios = false;        // botón «⇧ Varios»: cada toque agrega/quita de la selección
+  var libreGesto = false;        // true durante el pellizco de dos dedos (no arrastrar elementos)
+  // ---------- Modo dibujo a mano alzada ----------
+  var libreModoDibujo = false, trazosTmp = [], trazoVivo = null;
+  function dibujoGrosorCm() { return Math.max(0.05, Math.min(0.6, (parseInt(($('dibujoGrosor') || {}).value, 10) || 15) / 100)); }
+  function seleccionActual() {
+    var arr = [];
+    if (libreSel) { var p = libreObj(libreSel); if (p) arr.push(p); }
+    libreSelExtra.forEach(function (id) { if (id === libreSel) return; var o = libreObj(id); if (o) arr.push(o); });
+    return arr;
+  }
+  function enSeleccion(id) { return libreSel === id || libreSelExtra.indexOf(id) >= 0; }
+  function seleccionar(id, aditivo) {
+    if (aditivo && libreSel && id !== libreSel) {
+      var ix = libreSelExtra.indexOf(id);
+      if (ix >= 0) libreSelExtra.splice(ix, 1); else libreSelExtra.push(id);
+    } else {
+      libreSel = id; libreSelExtra = [];
+      var o = libreObj(id);   // un elemento agrupado trae a todo su grupo
+      if (o && o.grupo) libreSelExtra = libreObjs.filter(function (q) { return q.grupo === o.grupo && q.id !== id; }).map(function (q) { return q.id; });
+    }
+    actualizarBarraMulti();
+  }
+  function deseleccionar() { libreSel = null; libreSelExtra = []; actualizarBarraMulti(); }
+  function actualizarBarraMulti() {
+    var bar = $('multiBar'); if (!bar) return;
+    var n = seleccionActual().length;
+    bar.style.display = n > 1 ? 'flex' : 'none';
+    if (n > 1) $('multiCuenta').textContent = n + ' elementos seleccionados';
+    var p = libreSel && libreObj(libreSel);
+    var dg = $('desagruparBtn'); if (dg) dg.style.display = (p && p.grupo) ? 'inline-block' : 'none';
+  }
   hacerArrastrable($('previaLibre'), {
-    puede: function () { return libreObjs.length > 0; },
-    onInicio: function (p) {
+    puede: function () { return libreObjs.length > 0 || libreModoDibujo; },
+    onInicio: function (p, ev) {
+      if (libreGesto) return;
       var esc = libreEscala(), pad = librePad(), cx = (p.x - pad) / esc, cy = (p.y - pad) / esc;
       dragModo = null; dragDatos = null; dragCambio = false;
-      var s = libreSel ? libreObj(libreSel) : null;
-      if (s) {
+      // ✏️ Modo dibujo: el dedo dibuja un trazo en vez de seleccionar
+      if (libreModoDibujo) { trazoVivo = { pts: [[cx, cy]] }; dragModo = 'dibujar'; dragDatos = { x0: cx, y0: cy }; return; }
+      var s = (libreSel && !libreSelExtra.length) ? libreObj(libreSel) : null;
+      if (s) {   // manijas: solo con UN elemento seleccionado (en grupo se mueve todo junto)
         var dm = libreDim(), W = Math.round(dm.w * esc) + pad * 2, H = Math.round(dm.h * esc) + pad * 2;
         var hnd = libreHandlesPos(s, esc, pad, W, H);
         // manija ✕ = borrar (posición fija dentro del lienzo, en píxeles)
         if (Math.hypot(p.x - hnd.del.x, p.y - hnd.del.y) <= 16) {
           libreObjs = libreObjs.filter(function (q) { return q.id !== s.id; });
-          libreSel = null; libreSync(); dibujarLibre(); libreActivarBotones(); histPush();
+          deseleccionar(); libreSync(); dibujarLibre(); libreActivarBotones(); histPush();
           return;
         }
         // perilla de giro
@@ -2527,20 +2709,48 @@
         }
       }
       var hit = libreHit(cx, cy);
-      libreSel = hit ? hit.id : null;
-      if (hit) { dragModo = 'mover'; dragDatos = { x0: hit.xCm, y0: hit.yCm }; }
+      var aditivo = modoVarios || !!(ev && (ev.shiftKey || ev.ctrlKey || ev.metaKey));
+      if (!hit) {
+        if (!aditivo) deseleccionar();
+        libreSync(); dibujarLibre(); return;
+      }
+      if (aditivo && enSeleccion(hit.id)) {
+        // toque aditivo sobre algo ya seleccionado = quitarlo de la selección
+        if (hit.id !== libreSel) libreSelExtra.splice(libreSelExtra.indexOf(hit.id), 1);
+        else if (libreSelExtra.length) libreSel = libreSelExtra.shift();
+        else libreSel = null;
+        actualizarBarraMulti(); libreSync(); dibujarLibre(); return;
+      }
+      if (!enSeleccion(hit.id)) seleccionar(hit.id, aditivo);
+      // mover TODO lo seleccionado junto
+      dragModo = 'mover';
+      dragDatos = { pos0: seleccionActual().map(function (q) { return { id: q.id, x: q.xCm, y: q.yCm }; }) };
       libreSync(); dibujarLibre();
     },
     onMover: function (dx, dy) {
+      if (libreGesto) { if (dragModo === 'dibujar') { trazoVivo = null; dragModo = null; } return; }
+      var esc = libreEscala();
+      if (dragModo === 'dibujar') {
+        if (!trazoVivo) return;
+        var nxp = dragDatos.x0 + dx / esc, nyp = dragDatos.y0 + dy / esc;
+        var last = trazoVivo.pts[trazoVivo.pts.length - 1];
+        if (Math.hypot(nxp - last[0], nyp - last[1]) > 0.06) { trazoVivo.pts.push([nxp, nyp]); programar('libre', dibujarLibre); }
+        return;
+      }
       var o = libreSel ? libreObj(libreSel) : null; if (!o || !dragModo) return;
-      var d = libreDim(), esc = libreEscala();
+      var d = libreDim();
       dragCambio = true;
       if (dragModo === 'mover') {
-        var nx = dragDatos.x0 + dx / esc, ny = dragDatos.y0 + dy / esc;
+        var prim = dragDatos.pos0[0];
+        var nx = prim.x + dx / esc, ny = prim.y + dy / esc;
         libreGuiaSnap.x = Math.abs(nx - d.w / 2) < 0.25; if (libreGuiaSnap.x) nx = d.w / 2;
         libreGuiaSnap.y = Math.abs(ny - d.h / 2) < 0.25; if (libreGuiaSnap.y) ny = d.h / 2;
-        o.xCm = Math.max(0, Math.min(d.w, nx));
-        o.yCm = Math.max(0, Math.min(d.h, ny));
+        var ddx = nx - prim.x, ddy = ny - prim.y;
+        dragDatos.pos0.forEach(function (r) {
+          var q = libreObj(r.id); if (!q) return;
+          q.xCm = Math.max(0, Math.min(d.w, r.x + ddx));
+          q.yCm = Math.max(0, Math.min(d.h, r.y + ddy));
+        });
       } else if (dragModo === 'girar') {
         // ángulo del dedo respecto al centro del elemento (posición actual = inicio + delta)
         var aCur = Math.atan2(dragDatos.iniY + dy / esc - o.yCm, dragDatos.iniX + dx / esc - o.xCm);
@@ -2556,6 +2766,12 @@
       programar('libre', dibujarLibre);
     },
     onFin: function () {
+      if (dragModo === 'dibujar') {
+        if (trazoVivo && trazoVivo.pts.length > 1) trazosTmp.push(trazoVivo);
+        trazoVivo = null; dragModo = null; dragDatos = null;
+        dibujarLibre(); try { actualizarBotonesDibujo(); } catch (e) {}
+        return;
+      }
       var o = libreSel ? libreObj(libreSel) : null;
       libreGuiaSnap.x = libreGuiaSnap.y = false;
       if (o && dragModo === 'estirar' && o.tipo === 'texto') conFuenteLista(o.fontCss, function () { var cx0 = o.xCm, cy0 = o.yCm; libreRenderTexto(o); o.xCm = cx0; o.yCm = cy0; dibujarLibre(); libreSync(); });
@@ -2564,6 +2780,63 @@
       dragModo = null; dragDatos = null;
       dibujarLibre();
     }
+  });
+  // Pellizcar con dos dedos = acercar/alejar y desplazar el lienzo (gesto natural en tablet)
+  (function () {
+    var cv = $('previaLibre'), wrap = document.querySelector('#panel-libre .lienzo-wrap');
+    if (!cv || !wrap || !window.PointerEvent) return;
+    var pts = new Map(), pinch0 = null;
+    cv.addEventListener('pointerdown', function (e) {
+      pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pts.size === 2) {
+        libreGesto = true; dragModo = null; trazoVivo = null;
+        var a = Array.from(pts.values());
+        pinch0 = { d: Math.max(24, Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y)), zoom: libreZoom, mx: (a[0].x + a[1].x) / 2, my: (a[0].y + a[1].y) / 2, sl: wrap.scrollLeft, st: wrap.scrollTop };
+      }
+    });
+    window.addEventListener('pointermove', function (e) {
+      if (!pts.has(e.pointerId)) return;
+      pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pts.size !== 2 || !pinch0) return;
+      var a = Array.from(pts.values());
+      var dNow = Math.max(24, Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y));
+      var mx = (a[0].x + a[1].x) / 2, my = (a[0].y + a[1].y) / 2;
+      var zNuevo = Math.max(0.4, Math.min(4, pinch0.zoom * dNow / pinch0.d));
+      var fReal = zNuevo / pinch0.zoom;
+      fijarZoom(zNuevo);
+      // mantiene el punto pellizcado bajo los dedos: reescala el desplazamiento y suma el arrastre
+      var r = wrap.getBoundingClientRect();
+      wrap.scrollLeft = (pinch0.sl + (pinch0.mx - r.left)) * fReal - (mx - r.left);
+      wrap.scrollTop = (pinch0.st + (pinch0.my - r.top)) * fReal - (my - r.top);
+      if (e.cancelable) e.preventDefault();
+    }, { passive: false });
+    function alza(e) { if (pts.delete(e.pointerId) && pts.size < 2) { pinch0 = null; setTimeout(function () { libreGesto = false; }, 80); } }
+    window.addEventListener('pointerup', alza);
+    window.addEventListener('pointercancel', alza);
+  })();
+  // Atajos de teclado (en computador): flechas mueven (Shift = 1 cm), Supr borra,
+  // Ctrl+Z/Ctrl+Y deshacer/rehacer, Ctrl+D duplicar, Esc deselecciona.
+  document.addEventListener('keydown', function (e) {
+    var p = $('panel-libre'); if (!p || !p.classList.contains('activa')) return;
+    var t = e.target; if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable)) return;
+    if ($('candado')) return;
+    if (document.querySelector('.modal:not([hidden])')) return;
+    var ctrl = e.ctrlKey || e.metaKey, k = e.key;
+    if (ctrl && !e.shiftKey && (k === 'z' || k === 'Z')) { e.preventDefault(); histIr(histIdx - 1); return; }
+    if ((ctrl && (k === 'y' || k === 'Y')) || (ctrl && e.shiftKey && (k === 'z' || k === 'Z'))) { e.preventDefault(); histIr(histIdx + 1); return; }
+    if (ctrl && (k === 'd' || k === 'D')) { e.preventDefault(); $('dupLibre').click(); return; }
+    var sel = seleccionActual(); if (!sel.length) return;
+    if (k === 'Delete' || k === 'Backspace') { e.preventDefault(); $('borrarLibre').click(); return; }
+    if (k === 'Escape') { deseleccionar(); libreSync(); dibujarLibre(); return; }
+    var paso = e.shiftKey ? 1 : 0.1, mx2 = 0, my2 = 0;
+    if (k === 'ArrowLeft') mx2 = -paso; else if (k === 'ArrowRight') mx2 = paso;
+    else if (k === 'ArrowUp') my2 = -paso; else if (k === 'ArrowDown') my2 = paso;
+    else return;
+    e.preventDefault();
+    var d = libreDim();
+    sel.forEach(function (q) { q.xCm = Math.max(0, Math.min(d.w, q.xCm + mx2)); q.yCm = Math.max(0, Math.min(d.h, q.yCm + my2)); });
+    programar('libre', dibujarLibre);
+    programarRetardo('histTecla', histPush, 600);
   });
   function libreEditTextoSel() {
     var o = libreSel ? libreObj(libreSel) : null; if (!o) return;
@@ -2603,13 +2876,17 @@
   })();
   // ---------- Panel de capas: lista de elementos, la de arriba se dibuja al frente ----------
   function capaNombre(o) {
-    if (o.tipo === 'texto') return '✍️ “' + String(o.texto || '').slice(0, 16) + (String(o.texto || '').length > 16 ? '…' : '') + '”';
-    if (o.tipo === 'motivo') return '🌿 ' + motivoDef(o.clave)[1];
-    if (o.tipo === 'forma') { for (var i = 0; i < FORMAS.length; i++) if (FORMAS[i][0] === o.clave) return '◆ ' + FORMAS[i][1]; return '◆ Forma'; }
-    return '🖼️ Foto' + (o.aroCm > 0 ? ' · bastidor ⌀' + (+o.aroCm.toFixed(1)) : '');
+    if (o.nombre) return (o.grupo ? '🔗 ' : '') + o.nombre;
+    var base;
+    if (o.tipo === 'texto') base = '✍️ “' + String(o.texto || '').slice(0, 16) + (String(o.texto || '').length > 16 ? '…' : '') + '”';
+    else if (o.tipo === 'motivo') base = '🌿 ' + motivoDef(o.clave)[1];
+    else if (o.tipo === 'trazo') base = '✏️ Dibujo a mano';
+    else if (o.tipo === 'forma') { base = '◆ Forma'; for (var i = 0; i < FORMAS.length; i++) if (FORMAS[i][0] === o.clave) base = '◆ ' + FORMAS[i][1]; }
+    else base = '🖼️ Foto' + (o.aroCm > 0 ? ' · bastidor ⌀' + (+o.aroCm.toFixed(1)) : '');
+    return (o.grupo ? '🔗 ' : '') + base;
   }
   function capasMarcar() {
-    document.querySelectorAll('#listaCapas .capa-fila').forEach(function (f) { f.classList.toggle('activa', String(libreSel) === f.dataset.id); });
+    document.querySelectorAll('#listaCapas .capa-fila').forEach(function (f) { f.classList.toggle('activa', enSeleccion(+f.dataset.id)); });
   }
   function renderCapas() {
     var cont = $('listaCapas'); if (!cont) return;
@@ -2637,6 +2914,9 @@
           formaPath(tx, o.clave, fw, fh, o.radio);
           if (o.relleno && o.clave !== 'linea') { tx.fillStyle = o.color || '#b89a6a'; tx.fill(); }
           tx.strokeStyle = (o.clave === 'linea' ? o.color : o.colorLinea) || '#6f6151'; tx.lineWidth = 2; tx.lineJoin = 'round'; tx.lineCap = 'round'; tx.stroke();
+        } else if (o.tipo === 'trazo') {
+          tx.strokeStyle = o.color || '#6f6151'; tx.fillStyle = tx.strokeStyle; tx.lineWidth = 2; tx.lineCap = 'round'; tx.lineJoin = 'round';
+          (o.puntos || []).forEach(function (tr) { trazoSuave(tx, tr, o.wCm * e2, o.hCm * e2); });
         } else if (o._cv) {
           var tw2 = o.wCm * e2, th2 = o.hCm * e2; tx.drawImage(o._cv, -tw2 / 2, -th2 / 2, tw2, th2);
         }
@@ -2653,25 +2933,118 @@
         b.addEventListener('click', function (ev) { ev.stopPropagation(); bd[2](); });
         fila.appendChild(b);
       });
-      fila.addEventListener('click', function () { if (o.oculto) return; libreSel = o.id; libreSync(); dibujarLibre(); });
+      fila.addEventListener('click', function () { if (o.oculto) return; seleccionar(o.id, modoVarios); libreSync(); dibujarLibre(); });
+      // Renombrar: toca el nombre de la capa YA seleccionada (o doble clic en escritorio)
+      function renombrarCapa(ev) {
+        ev.stopPropagation();
+        var n = prompt('Nombre de la capa:', o.nombre || capaNombre(o).replace(/^[^ ]+ /, ''));
+        if (n == null) return;
+        o.nombre = String(n).trim().slice(0, 40) || null;
+        renderCapas(); tocarEstado();
+      }
+      nom.title = 'Toca (con la capa seleccionada) para ponerle nombre';
+      nom.addEventListener('click', function (ev) { if (enSeleccion(o.id)) renombrarCapa(ev); });
+      nom.addEventListener('dblclick', renombrarCapa);
+      // Reordenar arrastrando (escritorio)
+      fila.draggable = true;
+      fila.addEventListener('dragstart', function (ev) { try { ev.dataTransfer.setData('text/plain', String(o.id)); ev.dataTransfer.effectAllowed = 'move'; } catch (e) {} });
+      fila.addEventListener('dragover', function (ev) { ev.preventDefault(); ev.dataTransfer.dropEffect = 'move'; });
+      fila.addEventListener('drop', function (ev) {
+        ev.preventDefault();
+        var idArr; try { idArr = parseInt(ev.dataTransfer.getData('text/plain'), 10); } catch (e) { return; }
+        if (!idArr || idArr === o.id) return;
+        var desde = -1, hasta = -1;
+        libreObjs.forEach(function (q, i2) { if (q.id === idArr) desde = i2; if (q.id === o.id) hasta = i2; });
+        if (desde < 0 || hasta < 0) return;
+        var mov = libreObjs.splice(desde, 1)[0];
+        libreObjs.splice(hasta, 0, mov);
+        dibujarLibre(); renderCapas(); histPush();
+      });
       cont.appendChild(fila);
     })(libreObjs[i], i);
   }
   // Riel de herramientas: qué sub-panel se ve a la derecha (estilo programa de diseño)
   function railSel(cual) {
-    [['railLienzo', 'grpLienzo'], ['railTexto', 'grpTexto'], ['btnMotivos', 'grpMotivos'], ['railFormas', 'grpFormas'], ['railPlantillas', 'grpPlantillas'], ['railCapas', 'grpCapas']].forEach(function (p) {
+    [['railLienzo', 'grpLienzo'], ['railTexto', 'grpTexto'], ['btnMotivos', 'grpMotivos'], ['railFormas', 'grpFormas'], ['railDibujo', 'grpDibujo'], ['railPlantillas', 'grpPlantillas'], ['railCapas', 'grpCapas']].forEach(function (p) {
       var b = $(p[0]), g = $(p[1]);
       if (g) g.style.display = (p[1] === cual) ? 'block' : 'none';
       if (b) b.classList.toggle('activo', p[1] === cual);
     });
     if (cual === 'grpCapas') renderCapas();
+    // Entrar/salir del modo lápiz: al salir con trazos pendientes, se convierten solos en elemento
+    var entrando = cual === 'grpDibujo';
+    if (!entrando && libreModoDibujo) finalizarDibujo(true);
+    libreModoDibujo = entrando;
+    var cvL = $('previaLibre'); if (cvL) cvL.style.cursor = entrando ? 'crosshair' : 'grab';
+    if (entrando) { deseleccionar(); libreSync(); dibujarLibre(); try { actualizarBotonesDibujo(); } catch (e) {} }
+  }
+  // Convierte los trazos dibujados en UN elemento editable (o los descarta)
+  function finalizarDibujo(crear) {
+    if (crear && trazosTmp.length) {
+      var minX = 1e9, minY = 1e9, maxX = -1e9, maxY = -1e9;
+      trazosTmp.forEach(function (t) { t.pts.forEach(function (p) { if (p[0] < minX) minX = p[0]; if (p[0] > maxX) maxX = p[0]; if (p[1] < minY) minY = p[1]; if (p[1] > maxY) maxY = p[1]; }); });
+      var g = dibujoGrosorCm(), padT = g / 2 + 0.1;
+      minX -= padT; minY -= padT; maxX += padT; maxY += padT;
+      var w = Math.max(0.5, maxX - minX), h = Math.max(0.5, maxY - minY);
+      var cx = (minX + maxX) / 2, cy = (minY + maxY) / 2;
+      var o = {
+        tipo: 'trazo', id: ++libreSeq, xCm: cx, yCm: cy, wCm: w, hCm: h, wCm0: w, rot: 0, flip: false, flipY: false,
+        color: ($('dibujoColor') && $('dibujoColor').value) || '#6f6151', grosorCm: g, alpha: 1,
+        puntos: trazosTmp.map(function (t) { return t.pts.map(function (p) { return [+((p[0] - cx) / w).toFixed(4), +((p[1] - cy) / h).toFixed(4)]; }); })
+      };
+      libreObjs.push(o); libreSel = o.id; libreSelExtra = [];
+      libreActivarBotones(); histPush();
+      toast('Dibujo creado ✏️ · ahora es un elemento: muévelo, escálalo o gíralo');
+    }
+    trazosTmp = []; trazoVivo = null;
+    dibujarLibre(); libreSync(); try { actualizarBotonesDibujo(); } catch (e) {}
+  }
+  function actualizarBotonesDibujo() {
+    var hay = trazosTmp.length > 0;
+    ['dibujoListo', 'dibujoDeshacer', 'dibujoCancelar'].forEach(function (id) { var b = $(id); if (b) b.disabled = !hay; });
   }
   $('railLienzo').addEventListener('click', function () { railSel('grpLienzo'); });
   $('railTexto').addEventListener('click', function () { railSel('grpTexto'); });
   $('btnMotivos').addEventListener('click', function () { railSel('grpMotivos'); });
   $('railFormas').addEventListener('click', function () { railSel('grpFormas'); });
+  $('railDibujo').addEventListener('click', function () { railSel('grpDibujo'); });
   $('railPlantillas').addEventListener('click', function () { railSel('grpPlantillas'); });
   $('railCapas').addEventListener('click', function () { railSel('grpCapas'); });
+  $('dibujoListo').addEventListener('click', function () { finalizarDibujo(true); });
+  $('dibujoDeshacer').addEventListener('click', function () { trazosTmp.pop(); dibujarLibre(); actualizarBotonesDibujo(); });
+  $('dibujoCancelar').addEventListener('click', function () { finalizarDibujo(false); });
+  $('dibujoGrosor').addEventListener('input', function () { $('dibujoGrosorVal').textContent = (dibujoGrosorCm() * 10).toFixed(1).replace('.', ',') + ' mm'; programar('libre', dibujarLibre); });
+  $('dibujoColor').addEventListener('input', function () { programar('libre', dibujarLibre); });
+  // ⇧ Varios: modo multi-selección por toques
+  $('selVarios').addEventListener('click', function () {
+    modoVarios = !modoVarios;
+    this.classList.toggle('activo', modoVarios);
+    this.setAttribute('aria-pressed', modoVarios ? 'true' : 'false');
+    if (modoVarios) toast('Modo varios: toca los elementos para sumarlos a la selección');
+  });
+  // 🪡 Vista bordado (solo en pantalla; el PDF no cambia)
+  $('vistaBordadoBtn').addEventListener('click', function () {
+    vistaBordado = !vistaBordado;
+    this.classList.toggle('activo', vistaBordado);
+    this.setAttribute('aria-pressed', vistaBordado ? 'true' : 'false');
+    dibujarLibre();
+    if (vistaBordado) toast('Vista bordado 🪡 (aproximada) · la impresión no cambia');
+  });
+  // Agrupar / desagrupar / deseleccionar
+  $('agruparBtn').addEventListener('click', function () {
+    var sel = seleccionActual(); if (sel.length < 2) return;
+    var gid = ++libreSeq;
+    sel.forEach(function (q) { q.grupo = gid; });
+    actualizarBarraMulti(); histPush();
+    toast('Agrupados 🔗 · al tocar uno se seleccionará todo el grupo');
+  });
+  $('desagruparBtn').addEventListener('click', function () {
+    var p = libreSel && libreObj(libreSel); if (!p || !p.grupo) return;
+    var g = p.grupo;
+    libreObjs.forEach(function (q) { if (q.grupo === g) q.grupo = null; });
+    actualizarBarraMulti(); histPush(); toast('Grupo deshecho');
+  });
+  $('deselBtn').addEventListener('click', function () { deseleccionar(); libreSync(); dibujarLibre(); });
   // Galería de formas: miniaturas
   (function () {
     var grid = $('formasGrid'); if (!grid) return;
@@ -2897,6 +3270,33 @@
   $('girarLibre').addEventListener('click', function () { var o = libreSel ? libreObj(libreSel) : null; if (!o) return; o.rot = ((o.rot || 0) + Math.PI / 12) % (Math.PI * 2); dibujarLibre(); histPush(); });
   $('flipLibre').addEventListener('click', function () { var o = libreSel ? libreObj(libreSel) : null; if (o && o.tipo !== 'texto') { o.flip = !o.flip; dibujarLibre(); histPush(); } });
   $('recorteLibre').addEventListener('click', function () { var o = libreSel ? libreObj(libreSel) : null; if (!o || o.tipo !== 'img') return; o.recorte = o.recorte === 'circ' ? null : 'circ'; if (o.recorte) o.aroCm = null; libreSync(); dibujarLibre(); histPush(); });
+  // ✏️ Foto → SOLO LÍNEAS: crea un elemento nuevo con el contorno (fondo transparente) para
+  // calcar; la foto original queda oculta en Capas por si quieres volver a ella.
+  $('trazarFotoBtn').addEventListener('click', function () {
+    var o = libreSel ? libreObj(libreSel) : null; if (!o || o.tipo !== 'img' || !o.img) return;
+    var boc = fotoFiltrada({ img: o.img, filtro: 'boceto' });
+    if (!boc) { toast('No pude trazar esta foto'); return; }
+    var c = document.createElement('canvas'); c.width = boc.width; c.height = boc.height;
+    var x2 = c.getContext('2d', { willReadFrequently: true }); x2.drawImage(boc, 0, 0);
+    try {
+      var dta = x2.getImageData(0, 0, c.width, c.height), a2 = dta.data;
+      for (var i2 = 0; i2 < a2.length; i2 += 4) {
+        var v2 = a2[i2];                                 // boceto es gris: R=G=B
+        a2[i2] = 74; a2[i2 + 1] = 62; a2[i2 + 2] = 50;   // color hilo café oscuro
+        a2[i2 + 3] = v2 >= 235 ? 0 : Math.min(255, (235 - v2) + 30);   // papel → transparente
+      }
+      x2.putImageData(dta, 0, 0);
+    } catch (e2) {}
+    var im = new Image();
+    im.onload = function () {
+      var n = { tipo: 'img', id: ++libreSeq, img: im, xCm: o.xCm, yCm: o.yCm, wCm: o.wCm, hCm: o.hCm, flip: o.flip, flipY: o.flipY, prop: o.prop, rot: o.rot || 0, recorte: o.recorte, aroCm: o.aroCm || null, alpha: 1, filtro: 'original', esPng: true, nombre: 'Solo líneas (calcar)' };
+      o.oculto = true;
+      libreObjs.push(n); libreSel = n.id; libreSelExtra = [];
+      libreSync(); dibujarLibre(); libreActivarBotones(); histPush();
+      toast('Listo ✏️ · quedaron solo las líneas; la foto original está oculta en Capas');
+    };
+    im.src = c.toDataURL('image/png');
+  });
   // ⭕ Ajustar la foto a un bastidor: queda circular con ese diámetro EXACTO (a tamaño real),
   // sin deformarla (se recorta lo que sobra). Permite varias fotos-bastidor en la misma hoja.
   $('aroLibre').addEventListener('change', function () {
@@ -2939,15 +3339,28 @@
   });
   $('centrarLibre').addEventListener('click', function () { var o = libreSel ? libreObj(libreSel) : null; if (!o) return; var d = libreDim(); o.xCm = d.w / 2; o.yCm = d.h / 2; dibujarLibre(); histPush(); });
   $('dupLibre').addEventListener('click', function () {
-    var o = libreSel ? libreObj(libreSel) : null; if (!o) return;
-    var d = libreDim(), c = {};
-    for (var k in o) c[k] = o[k];
-    c.id = ++libreSeq; c.xCm = Math.min(d.w, o.xCm + 0.8); c.yCm = Math.min(d.h, o.yCm + 0.8);
-    libreObjs.push(c); libreSel = c.id; libreSync(); dibujarLibre(); libreActivarBotones(); histPush();
+    var sel = seleccionActual(); if (!sel.length) return;
+    var d = libreDim(), nuevos = [], gid = sel.length > 1 ? ++libreSeq : null;
+    sel.forEach(function (o) {
+      var c = {};
+      for (var k in o) c[k] = o[k];
+      c.id = ++libreSeq; c.xCm = Math.min(d.w, o.xCm + 0.8); c.yCm = Math.min(d.h, o.yCm + 0.8);
+      delete c._cv; delete c._fCv; delete c._fKey;
+      if (c.tipo === 'texto') { try { libreRenderTexto(c); } catch (e) {} }
+      if (gid && c.grupo) c.grupo = gid;   // las copias forman su propio grupo, no el original
+      libreObjs.push(c); nuevos.push(c.id);
+    });
+    libreSel = nuevos[0]; libreSelExtra = nuevos.slice(1);
+    actualizarBarraMulti(); libreSync(); dibujarLibre(); libreActivarBotones(); histPush();
   });
   $('frenteLibre').addEventListener('click', function () { var o = libreSel ? libreObj(libreSel) : null; if (!o) return; libreObjs = libreObjs.filter(function (q) { return q.id !== o.id; }); libreObjs.push(o); dibujarLibre(); histPush(); });
   $('fondoLibre').addEventListener('click', function () { var o = libreSel ? libreObj(libreSel) : null; if (!o) return; libreObjs = libreObjs.filter(function (q) { return q.id !== o.id; }); libreObjs.unshift(o); dibujarLibre(); histPush(); });
-  $('borrarLibre').addEventListener('click', function () { if (!libreSel) return; libreObjs = libreObjs.filter(function (q) { return q.id !== libreSel; }); libreSel = null; libreSync(); dibujarLibre(); libreActivarBotones(); histPush(); });
+  $('borrarLibre').addEventListener('click', function () {
+    var sel = seleccionActual(); if (!sel.length) return;
+    var ids = sel.map(function (q) { return q.id; });
+    libreObjs = libreObjs.filter(function (q) { return ids.indexOf(q.id) < 0; });
+    deseleccionar(); libreSync(); dibujarLibre(); libreActivarBotones(); histPush();
+  });
   // Al cambiar el tamaño del lienzo, el diseño completo se reescala proporcionalmente
   // (posiciones y tamaños, letras incluidas): la composición se conserva tal cual.
   var _dimPrev = null;
@@ -4607,8 +5020,17 @@
   //  medidas ni posiciones al recargar o si iOS descarta la pestaña.
   // ====================================================================
   var ESTADO_VER = 3, restaurandoEstado = false;
-  function imgAJpeg(img) {
+  function imgAJpeg(img, png) {
     if (!img) return null;
+    if (png) {   // PNG conserva transparencia (contornos «solo líneas»); las líneas comprimen bien
+      if (img.__png) return img.__png;
+      try {
+        var iwp = img.naturalWidth || img.width, ihp = img.naturalHeight || img.height, maxp = 1280;
+        var ep = Math.min(1, maxp / Math.max(iwp, ihp)), wp = Math.max(1, Math.round(iwp * ep)), hp = Math.max(1, Math.round(ihp * ep));
+        var cp = document.createElement('canvas'); cp.width = wp; cp.height = hp; cp.getContext('2d').drawImage(img, 0, 0, wp, hp);
+        img.__png = cp.toDataURL('image/png'); return img.__png;
+      } catch (ePng) { return null; }
+    }
     if (img.__jpeg) return img.__jpeg;
     try {
       var iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height, max = 1280;
@@ -4628,10 +5050,11 @@
     s.libre = capIn(['anchoLibre', 'altoLibre', 'hojaLibre', 'diametroEstudio', 'guiaEstudio', 'espejoEstudio', 'copiasLibre', 'colorFondoLibre']);
     s.libre.forma = libreForma();
     s.libre.objs = libreObjs.map(function (o) {
-      if (o.tipo === 'img') return { tipo: 'img', xCm: o.xCm, yCm: o.yCm, wCm: o.wCm, hCm: o.hCm, flip: o.flip, flipY: !!o.flipY, prop: o.prop, rot: o.rot || 0, recorte: o.recorte || null, alpha: o.alpha == null ? 1 : o.alpha, filtro: o.filtro || 'original', aroCm: o.aroCm > 0 ? o.aroCm : null, oculto: !!o.oculto, img: conFotos ? imgAJpeg(o.img) : null };
-      if (o.tipo === 'motivo') return { tipo: 'motivo', clave: o.clave, color: o.color, xCm: o.xCm, yCm: o.yCm, wCm: o.wCm, hCm: o.hCm, rot: o.rot || 0, flip: !!o.flip, flipY: !!o.flipY, oculto: !!o.oculto, alpha: o.alpha == null ? 1 : o.alpha };
-      if (o.tipo === 'forma') return { tipo: 'forma', clave: o.clave, xCm: o.xCm, yCm: o.yCm, wCm: o.wCm, hCm: o.hCm, rot: o.rot || 0, flip: !!o.flip, flipY: !!o.flipY, relleno: !!o.relleno, color: o.color, colorLinea: o.colorLinea || null, grosor: o.grosor == null ? 0.2 : o.grosor, radio: o.radio == null ? 0.28 : o.radio, alpha: o.alpha == null ? 1 : o.alpha, oculto: !!o.oculto };
-      return { tipo: 'texto', xCm: o.xCm, yCm: o.yCm, wCm: o.wCm, hCm: o.hCm, rot: o.rot || 0, curva: o.curva || 0, texto: o.texto, fontCss: o.fontCss, color: o.color, estilo: o.estilo, altoCm: o.altoCm, color2c: o.color2c || null, grosor: o.grosor == null ? 0.4 : o.grosor, espaciado: o.espaciado || 0, degradado: !!o.degradado, colorDeg: o.colorDeg || null, dirDeg: o.dirDeg || 'vertical', sombra: !!o.sombra, decor: o.decor || 'no', decorColor: o.decorColor || null, oculto: !!o.oculto, alpha: o.alpha == null ? 1 : o.alpha };
+      if (o.tipo === 'img') return { tipo: 'img', xCm: o.xCm, yCm: o.yCm, wCm: o.wCm, hCm: o.hCm, flip: o.flip, flipY: !!o.flipY, prop: o.prop, rot: o.rot || 0, recorte: o.recorte || null, alpha: o.alpha == null ? 1 : o.alpha, filtro: o.filtro || 'original', aroCm: o.aroCm > 0 ? o.aroCm : null, oculto: !!o.oculto, grupo: o.grupo || null, nombre: o.nombre || null, esPng: !!o.esPng, img: conFotos ? imgAJpeg(o.img, !!o.esPng) : null };
+      if (o.tipo === 'motivo') return { tipo: 'motivo', clave: o.clave, color: o.color, xCm: o.xCm, yCm: o.yCm, wCm: o.wCm, hCm: o.hCm, rot: o.rot || 0, flip: !!o.flip, flipY: !!o.flipY, oculto: !!o.oculto, alpha: o.alpha == null ? 1 : o.alpha, grupo: o.grupo || null, nombre: o.nombre || null };
+      if (o.tipo === 'forma') return { tipo: 'forma', clave: o.clave, xCm: o.xCm, yCm: o.yCm, wCm: o.wCm, hCm: o.hCm, rot: o.rot || 0, flip: !!o.flip, flipY: !!o.flipY, relleno: !!o.relleno, color: o.color, colorLinea: o.colorLinea || null, grosor: o.grosor == null ? 0.2 : o.grosor, radio: o.radio == null ? 0.28 : o.radio, alpha: o.alpha == null ? 1 : o.alpha, oculto: !!o.oculto, grupo: o.grupo || null, nombre: o.nombre || null };
+      if (o.tipo === 'trazo') return { tipo: 'trazo', xCm: o.xCm, yCm: o.yCm, wCm: o.wCm, hCm: o.hCm, wCm0: o.wCm0 || o.wCm, rot: o.rot || 0, flip: !!o.flip, flipY: !!o.flipY, color: o.color, grosorCm: o.grosorCm || 0.15, puntos: o.puntos || [], alpha: o.alpha == null ? 1 : o.alpha, oculto: !!o.oculto, grupo: o.grupo || null, nombre: o.nombre || null };
+      return { tipo: 'texto', xCm: o.xCm, yCm: o.yCm, wCm: o.wCm, hCm: o.hCm, rot: o.rot || 0, curva: o.curva || 0, texto: o.texto, fontCss: o.fontCss, color: o.color, estilo: o.estilo, altoCm: o.altoCm, color2c: o.color2c || null, grosor: o.grosor == null ? 0.4 : o.grosor, espaciado: o.espaciado || 0, degradado: !!o.degradado, colorDeg: o.colorDeg || null, dirDeg: o.dirDeg || 'vertical', sombra: !!o.sombra, decor: o.decor || 'no', decorColor: o.decorColor || null, oculto: !!o.oculto, alpha: o.alpha == null ? 1 : o.alpha, grupo: o.grupo || null, nombre: o.nombre || null };
     });
     s.cruz = capIn(['anchoCruz', 'telaCruz', 'coloresCruz', 'telaColorCruz', 'hojaCruz']);
     s.cruz.simbolos = mostrarSimbolosCruz; s.cruz.fondo = quitarFondoCruz; s.cruz.limpiar = limpiarCruz; s.cruz.bn = bnCruz; s.cruz.img = conFotos ? imgAJpeg(imgCruz) : null; s.cruz.recorte = recorteCruz;
@@ -4702,10 +5125,11 @@
     // ESTUDIO
     try { if (s.libre) { resIn(s.libre); setRadio('formaEstudio', s.libre.forma === 'rect' ? 'rect' : 'circulo'); aplicarFormaUI();
       libreObjs = []; libreSel = null; (s.libre.objs || []).forEach(function (d) {
-      if (d.tipo === 'img') { var o = { tipo: 'img', id: ++libreSeq, img: null, xCm: +d.xCm || 0, yCm: +d.yCm || 0, wCm: +d.wCm || 1, hCm: +d.hCm || 1, flip: !!d.flip, prop: d.prop || 1, rot: +d.rot || 0, recorte: d.recorte === 'circ' ? 'circ' : null, alpha: d.alpha == null ? 1 : +d.alpha, filtro: d.filtro || 'original', flipY: !!d.flipY, aroCm: +d.aroCm > 0 ? +d.aroCm : null, oculto: !!d.oculto }; libreObjs.push(o); cargarFoto(d.img, function (im) { o.img = im; }, dibujarLibre); }
-      else if (d.tipo === 'motivo') { libreObjs.push({ tipo: 'motivo', id: ++libreSeq, clave: d.clave, color: d.color || '#6f6151', xCm: +d.xCm || 0, yCm: +d.yCm || 0, wCm: +d.wCm || 4, hCm: +d.hCm || 4, rot: +d.rot || 0, flip: !!d.flip, flipY: !!d.flipY, oculto: !!d.oculto, alpha: d.alpha == null ? 1 : +d.alpha }); }
-      else if (d.tipo === 'forma') { libreObjs.push({ tipo: 'forma', id: ++libreSeq, clave: d.clave || 'rect', xCm: +d.xCm || 0, yCm: +d.yCm || 0, wCm: +d.wCm || 4, hCm: +d.hCm || 4, rot: +d.rot || 0, flip: !!d.flip, flipY: !!d.flipY, relleno: d.relleno !== false, color: d.color || '#b89a6a', colorLinea: d.colorLinea || '#6f6151', grosor: d.grosor == null ? 0.2 : +d.grosor, radio: d.radio == null ? 0.28 : +d.radio, alpha: d.alpha == null ? 1 : +d.alpha, oculto: !!d.oculto }); }
-      else { var t = { tipo: 'texto', id: ++libreSeq, texto: d.texto, fontCss: d.fontCss, color: d.color, estilo: d.estilo, altoCm: d.altoCm, curva: +d.curva || 0, color2c: d.color2c || null, grosor: d.grosor == null ? 0.4 : +d.grosor, espaciado: +d.espaciado || 0, degradado: !!d.degradado, colorDeg: d.colorDeg || null, dirDeg: d.dirDeg || 'vertical', sombra: !!d.sombra, decor: d.decor || 'no', decorColor: d.decorColor || null, oculto: !!d.oculto, alpha: d.alpha == null ? 1 : +d.alpha, xCm: +d.xCm || 0, yCm: +d.yCm || 0, wCm: +d.wCm || 2, hCm: +d.hCm || 1, rot: +d.rot || 0 }; try { libreRenderTexto(t); } catch (e3) {} libreObjs.push(t); } });
+      if (d.tipo === 'img') { var o = { tipo: 'img', id: ++libreSeq, img: null, xCm: +d.xCm || 0, yCm: +d.yCm || 0, wCm: +d.wCm || 1, hCm: +d.hCm || 1, flip: !!d.flip, prop: d.prop || 1, rot: +d.rot || 0, recorte: d.recorte === 'circ' ? 'circ' : null, alpha: d.alpha == null ? 1 : +d.alpha, filtro: d.filtro || 'original', flipY: !!d.flipY, aroCm: +d.aroCm > 0 ? +d.aroCm : null, oculto: !!d.oculto, grupo: d.grupo || null, nombre: d.nombre || null, esPng: !!d.esPng }; libreObjs.push(o); cargarFoto(d.img, function (im) { o.img = im; }, dibujarLibre); }
+      else if (d.tipo === 'motivo') { libreObjs.push({ tipo: 'motivo', id: ++libreSeq, clave: d.clave, color: d.color || '#6f6151', xCm: +d.xCm || 0, yCm: +d.yCm || 0, wCm: +d.wCm || 4, hCm: +d.hCm || 4, rot: +d.rot || 0, flip: !!d.flip, flipY: !!d.flipY, oculto: !!d.oculto, alpha: d.alpha == null ? 1 : +d.alpha, grupo: d.grupo || null, nombre: d.nombre || null }); }
+      else if (d.tipo === 'forma') { libreObjs.push({ tipo: 'forma', id: ++libreSeq, clave: d.clave || 'rect', xCm: +d.xCm || 0, yCm: +d.yCm || 0, wCm: +d.wCm || 4, hCm: +d.hCm || 4, rot: +d.rot || 0, flip: !!d.flip, flipY: !!d.flipY, relleno: d.relleno !== false, color: d.color || '#b89a6a', colorLinea: d.colorLinea || '#6f6151', grosor: d.grosor == null ? 0.2 : +d.grosor, radio: d.radio == null ? 0.28 : +d.radio, alpha: d.alpha == null ? 1 : +d.alpha, oculto: !!d.oculto, grupo: d.grupo || null, nombre: d.nombre || null }); }
+      else if (d.tipo === 'trazo') { libreObjs.push({ tipo: 'trazo', id: ++libreSeq, xCm: +d.xCm || 0, yCm: +d.yCm || 0, wCm: +d.wCm || 2, hCm: +d.hCm || 2, wCm0: +d.wCm0 || +d.wCm || 2, rot: +d.rot || 0, flip: !!d.flip, flipY: !!d.flipY, color: d.color || '#6f6151', grosorCm: +d.grosorCm || 0.15, puntos: Array.isArray(d.puntos) ? d.puntos : [], alpha: d.alpha == null ? 1 : +d.alpha, oculto: !!d.oculto, grupo: d.grupo || null, nombre: d.nombre || null }); }
+      else { var t = { tipo: 'texto', id: ++libreSeq, texto: d.texto, fontCss: d.fontCss, color: d.color, estilo: d.estilo, altoCm: d.altoCm, curva: +d.curva || 0, color2c: d.color2c || null, grosor: d.grosor == null ? 0.4 : +d.grosor, espaciado: +d.espaciado || 0, degradado: !!d.degradado, colorDeg: d.colorDeg || null, dirDeg: d.dirDeg || 'vertical', sombra: !!d.sombra, decor: d.decor || 'no', decorColor: d.decorColor || null, oculto: !!d.oculto, alpha: d.alpha == null ? 1 : +d.alpha, grupo: d.grupo || null, nombre: d.nombre || null, xCm: +d.xCm || 0, yCm: +d.yCm || 0, wCm: +d.wCm || 2, hCm: +d.hCm || 1, rot: +d.rot || 0 }; try { libreRenderTexto(t); } catch (e3) {} libreObjs.push(t); } });
       dibujarLibre(); libreActivarBotones(); estudioRefrescaTextos(); try { _dimPrev = libreDim(); } catch (e4) {} histPila = []; histIdx = -1; histPush(); } } catch (e) {}
     // PUNTO DE CRUZ
     try { if (s.cruz) { resIn(s.cruz); mostrarSimbolosCruz = !!s.cruz.simbolos; quitarFondoCruz = !!s.cruz.fondo; limpiarCruz = !!s.cruz.limpiar; bnCruz = !!s.cruz.bn;
@@ -4725,6 +5149,46 @@
   var proyectos = [];
   function cargarProyectos() { try { var s = JSON.parse(localStorage.getItem('alma_proyectos') || '[]'); proyectos = Array.isArray(s) ? s : []; } catch (e) { proyectos = []; } }
   function guardarProyectosLS() { try { localStorage.setItem('alma_proyectos', JSON.stringify(proyectos)); return true; } catch (e) { return false; } }
+  // ---------- Respaldo y traspaso (.alma): todos los proyectos + el diseño actual en un archivo ----------
+  (function () {
+    var btnExp = $('exportarRespaldo'), inpImp = $('importarRespaldo');
+    if (!btnExp || !inpImp) return;
+    btnExp.addEventListener('click', function () {
+      var datos;
+      try { datos = JSON.stringify({ tipo: 'alma-respaldo', v: 1, app: 'Alma bordado', proyectos: proyectos, estadoActual: capturarEstado(true) }); }
+      catch (e) { toast('No pude preparar el respaldo'); return; }
+      var hoy = new Date(), f = hoy.getFullYear() + '-' + String(hoy.getMonth() + 1).padStart(2, '0') + '-' + String(hoy.getDate()).padStart(2, '0');
+      var b = new Blob([datos], { type: 'application/json' });
+      var u = URL.createObjectURL(b), a = document.createElement('a');
+      a.href = u; a.download = 'alma-respaldo-' + f + '.alma';
+      document.body.appendChild(a); a.click();
+      setTimeout(function () { URL.revokeObjectURL(u); a.remove(); }, 500);
+      var inf = $('respaldoInfo'); if (inf) inf.textContent = '✅ Respaldo guardado: ' + proyectos.length + ' proyecto' + (proyectos.length === 1 ? '' : 's') + ' + el diseño actual. Guarda el archivo en un lugar seguro (o envíatelo).';
+      toast('Respaldo .alma descargado 💾');
+    });
+    inpImp.addEventListener('change', function () {
+      var f = this.files && this.files[0]; this.value = '';
+      if (!f) return;
+      var lector = new FileReader();
+      lector.onerror = function () { toast('No pude leer el archivo'); };
+      lector.onload = function () {
+        var r; try { r = JSON.parse(lector.result); } catch (e) { toast('Ese archivo no parece un respaldo .alma'); return; }
+        if (!r || r.tipo !== 'alma-respaldo' || !Array.isArray(r.proyectos)) { toast('Ese archivo no parece un respaldo .alma'); return; }
+        var idsMios = {}; proyectos.forEach(function (p) { idsMios[p.id] = 1; });
+        var nuevos = r.proyectos.filter(function (p) { return p && p.id && !idsMios[p.id]; });
+        proyectos = nuevos.concat(proyectos).slice(0, 60);
+        if (!guardarProyectosLS()) { toast('No hay espacio para todos los proyectos del respaldo'); }
+        renderProyectos(); actualizarCuentaGaleria();
+        var inf = $('respaldoInfo'); if (inf) inf.textContent = '✅ Respaldo cargado: ' + nuevos.length + ' proyecto' + (nuevos.length === 1 ? '' : 's') + ' nuevo' + (nuevos.length === 1 ? '' : 's') + ' agregado' + (nuevos.length === 1 ? '' : 's') + '.';
+        if (r.estadoActual && confirm('¿Abrir también el diseño que estaba abierto en el respaldo? (Reemplaza lo que tienes ahora en el Estudio)')) {
+          aplicarEstado(r.estadoActual, 'Diseño del respaldo abierto 🌸');
+        } else {
+          toast(nuevos.length ? 'Proyectos del respaldo agregados 📂' : 'Ese respaldo no traía proyectos nuevos');
+        }
+      };
+      lector.readAsText(f);
+    });
+  })();
   function miniaturaPanelActivo() {
     var act = document.querySelector('.tab-btn.activa'), panel = act ? act.dataset.panel : ultimoPanelDiseno;
     if (['panel-asistente', 'panel-galeria', 'panel-kits'].indexOf(panel) >= 0) panel = ultimoPanelDiseno;
@@ -5433,7 +5897,9 @@
   (function () {
     var b;
     b = $('btnNuevoLibre'); if (b) b.addEventListener('click', conConfirmarNuevo(function () {
-      libreObjs = []; libreSel = null; libreZoom = 1; var zn = $('zoomNivel'); if (zn) zn.textContent = '100%';
+      libreObjs = []; libreSel = null; libreSelExtra = []; trazosTmp = []; trazoVivo = null;
+      try { actualizarBarraMulti(); } catch (e2) {}
+      libreZoom = 1; var zn = $('zoomNivel'); if (zn) zn.textContent = '100%';
       var rc = document.querySelector('input[name="formaEstudio"][value="circulo"]'); if (rc) rc.checked = true;
       setVal('diametroEstudio', 18);
       setVal('anchoLibre', 18); setVal('altoLibre', 18); setVal('textoLibre', '');
@@ -6160,14 +6626,14 @@
       $('modalBienvenida').hidden = false;
       $('empezarBienvenida').addEventListener('click', function () {
         CONFIG.tema = temaSel; guardarConfig(); aplicarTema();
-        try { localStorage.setItem('alma_visto', '1'); localStorage.setItem('alma_v50', '1'); } catch (e) {}
+        try { localStorage.setItem('alma_visto', '1'); localStorage.setItem('alma_v51', '1'); } catch (e) {}
         $('modalBienvenida').hidden = true;
       });
       return;
     }
-    if (!localStorage.getItem('alma_v50')) {
+    if (!localStorage.getItem('alma_v51')) {
       $('modalNovedades').hidden = false;
-      var cerrarNov = function () { try { localStorage.setItem('alma_v50', '1'); } catch (e) {} $('modalNovedades').hidden = true; };
+      var cerrarNov = function () { try { localStorage.setItem('alma_v51', '1'); } catch (e) {} $('modalNovedades').hidden = true; };
       $('cerrarNovedades').addEventListener('click', cerrarNov);
       $('modalNovedades').addEventListener('click', function (e) { if (e.target === this) cerrarNov(); });
     }
