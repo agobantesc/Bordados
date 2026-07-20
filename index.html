@@ -271,7 +271,7 @@
   @media (min-width: 1000px) {
     .panel-cols.activa { display: grid; grid-template-columns: minmax(0, 45fr) minmax(0, 55fr); gap: 0 22px; align-items: start; }
     .panel-cols > .intro, .panel-cols > .divisor { grid-column: 1 / -1; }
-    .panel-cols > .col-der { position: sticky; top: 172px; }
+    .panel-cols > .col-der { position: sticky; top: calc(var(--altoFijo, 166px) + 6px); }
   }
   @media (hover: hover) {
     .boton-sec:not(:disabled):not(.activo):hover { background: #ece2cd; border-color: var(--trigo-osc); }
@@ -400,7 +400,7 @@
   .boton-nuevo { border-color: #e2b7c8; color: #a14f72; background: #faf1f4; }
   /* Alma Estudio: taller estilo programa de diseño (riel + lienzo grande + panel lateral) */
   .taller { display: grid; grid-template-columns: 56px minmax(0, 1fr) 330px; gap: 12px; align-items: start; }
-  .taller-rail { display: flex; flex-direction: column; gap: 8px; position: sticky; top: 172px; }
+  .taller-rail { display: flex; flex-direction: column; gap: 8px; position: sticky; top: calc(var(--altoFijo, 166px) + 6px); }
   .taller-rail .rbtn { width: 52px; height: 52px; border-radius: 13px; border: 1px solid var(--borde-fuerte); background: var(--superficie); font-size: 1.35rem; cursor: pointer; box-shadow: var(--sombra-sutil); display: grid; place-items: center; }
   .taller-rail .rbtn small { font-size: .52rem; color: var(--tinta-suave); display: block; line-height: 1; }
   .taller-rail .rbtn.activo { background: var(--acento-grad); color: #fff; }
@@ -411,14 +411,16 @@
      la página nunca se mueve al hacer zoom, cambiar de tamaño o volver al Estudio. El canvas usa
      margin:auto dentro de un flex: se centra cuando cabe y, al acercar el zoom, los márgenes pasan
      a 0 y se puede desplazar a AMBOS lados sin perder nada. */
-  .taller-centro .lienzo-wrap { display: flex; padding: 12px; background: #f3eee3; border: 1px solid var(--borde); border-radius: 16px; overflow: auto; height: calc(100vh - 220px); min-height: 340px; }
+  .taller-centro .lienzo-wrap { display: flex; padding: 12px; background: #f3eee3; border: 1px solid var(--borde); border-radius: 16px; overflow: auto; height: calc(100vh - 220px); height: calc(100svh - var(--altoFijo, 166px) - 62px); min-height: 340px; }
   #previaLibre { flex: none; margin: auto; border-radius: 12px; box-shadow: 0 10px 30px rgba(60,45,35,0.16); }
   .zoom-bar { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
   .zoom-bar #zoomNivel { min-width: 46px; text-align: center; font-weight: 700; font-size: .82rem; color: var(--tinta-suave); }
   .zoom-btn { width: 38px; height: 34px; border-radius: 10px; border: 1px solid var(--borde-fuerte); background: var(--superficie); color: var(--tinta); font-size: 1.1rem; font-weight: 700; cursor: pointer; box-shadow: var(--sombra-sutil); }
   .zoom-btn.zoom-fit { width: auto; padding: 0 12px; font-size: .82rem; font-weight: 600; }
   .zoom-btn:active { transform: scale(.94); background: var(--papel-2); }
-  .taller-lado { min-width: 0; display: flex; flex-direction: column; gap: 12px; position: sticky; top: 172px; max-height: calc(100vh - 190px); overflow-y: auto; }
+  /* El panel usa svh (viewport visible MÍNIMO): 100vh miente en tablet cuando la barra del
+     navegador está a la vista y dejaba el final del panel imposible de alcanzar. */
+  .taller-lado { min-width: 0; display: flex; flex-direction: column; gap: 12px; position: sticky; top: calc(var(--altoFijo, 166px) + 6px); max-height: calc(100vh - 190px); max-height: calc(100svh - var(--altoFijo, 166px) - 24px); overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
   .taller-lado .tarjeta { margin-bottom: 0; padding: 15px; }
   .taller-lado .tarjeta h2 { font-size: 1.12rem; margin-bottom: 10px; }
   .h2-sub { font-size: .72rem; font-weight: 600; color: var(--tinta-suave); letter-spacing: .02em; }
@@ -437,7 +439,7 @@
     .taller-lado { position: static; max-height: none; }
     .taller-centro { order: -1; }
     .taller-rail { order: -2; }
-    .taller-centro .lienzo-wrap { height: 58vh; min-height: 300px; }
+    .taller-centro .lienzo-wrap { height: 58vh; height: 58svh; min-height: 300px; }
   }
   /* Galería de motivos del Estudio */
   .motivos-grid { grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 8px; margin-bottom: 12px; padding: 10px; background: #faf5ea; border: 1px solid #e6d8b8; border-radius: 12px; }
@@ -714,7 +716,7 @@
   <div class="marca">
     <svg class="logo" viewBox="0 0 80 80" aria-hidden="true"><use href="#logoMini"/></svg>
     <div style="min-width:0;">
-      <div class="fila-marca"><h1 id="tituloMarca">Alma bordado</h1><span class="ver-badge" title="AlmaApp 5.2 · Alma Estudio profesional">5.2</span></div>
+      <div class="fila-marca"><h1 id="tituloMarca">Alma bordado</h1><span class="ver-badge" title="AlmaApp 5.3 · Alma Estudio profesional">5.3</span></div>
       <p class="lema">Plantillas a tamaño real, listas para bordar</p>
     </div>
   </div>
@@ -746,7 +748,7 @@
 </nav>
 <!-- ============ ALMA ESTUDIO (taller único de diseño) ============ -->
 <section id="panel-libre" class="panel activa">
-  <p class="intro"><strong>Alma Estudio</strong>: fotos, textos, motivos, <strong>formas</strong> ◆ y ahora <strong>lápiz a mano alzada</strong> ✏️. Selecciona <strong>varios a la vez</strong> (⇧), agrupa, pellizca para el <strong>zoom</strong>, elige <strong>hilos DMC</strong> 🧵 y mira la <strong>vista bordado</strong> 🪡 o <strong>«👁️ la hoja»</strong> antes de imprimir. 🌸</p>
+  <p class="intro"><strong>Alma Estudio</strong>: fotos, textos, motivos, <strong>formas</strong> ◆ y ahora <strong>lápiz a mano alzada</strong> ✏️. Selecciona <strong>varios a la vez</strong> (⇧), agrupa, <strong>pellizca un elemento</strong> 🤏 para su tamaño (o la tela vacía para el zoom), elige <strong>hilos DMC</strong> 🧵 y mira la <strong>vista bordado</strong> 🪡 o <strong>«👁️ la hoja»</strong> antes de imprimir. 🌸</p>
   <svg class="divisor" viewBox="0 0 150 22"><use href="#divisorBot"/></svg>
   <div class="taller">
     <div class="taller-rail" aria-label="Herramientas">
@@ -774,7 +776,7 @@
         <button class="zoom-btn zoom-fit" id="verHoja" type="button" title="Ver la hoja tal como saldrá impresa">👁️ Ver la hoja</button>
       </div>
       <div class="lienzo-wrap"><canvas id="previaLibre" width="320" height="320"></canvas></div>
-      <p class="pie" id="ayudaLibre" style="display:none">👆 Toca un elemento y arrástralo · esquinas = tamaño · perilla = girar · ✕ = quitar · usa el zoom para acercarte</p>
+      <p class="pie" id="ayudaLibre" style="display:none">👆 Toca un elemento y arrástralo · 🤏 pellízcalo con dos dedos para el tamaño · perilla = girar · ✕ = quitar · pellizca la tela vacía para acercar el lienzo</p>
       <div class="pie" id="pieLibre">Agrega una foto, un texto o un motivo para empezar</div>
       <button class="boton-pdf" id="pdfLibre" disabled style="margin-top:12px;">📄 Generar PDF a tamaño real</button>
       <button class="boton-sec boton-img" id="imgLibre" type="button" disabled>🖼️ Guardar imagen (para compartir)</button>
@@ -783,35 +785,8 @@
     </div>
 
     <div class="taller-lado">
-      <div class="tarjeta" id="grpLienzo">
-        <h2>🧵 Lienzo <span class="h2-sub">— define esto primero</span></h2>
-        <div class="radios radios-fila">
-          <label class="radio-opcion elegida" id="opLienzoCirc"><input type="radio" name="formaEstudio" value="circulo" checked><span><strong>Bastidor</strong><small>Un aro, con guía.</small></span></label>
-          <label class="radio-opcion" id="opLienzoRect"><input type="radio" name="formaEstudio" value="rect"><span><strong>Hoja / rectángulo</strong><small>Libre o varios aros.</small></span></label>
-        </div>
-        <div id="filaLienzoCirc" style="margin-top:12px;">
-          <div class="campo"><label for="diametroEstudio">Diámetro del bastidor (cm)</label><input type="number" id="diametroEstudio" min="4" max="60" step="0.5" value="18" inputmode="decimal" style="max-width:130px;"></div>
-          <div class="chips" id="chipsBastidor" style="margin:8px 0 0;"></div>
-        </div>
-        <div id="filaLienzoRect" style="display:none; margin-top:12px;">
-          <div class="fila">
-            <div class="campo"><label for="anchoLibre">Ancho (cm)</label><input type="number" id="anchoLibre" min="3" max="60" step="0.5" value="18" inputmode="decimal"></div>
-            <div class="campo"><label for="altoLibre">Alto (cm)</label><input type="number" id="altoLibre" min="3" max="60" step="0.5" value="18" inputmode="decimal"></div>
-          </div>
-          <div class="chips" id="chipsHoja" style="margin:8px 0 0;"></div>
-          <p class="info-img" style="text-align:left; margin-top:8px;">💡 Elige «Hoja A4» y agrega varias fotos ajustadas a bastidor (⭕) para imprimir varios diseños circulares en una sola hoja.</p>
-        </div>
-        <div class="fila" style="margin-top:12px;">
-          <div class="campo"><label for="hojaLibre">Papel al imprimir</label><select id="hojaLibre"><option value="A4" selected>A4 (21 × 29,7 cm)</option><option value="Carta">Carta (21,6 × 27,9 cm)</option><option value="A3">A3 (29,7 × 42 cm)</option></select></div>
-          <div class="campo"><label for="copiasLibre">Copias por hoja</label><select id="copiasLibre"><option value="1" selected>1 (centrada)</option><option value="2">2</option><option value="4">4</option><option value="6">6</option><option value="9">9</option></select></div>
-          <div class="campo campo-color"><label for="colorFondoLibre">Fondo (tela)</label><input type="color" id="colorFondoLibre" value="#ffffff"></div>
-        </div>
-        <label class="check-fila" id="filaGuiaEstudio"><input type="checkbox" id="guiaEstudio" checked><span>Imprimir guías de bastidor y marcas de centrado</span></label>
-        <label class="check-fila"><input type="checkbox" id="espejoEstudio"><span>🪞 Exportar en espejo (para transferir con plancha)</span></label>
-      </div>
-
       <div id="libreSelControles" class="tarjeta" style="display:none">
-        <h2>🎯 Elemento seleccionado</h2>
+        <h2 id="selTitulo">🎯 Elemento seleccionado</h2>
         <div id="multiBar" style="display:none; align-items:center; gap:7px; flex-wrap:wrap; margin-bottom:10px; padding:8px 10px; background:#f0ead9; border:1px solid #ddcfae; border-radius:10px;">
           <strong id="multiCuenta" style="font-size:.84rem; color:var(--tinta);">2 elementos</strong>
           <button class="boton-sec" id="agruparBtn" type="button" title="Los agrupados se seleccionan y mueven juntos">🔗 Agrupar</button>
@@ -824,6 +799,7 @@
         </div>
         <div class="campo"><label for="tamanoLibre">Tamaño <span id="tamanoLibreVal"></span></label><input type="range" id="tamanoLibre" min="1" max="30" step="0.5" value="6"></div>
         <div class="campo" id="filaTamNum" style="margin-top:8px;"><label for="tamanoLibreNum">Tamaño exacto (cm)</label><input type="number" id="tamanoLibreNum" min="0.5" max="60" step="0.1" inputmode="decimal" style="max-width:130px;"></div>
+        <div class="campo bloque-efectos" id="filaFiltroLibre" style="display:none; margin-top:10px;"><label>🎨 Efecto de color de la foto <span class="h2-sub">— toca uno para aplicarlo</span></label><div class="efectos-grid" id="chipsFiltro"></div></div>
         <div class="campo" id="filaAroLibre" style="display:none; margin-top:8px;"><label for="aroLibre">⭕ Ajustar a un bastidor (queda circular, a tamaño real)</label><select id="aroLibre"><option value="0" selected>Sin ajuste — libre</option><option value="10">Bastidor ⌀ 10 cm</option><option value="13">Bastidor ⌀ 13 cm</option><option value="15">Bastidor ⌀ 15 cm</option><option value="18">Bastidor ⌀ 18 cm</option><option value="20">Bastidor ⌀ 20 cm</option><option value="23">Bastidor ⌀ 23 cm</option><option value="26">Bastidor ⌀ 26 cm</option></select></div>
         <div class="campo" id="filaRotLibre" style="margin-top:8px;"><label for="rotLibre">Giro exacto · <span id="rotLibreVal">0°</span></label><input type="range" id="rotLibre" min="-180" max="180" step="5" value="0"></div>
         <div class="campo" id="filaGrosorMotivo" style="display:none; margin-top:8px;"><label for="grosorMotivo">Grosor del trazo · <span id="grosorMotivoVal">100%</span></label><input type="range" id="grosorMotivo" min="40" max="300" step="10" value="100"></div>
@@ -833,7 +809,6 @@
         </div>
         <div class="campo" id="filaCurvaLibre" style="display:none; margin-top:8px;"><label for="curvaLibre">Curvar el texto · <span id="curvaLibreVal">recto</span></label><input type="range" id="curvaLibre" min="-100" max="100" step="5" value="0"></div>
         <div class="campo" id="filaAlphaLibre" style="display:none; margin-top:8px;"><label for="alphaLibre">Opacidad · <span id="alphaLibreVal">100%</span> <span class="h2-sub">(baja para calcar)</span></label><input type="range" id="alphaLibre" min="15" max="100" step="5" value="100"></div>
-        <div class="campo bloque-efectos" id="filaFiltroLibre" style="display:none; margin-top:10px;"><label>🎨 Efecto de color de la foto <span class="h2-sub">— toca uno para aplicarlo</span></label><div class="efectos-grid" id="chipsFiltro"></div></div>
         <div class="controles-previa" style="justify-content:flex-start; margin-top:10px;">
           <button class="boton-sec" id="girarLibre" type="button" title="Girar 15°">↻ Girar</button>
           <button class="boton-sec" id="flipLibre" type="button">⇋ Espejo</button>
@@ -889,6 +864,33 @@
             <div class="campo campo-color" id="filaDecorColor" style="display:none"><label for="decorColorLibre">Color de las flores</label><input type="color" id="decorColorLibre" value="#d98fa6"></div>
           </div>
         </div>
+      </div>
+
+      <div class="tarjeta" id="grpLienzo">
+        <h2>🧵 Lienzo <span class="h2-sub">— define esto primero</span></h2>
+        <div class="radios radios-fila">
+          <label class="radio-opcion elegida" id="opLienzoCirc"><input type="radio" name="formaEstudio" value="circulo" checked><span><strong>Bastidor</strong><small>Un aro, con guía.</small></span></label>
+          <label class="radio-opcion" id="opLienzoRect"><input type="radio" name="formaEstudio" value="rect"><span><strong>Hoja / rectángulo</strong><small>Libre o varios aros.</small></span></label>
+        </div>
+        <div id="filaLienzoCirc" style="margin-top:12px;">
+          <div class="campo"><label for="diametroEstudio">Diámetro del bastidor (cm)</label><input type="number" id="diametroEstudio" min="4" max="60" step="0.5" value="18" inputmode="decimal" style="max-width:130px;"></div>
+          <div class="chips" id="chipsBastidor" style="margin:8px 0 0;"></div>
+        </div>
+        <div id="filaLienzoRect" style="display:none; margin-top:12px;">
+          <div class="fila">
+            <div class="campo"><label for="anchoLibre">Ancho (cm)</label><input type="number" id="anchoLibre" min="3" max="60" step="0.5" value="18" inputmode="decimal"></div>
+            <div class="campo"><label for="altoLibre">Alto (cm)</label><input type="number" id="altoLibre" min="3" max="60" step="0.5" value="18" inputmode="decimal"></div>
+          </div>
+          <div class="chips" id="chipsHoja" style="margin:8px 0 0;"></div>
+          <p class="info-img" style="text-align:left; margin-top:8px;">💡 Elige «Hoja A4» y agrega varias fotos ajustadas a bastidor (⭕) para imprimir varios diseños circulares en una sola hoja.</p>
+        </div>
+        <div class="fila" style="margin-top:12px;">
+          <div class="campo"><label for="hojaLibre">Papel al imprimir</label><select id="hojaLibre"><option value="A4" selected>A4 (21 × 29,7 cm)</option><option value="Carta">Carta (21,6 × 27,9 cm)</option><option value="A3">A3 (29,7 × 42 cm)</option></select></div>
+          <div class="campo"><label for="copiasLibre">Copias por hoja</label><select id="copiasLibre"><option value="1" selected>1 (centrada)</option><option value="2">2</option><option value="4">4</option><option value="6">6</option><option value="9">9</option></select></div>
+          <div class="campo campo-color"><label for="colorFondoLibre">Fondo (tela)</label><input type="color" id="colorFondoLibre" value="#ffffff"></div>
+        </div>
+        <label class="check-fila" id="filaGuiaEstudio"><input type="checkbox" id="guiaEstudio" checked><span>Imprimir guías de bastidor y marcas de centrado</span></label>
+        <label class="check-fila"><input type="checkbox" id="espejoEstudio"><span>🪞 Exportar en espejo (para transferir con plancha)</span></label>
       </div>
 
       <div class="tarjeta" id="grpTexto" style="display:none">
@@ -1223,14 +1225,14 @@
 <div class="modal" id="modalNovedades" hidden>
   <div class="modal-caja" role="dialog" aria-modal="true" aria-labelledby="tituloNovedades">
     <svg viewBox="0 0 240 175" aria-hidden="true" style="width:120px; height:auto; display:block; margin:0 auto 4px; opacity:.9;"><use href="#ramoAlma"/></svg>
-    <h2 id="tituloNovedades" style="font-family:'Cormorant Garamond',Georgia,serif; font-size:1.7rem; text-align:center;">Alma ahora diseña contigo 🎨</h2>
-    <p class="sub" style="text-align:center;">Y el taller gana precisión profesional:</p>
+    <h2 id="tituloNovedades" style="font-family:'Cormorant Garamond',Georgia,serif; font-size:1.7rem; text-align:center;">Más cómoda en tu tablet 🤏</h2>
+    <p class="sub" style="text-align:center;">Pulimos la app para que se sienta ligera y natural:</p>
     <ul class="bienvenida-lista">
-      <li>🤖 <strong>Alma compone diseños de verdad</strong>: pídele en el Asistente «un bastidor de 18 cm que diga Familia con guirnalda y corazones» y arma el diseño con las piezas del Estudio — <strong>cada elemento queda editable</strong> para que lo acomodes a tu gusto. Además ahora piensa con un modelo más nuevo.</li>
-      <li>📐 <strong>Alinear y repartir</strong>: con varios seleccionados, déjalos en la misma fila/columna o con espaciado parejo.</li>
-      <li>🌿 <strong>Grosor del trazo de los motivos</strong> ajustable (más finito o más grueso).</li>
-      <li>✏️ El <strong>dibujo a mano</strong> ya se puede recolorear y cambiar de grosor después de creado.</li>
-      <li>➿ <strong>Contorno punteado</strong> en las formas, como puntada corrida/bastilla (también se imprime así).</li>
+      <li>🤏 <strong>Pellizca la foto para agrandarla o achicarla</strong>: si el gesto parte sobre un elemento, cambia SU tamaño; si parte sobre la tela vacía, acerca o aleja el lienzo. Ya no se confunden.</li>
+      <li>🎨 <strong>Efectos de foto a mano</strong>: al tocar una foto, sus controles (con B/N, cálido, oscuro y más) aparecen ARRIBA del panel, con los efectos justo bajo el tamaño.</li>
+      <li>📜 El <strong>panel de herramientas ahora se recorre completo</strong> en tablet: nada queda cortado abajo.</li>
+      <li>⚡ <strong>Todo más fluido</strong>: arrastrar fotos y dibujar responde mucho más rápido (dibujamos las fotos a resolución de pantalla y evitamos trabajo repetido).</li>
+      <li>👆 Manijas de girar, estirar y quitar <strong>más fáciles de tocar</strong>.</li>
     </ul>
     <div class="modal-acciones"><button class="boton-primario" id="cerrarNovedades" type="button">¡A bordar! 🌸</button></div>
   </div>
@@ -1337,6 +1339,14 @@
   function programarRetardo(clave, fn, ms) {
     if (retardos[clave]) clearTimeout(retardos[clave]);
     retardos[clave] = setTimeout(function () { retardos[clave] = 0; fn(); }, ms || 250);
+  }
+  // Altura REAL de las barras pegajosas (cabecera + pestañas): los paneles laterales calculan su
+  // tope y su alto con esta medida. Antes iba adivinada en 172px y en tablet (pestañas más altas,
+  // otra tipografía) el final del panel de herramientas quedaba fuera de alcance.
+  function medirBarras() {
+    var tb = document.querySelector('.tabs');
+    var h = 74 + (tb ? tb.offsetHeight : 92);   // 74 = tope pegajoso de las pestañas
+    document.documentElement.style.setProperty('--altoFijo', h + 'px');
   }
   var toastT = null;
   function toast(msg) {
@@ -1972,6 +1982,27 @@
     } catch (e2) {}
     o._fCv = c; o._fKey = f; return c;
   }
+  // Versión reducida de la foto SOLO PARA PINTAR EN PANTALLA (el PDF y las exportaciones siguen
+  // usando la resolución completa). Reescalar una foto de cámara entera (4000+ px) en cada cuadro
+  // era lo que ponía lenta la app en tablet: aquí se reduce UNA vez por escalón de tamaño (×2)
+  // y se reutiliza en todos los cuadros siguientes.
+  function fotoPantalla(o, src, ow, oh) {
+    var iw = src.naturalWidth || src.width, ih = src.naturalHeight || src.height;
+    var lado = Math.max(ow, oh);
+    if (!(iw > 0) || !(lado > 0)) return src;
+    var objetivo = Math.min(2048, Math.max(128, Math.pow(2, Math.ceil(Math.log(lado * 1.4) / Math.LN2))));
+    if (Math.max(iw, ih) <= objetivo * 1.25) return src;   // la foto ya es chica: se usa tal cual
+    var clave = (o.filtro || 'original') + ':' + objetivo;
+    if (o._pCv && o._pKey === clave) return o._pCv;
+    var e = objetivo / Math.max(iw, ih);
+    var c = document.createElement('canvas');
+    c.width = Math.max(1, Math.round(iw * e)); c.height = Math.max(1, Math.round(ih * e));
+    var x = c.getContext('2d');
+    x.imageSmoothingEnabled = true; try { x.imageSmoothingQuality = 'high'; } catch (eq) {}
+    x.drawImage(src, 0, 0, c.width, c.height);
+    o._pCv = c; o._pKey = clave;
+    return c;
+  }
   function motivoDef(clave) { for (var i = 0; i < MOTIVOS.length; i++) if (MOTIVOS[i][0] === clave) return MOTIVOS[i]; return MOTIVOS[0]; }
   // Miniatura de un efecto aplicado a una foto (para que se VEA cada tono antes de elegirlo).
   function filtroMini(img, filtro, size) {
@@ -2373,7 +2404,9 @@
       if (o.aroCm > 0) { x.beginPath(); x.arc(0, 0, o.aroCm / 2 * esc, 0, 6.2832); x.clip(); }   // ajustada a bastidor: círculo exacto a tamaño real
       else if (o.recorte === 'circ') { x.beginPath(); x.ellipse(0, 0, ow / 2, oh / 2, 0, 0, 6.2832); x.clip(); }
       if (o.flip || o.flipY) x.scale(o.flip ? -1 : 1, o.flipY ? -1 : 1);
-      x.drawImage(fotoFiltrada(o) || o.img, -ow / 2, -oh / 2, ow, oh);
+      var srcImg = fotoFiltrada(o) || o.img;
+      if (!dpi) srcImg = fotoPantalla(o, srcImg, ow, oh);   // en pantalla: versión reducida en caché
+      x.drawImage(srcImg, -ow / 2, -oh / 2, ow, oh);
     } else if (o.tipo === 'motivo') {
       // vectorial: nítido a cualquier tamaño y resolución
       if (o.flip || o.flipY) x.scale(o.flip ? -1 : 1, o.flipY ? -1 : 1);
@@ -2415,10 +2448,14 @@
     var d = libreDim(), esc = libreEscala(), pad = librePad();
     var dW = Math.round(d.w * esc), dH = Math.round(d.h * esc);
     var W = dW + pad * 2, H = dH + pad * 2;
-    cv.width = W; cv.height = H;
+    // Cambiar cv.width borra y REALOJA el lienzo aunque el valor sea el mismo: solo cuando cambia.
+    // (Al arrastrar elementos el tamaño no varía y así cada cuadro se pinta sin ese costo.)
+    if (cv.width !== W) cv.width = W;
+    if (cv.height !== H) cv.height = H;
     var x = cv.getContext('2d');
     var circ = libreForma() === 'circulo';
     var fondo = ($('colorFondoLibre') && $('colorFondoLibre').value) || '#ffffff';
+    x.setTransform(1, 0, 0, 1, 0, 0);   // seguro: antes lo reseteaba la reasignación de cv.width
     // Mesa de trabajo (marco alrededor del bordado, estilo programa de diseño)
     x.fillStyle = '#eae3d5'; x.fillRect(0, 0, W, H);
     x.save();
@@ -2508,11 +2545,21 @@
       x.moveTo(h.del.x + 4, h.del.y - 4); x.lineTo(h.del.x - 4, h.del.y + 4); x.stroke();
     }
   }
+  var libreSyncUlt = null;   // último elemento sincronizado: para subir el panel solo al CAMBIAR de selección
+  var TITULO_SEL = { img: '🖼️ Foto seleccionada', texto: '✍️ Texto seleccionado', motivo: '🌿 Motivo seleccionado', forma: '◆ Forma seleccionada', trazo: '✏️ Dibujo seleccionado' };
   function libreSync() {
     var o = libreSel ? libreObj(libreSel) : null, box = $('libreSelControles');
     try { capasMarcar(); } catch (eC) {}
-    if (!o) { box.style.display = 'none'; return; }
-    box.style.display = 'block';   // NO movemos el scroll al seleccionar: el lienzo se queda quieto
+    if (!o) { box.style.display = 'none'; libreSyncUlt = null; return; }
+    box.style.display = 'block';   // NO movemos el scroll de la página al seleccionar: el lienzo se queda quieto
+    var tt = $('selTitulo'); if (tt) tt.textContent = TITULO_SEL[o.tipo] || '🎯 Elemento seleccionado';
+    if (libreSyncUlt !== o.id) {
+      libreSyncUlt = o.id;
+      // en pantalla ancha el panel lateral tiene su propio scroll: lo subimos para que los
+      // controles del elemento recién tocado (con sus efectos de foto) queden a la vista
+      var lado = document.querySelector('#panel-libre .taller-lado');
+      if (lado && window.innerWidth > 999 && lado.scrollTop > 0) lado.scrollTop = 0;
+    }
     var d = libreDim(), sl = $('tamanoLibre');
     sl.min = 1; sl.max = Math.ceil(Math.max(d.w, d.h)); sl.step = 0.5;
     sl.value = o.tipo === 'texto' ? o.altoCm : o.wCm;
@@ -2705,19 +2752,19 @@
         var dm = libreDim(), W = Math.round(dm.w * esc) + pad * 2, H = Math.round(dm.h * esc) + pad * 2;
         var hnd = libreHandlesPos(s, esc, pad, W, H);
         // manija ✕ = borrar (posición fija dentro del lienzo, en píxeles)
-        if (Math.hypot(p.x - hnd.del.x, p.y - hnd.del.y) <= 16) {
+        if (Math.hypot(p.x - hnd.del.x, p.y - hnd.del.y) <= 20) {
           libreObjs = libreObjs.filter(function (q) { return q.id !== s.id; });
           deseleccionar(); libreSync(); dibujarLibre(); libreActivarBotones(); histPush();
           return;
         }
         // perilla de giro
-        if (Math.hypot(p.x - hnd.knob.x, p.y - hnd.knob.y) <= 16) {
+        if (Math.hypot(p.x - hnd.knob.x, p.y - hnd.knob.y) <= 20) {
           dragModo = 'girar';
           dragDatos = { iniX: cx, iniY: cy, rot0: s.rot || 0, a0: Math.atan2(cy - s.yCm, cx - s.xCm) };
           return;
         }
         // esquinas (estirar) — en el marco local del elemento
-        var loc = libreALocal(s, cx, cy), tol = 15 / esc;
+        var loc = libreALocal(s, cx, cy), tol = 18 / esc;
         var esquinas = [[-1, -1], [1, -1], [-1, 1], [1, 1]], enEsquina = false;
         esquinas.forEach(function (e) { if (Math.abs(loc.x - e[0] * s.wCm / 2) <= tol && Math.abs(loc.y - e[1] * s.hCm / 2) <= tol) enEsquina = true; });
         if (enEsquina) {
@@ -2799,36 +2846,82 @@
       dibujarLibre();
     }
   });
-  // Pellizcar con dos dedos = acercar/alejar y desplazar el lienzo (gesto natural en tablet)
+  // Pellizcar con dos dedos: si el gesto PARTE SOBRE UN ELEMENTO (el primer dedo lo tomó),
+  // agranda o achica ESE elemento — lo natural al ajustar una foto. Si parte sobre la tela
+  // vacía o el margen de trabajo, acerca/aleja el lienzo como siempre.
   (function () {
     var cv = $('previaLibre'), wrap = document.querySelector('#panel-libre .lienzo-wrap');
     if (!cv || !wrap || !window.PointerEvent) return;
-    var pts = new Map(), pinch0 = null;
+    var pts = new Map(), pinch0 = null, pinchElem = null;
     cv.addEventListener('pointerdown', function (e) {
       pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
       if (pts.size === 2) {
+        // ¿el primer dedo estaba moviendo/estirando algo? → el pellizco escala la selección
+        var sobreElemento = !libreModoDibujo && libreSel && (dragModo === 'mover' || dragModo === 'estirar');
         libreGesto = true; dragModo = null; trazoVivo = null;
         var a = Array.from(pts.values());
-        pinch0 = { d: Math.max(24, Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y)), zoom: libreZoom, mx: (a[0].x + a[1].x) / 2, my: (a[0].y + a[1].y) / 2, sl: wrap.scrollLeft, st: wrap.scrollTop };
+        var d0 = Math.max(24, Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y));
+        var mx0 = (a[0].x + a[1].x) / 2, my0 = (a[0].y + a[1].y) / 2;
+        if (sobreElemento) {
+          var sel = seleccionActual(), cxs = 0, cys = 0;
+          sel.forEach(function (q) { cxs += q.xCm; cys += q.yCm; });
+          pinchElem = {
+            d: d0, mx: mx0, my: my0, cx: cxs / sel.length, cy: cys / sel.length, cambio: false,
+            objs: sel.map(function (q) { return { id: q.id, x: q.xCm, y: q.yCm, w: q.wCm, h: q.hCm, alto: q.altoCm }; })
+          };
+        } else {
+          pinch0 = { d: d0, zoom: libreZoom, mx: mx0, my: my0, sl: wrap.scrollLeft, st: wrap.scrollTop };
+        }
       }
     });
     window.addEventListener('pointermove', function (e) {
       if (!pts.has(e.pointerId)) return;
       pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
-      if (pts.size !== 2 || !pinch0) return;
+      if (pts.size !== 2 || (!pinch0 && !pinchElem)) return;
       var a = Array.from(pts.values());
       var dNow = Math.max(24, Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y));
       var mx = (a[0].x + a[1].x) / 2, my = (a[0].y + a[1].y) / 2;
-      var zNuevo = Math.max(0.4, Math.min(4, pinch0.zoom * dNow / pinch0.d));
-      var fReal = zNuevo / pinch0.zoom;
-      fijarZoom(zNuevo);
-      // mantiene el punto pellizcado bajo los dedos: reescala el desplazamiento y suma el arrastre
-      var r = wrap.getBoundingClientRect();
-      wrap.scrollLeft = (pinch0.sl + (pinch0.mx - r.left)) * fReal - (mx - r.left);
-      wrap.scrollTop = (pinch0.st + (pinch0.my - r.top)) * fReal - (my - r.top);
+      if (pinchElem) {
+        // escala la selección alrededor de su centro; el punto medio del gesto también la arrastra
+        var esc = libreEscala(), rc = cv.getBoundingClientRect(), d = libreDim();
+        var f = Math.max(0.12, Math.min(12, dNow / pinchElem.d));
+        var dxCm = (mx - pinchElem.mx) * (cv.width / rc.width) / esc;
+        var dyCm = (my - pinchElem.my) * (cv.height / rc.height) / esc;
+        pinchElem.objs.forEach(function (r0) {
+          var q = libreObj(r0.id); if (!q) return;
+          q.wCm = r0.w * f; q.hCm = r0.h * f;
+          if (q.tipo === 'texto' && r0.alto) q.altoCm = r0.alto * f;
+          q.xCm = Math.max(0, Math.min(d.w, pinchElem.cx + (r0.x - pinchElem.cx) * f + dxCm));
+          q.yCm = Math.max(0, Math.min(d.h, pinchElem.cy + (r0.y - pinchElem.cy) * f + dyCm));
+        });
+        pinchElem.cambio = true;
+        programar('libre', dibujarLibre);
+      } else {
+        var zNuevo = Math.max(0.4, Math.min(4, pinch0.zoom * dNow / pinch0.d));
+        var fReal = zNuevo / pinch0.zoom;
+        fijarZoom(zNuevo);
+        // mantiene el punto pellizcado bajo los dedos: reescala el desplazamiento y suma el arrastre
+        var r = wrap.getBoundingClientRect();
+        wrap.scrollLeft = (pinch0.sl + (pinch0.mx - r.left)) * fReal - (mx - r.left);
+        wrap.scrollTop = (pinch0.st + (pinch0.my - r.top)) * fReal - (my - r.top);
+      }
       if (e.cancelable) e.preventDefault();
     }, { passive: false });
-    function alza(e) { if (pts.delete(e.pointerId) && pts.size < 2) { pinch0 = null; setTimeout(function () { libreGesto = false; }, 80); } }
+    function alza(e) {
+      if (pts.delete(e.pointerId) && pts.size < 2) {
+        pinch0 = null;
+        if (pinchElem) {
+          var fin = pinchElem; pinchElem = null;
+          if (fin.cambio) {
+            // el texto se re-rasteriza al tamaño final para quedar nítido
+            var o = libreSel ? libreObj(libreSel) : null;
+            if (o && o.tipo === 'texto') conFuenteLista(o.fontCss, function () { var cx0 = o.xCm, cy0 = o.yCm; libreRenderTexto(o); o.xCm = cx0; o.yCm = cy0; dibujarLibre(); });
+            libreSync(); dibujarLibre(); histPush();
+          }
+        }
+        setTimeout(function () { libreGesto = false; }, 80);
+      }
+    }
     window.addEventListener('pointerup', alza);
     window.addEventListener('pointercancel', alza);
   })();
@@ -3451,11 +3544,13 @@
   // alto: eso lo ignoramos para que el lienzo NO salte ni cambie de tamaño al hacer scroll.
   (function () {
     var t = null, lastW = window.innerWidth;
+    medirBarras();
     window.addEventListener('resize', function () {
       if (window.innerWidth === lastW) return;
       lastW = window.innerWidth;
       if (t) clearTimeout(t);
       t = setTimeout(function () {
+        medirBarras();   // el alto de las pestañas puede cambiar al reacomodarse
         var p = $('panel-libre');
         if (p && p.classList.contains('activa')) { try { dibujarLibre(); } catch (e) {} }
       }, 160);
@@ -6826,14 +6921,14 @@
       $('modalBienvenida').hidden = false;
       $('empezarBienvenida').addEventListener('click', function () {
         CONFIG.tema = temaSel; guardarConfig(); aplicarTema();
-        try { localStorage.setItem('alma_visto', '1'); localStorage.setItem('alma_v52', '1'); } catch (e) {}
+        try { localStorage.setItem('alma_visto', '1'); localStorage.setItem('alma_v53', '1'); } catch (e) {}
         $('modalBienvenida').hidden = true;
       });
       return;
     }
-    if (!localStorage.getItem('alma_v52')) {
+    if (!localStorage.getItem('alma_v53')) {
       $('modalNovedades').hidden = false;
-      var cerrarNov = function () { try { localStorage.setItem('alma_v52', '1'); } catch (e) {} $('modalNovedades').hidden = true; };
+      var cerrarNov = function () { try { localStorage.setItem('alma_v53', '1'); } catch (e) {} $('modalNovedades').hidden = true; };
       $('cerrarNovedades').addEventListener('click', cerrarNov);
       $('modalNovedades').addEventListener('click', function (e) { if (e.target === this) cerrarNov(); });
     }
