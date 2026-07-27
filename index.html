@@ -447,6 +447,13 @@
   .motivo-btn canvas { width: 44px; height: 44px; }
   .motivo-btn span { font-size: .66rem; color: var(--tinta-suave); }
   .motivo-btn:active { transform: scale(.94); }
+  /* Recetario de diseñador: chips de paleta con sus hilos + tarjetas con vista previa */
+  .paleta-chip { display: inline-flex; align-items: center; gap: 6px; padding: 7px 11px; border: 1.5px solid var(--borde-fuerte); border-radius: 999px; background: var(--superficie); cursor: pointer; font-size: .78rem; font-weight: 600; color: var(--tinta); font-family: inherit; }
+  .paleta-chip .pd { width: 13px; height: 13px; border-radius: 50%; border: 1px solid rgba(0,0,0,.14); margin-left: -2px; flex: none; }
+  .paleta-chip.activa { border-color: var(--trigo-osc); background: #faf5ea; box-shadow: 0 0 0 1px var(--trigo-osc) inset; }
+  .recetas-grid { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); }
+  .receta-btn canvas { width: 86px; height: 86px; }
+  .receta-btn span { font-size: .68rem; line-height: 1.2; }
   /* Modal "Analizando tu diseño": pasos que se van marcando */
   .analisis-lista { list-style: none; margin: 14px 0 4px; padding: 0; display: flex; flex-direction: column; gap: 10px; }
   .analisis-lista li { font-size: .94rem; color: var(--tinta-suave); opacity: .38; transition: opacity .35s; display: flex; gap: 9px; align-items: baseline; }
@@ -716,7 +723,7 @@
   <div class="marca">
     <svg class="logo" viewBox="0 0 80 80" aria-hidden="true"><use href="#logoMini"/></svg>
     <div style="min-width:0;">
-      <div class="fila-marca"><h1 id="tituloMarca">Alma bordado</h1><span class="ver-badge" title="AlmaApp 5.3 · Alma Estudio profesional">5.3</span></div>
+      <div class="fila-marca"><h1 id="tituloMarca">Alma bordado</h1><span class="ver-badge" title="AlmaApp 6.0 · Estudio con recetario de diseñador">6.0</span></div>
       <p class="lema">Plantillas a tamaño real, listas para bordar</p>
     </div>
   </div>
@@ -932,7 +939,15 @@
       </div>
 
       <div class="tarjeta" id="grpPlantillas" style="display:none">
-        <h2>🌳 Árbol genealógico</h2>
+        <h2>📖 Recetas de diseñador <span class="h2-sub">— composición pro al toque</span></h2>
+        <div class="fila">
+          <div class="campo"><label for="recTexto1">Texto principal <span class="h2-sub">(nombre, frase)</span></label><input type="text" id="recTexto1" value="Familia" inputmode="text"></div>
+          <div class="campo"><label for="recTexto2">Secundario <span class="h2-sub">(fecha, apellido)</span></label><input type="text" id="recTexto2" value="desde 2026" inputmode="text"></div>
+        </div>
+        <div class="chips" id="chipsPaleta" style="margin:10px 0 8px;" aria-label="Paleta de hilos"></div>
+        <div class="motivos-grid recetas-grid" id="recetasGrid" style="display:grid;" aria-label="Recetas de composición"></div>
+        <p class="info-img" style="text-align:left; margin-top:8px;">Cada receta es un layout con proporciones y parejas tipográficas de diseñador: se arma con <strong>tus textos y tu paleta</strong>, y luego editas cada pieza como siempre.</p>
+        <h2 style="margin-top:18px;">🌳 Árbol genealógico</h2>
         <div class="campo"><label for="arbolTitulo">Título</label><input type="text" id="arbolTitulo" value="Nuestra Familia" inputmode="text"></div>
         <div class="campo" style="margin-top:10px;"><label for="arbolNombres">Nombres — uno por línea (deja una línea en blanco para separar generaciones)</label><textarea id="arbolNombres" rows="6" placeholder="Abuelo &amp; Abuela&#10;&#10;Papá &amp; Mamá&#10;&#10;Sofía&#10;Mateo" style="width:100%; resize:vertical; font-family:inherit; font-size:.95rem; padding:10px; border:1px solid var(--borde-fuerte); border-radius:10px;"></textarea></div>
         <div class="fila" style="margin-top:10px;">
@@ -1225,14 +1240,14 @@
 <div class="modal" id="modalNovedades" hidden>
   <div class="modal-caja" role="dialog" aria-modal="true" aria-labelledby="tituloNovedades">
     <svg viewBox="0 0 240 175" aria-hidden="true" style="width:120px; height:auto; display:block; margin:0 auto 4px; opacity:.9;"><use href="#ramoAlma"/></svg>
-    <h2 id="tituloNovedades" style="font-family:'Cormorant Garamond',Georgia,serif; font-size:1.7rem; text-align:center;">Más cómoda en tu tablet 🤏</h2>
-    <p class="sub" style="text-align:center;">Pulimos la app para que se sienta ligera y natural:</p>
+    <h2 id="tituloNovedades" style="font-family:'Cormorant Garamond',Georgia,serif; font-size:1.7rem; text-align:center;">Tu Estudio, nivel diseñador 📖</h2>
+    <p class="sub" style="text-align:center;">La 6.0 sube el nivel de todo lo que creas:</p>
     <ul class="bienvenida-lista">
-      <li>🤏 <strong>Pellizca la foto para agrandarla o achicarla</strong>: si el gesto parte sobre un elemento, cambia SU tamaño; si parte sobre la tela vacía, acerca o aleja el lienzo. Ya no se confunden.</li>
-      <li>🎨 <strong>Efectos de foto a mano</strong>: al tocar una foto, sus controles (con B/N, cálido, oscuro y más) aparecen ARRIBA del panel, con los efectos justo bajo el tamaño.</li>
-      <li>📜 El <strong>panel de herramientas ahora se recorre completo</strong> en tablet: nada queda cortado abajo.</li>
-      <li>⚡ <strong>Todo más fluido</strong>: arrastrar fotos y dibujar responde mucho más rápido (dibujamos las fotos a resolución de pantalla y evitamos trabajo repetido).</li>
-      <li>👆 Manijas de girar, estirar y quitar <strong>más fáciles de tocar</strong>.</li>
+      <li>📖 <strong>Recetas de diseñador</strong> (en Plantillas): 10 composiciones profesionales — laurel clásico, boda, bebé, monograma, marco con esquinas… Pones tus textos, eliges una <strong>paleta de hilos</strong> y se arma con proporciones y tipografías afinadas a mano. Todo queda editable.</li>
+      <li>🎨 <strong>6 paletas de hilos con nombre</strong> (salvia y rosa viejo, lino y trigo, terracota…) para que los colores siempre combinen.</li>
+      <li>🤖 <strong>Alma ahora diseña con las recetas</strong> y con reglas de composición de oficio: pídele «un bastidor de boda para Ana y Diego» y usa el layout profesional que corresponde.</li>
+      <li>✨ <strong>Lienzo nítido en iPad</strong>: el Estudio se dibuja a resolución retina — líneas y letras se ven como impresas.</li>
+      <li>🌿 <strong>6 motivos nuevos de composición</strong>: esquinas florales, ramas laterales, festón de puntos, lavanda, eucalipto y rasgo caligráfico.</li>
     </ul>
     <div class="modal-acciones"><button class="boton-primario" id="cerrarNovedades" type="button">¡A bordar! 🌸</button></div>
   </div>
@@ -1397,7 +1412,8 @@
     var activo = false, idPuntero = null, ini = null, rafPend = false, ultimo = null;
     function aLienzo(e) {
       var r = canvas.getBoundingClientRect();
-      return { x: (e.clientX - r.left) * (canvas.width / r.width), y: (e.clientY - r.top) * (canvas.height / r.height) };
+      var k = parseFloat(canvas.dataset && canvas.dataset.dpr) || 1;   // lienzos retina: volver a píxeles lógicos
+      return { x: (e.clientX - r.left) * (canvas.width / k / r.width), y: (e.clientY - r.top) * (canvas.height / k / r.height) };
     }
     function procesar() {
       rafPend = false; if (!activo || !ultimo) return;
@@ -1914,9 +1930,59 @@
     ['espiga', 'Espiga', function (x) { x.beginPath(); x.moveTo(0, 40); x.lineTo(0, -34); x.stroke(); for (var i = 0; i < 4; i++) { var y0 = 22 - i * 16; x.beginPath(); x.ellipse(-8, y0 - 6, 4.5, 11, 0.5, 0, 6.2832); x.stroke(); x.beginPath(); x.ellipse(8, y0 - 6, 4.5, 11, -0.5, 0, 6.2832); x.stroke(); } x.beginPath(); x.ellipse(0, -38, 4.5, 10, 0, 0, 6.2832); x.stroke(); }],
     ['montanas', 'Montañas', function (x) { x.beginPath(); x.moveTo(-44, 26); x.lineTo(-14, -22); x.lineTo(6, 8); x.lineTo(22, -12); x.lineTo(44, 26); x.closePath(); x.stroke(); x.beginPath(); x.moveTo(-22, -9); x.lineTo(-14, -2); x.lineTo(-7, -10); x.stroke(); x.beginPath(); x.arc(28, -28, 7, 0, 6.2832); x.stroke(); }],
     ['banderin', 'Banderines', function (x) { x.beginPath(); x.moveTo(-46, -22); x.quadraticCurveTo(0, -2, 46, -22); x.stroke(); for (var i = 0; i < 4; i++) { var t = -0.75 + i * 0.5, bx = t * 60, by = -20 + 16 * (1 - Math.abs(t) * 0.8) - 12; x.beginPath(); x.moveTo(bx - 9, by + 10); x.lineTo(bx, by + 34); x.lineTo(bx + 9, by + 12); x.stroke(); } }],
-    ['guirnalda', 'Guirnalda laurel', function (x) { x.beginPath(); x.arc(0, -8, 42, 0.5, 2.64); x.stroke(); for (var i = 0; i < 7; i++) { var a = 0.62 + i * (2.52 - 0.62) / 6, px = 42 * Math.cos(a), py = -8 + 42 * Math.sin(a); x.save(); x.translate(px, py); x.rotate(a + Math.PI / 2); x.beginPath(); x.ellipse(-6, -3, 3.4, 7.5, 0.55, 0, 6.2832); x.stroke(); x.beginPath(); x.ellipse(6, -3, 3.4, 7.5, -0.55, 0, 6.2832); x.stroke(); x.restore(); } x.beginPath(); x.ellipse(-40, -21, 3.4, 7.5, 1.1, 0, 6.2832); x.stroke(); x.beginPath(); x.ellipse(40, -21, 3.4, 7.5, -1.1, 0, 6.2832); x.stroke(); }],
+    ['guirnalda', 'Guirnalda laurel', function (x) { x.beginPath(); x.arc(0, -8, 42, 0.5, 2.64); x.stroke(); for (var i = 0; i < 7; i++) { var a = 0.62 + i * (2.52 - 0.62) / 6, px = 42 * Math.cos(a), py = -8 + 42 * Math.sin(a); x.save(); x.translate(px, py); x.rotate(a + Math.PI / 2); x.beginPath(); x.ellipse(-6, -3, 3.4, 7.5, 0.55, 0, 6.2832); x.stroke(); x.beginPath(); x.ellipse(6, -3, 3.4, 7.5, -0.55, 0, 6.2832); x.stroke(); x.restore(); } x.beginPath(); x.ellipse(-39.5, 8, 3.4, 7.5, 0.5, 0, 6.2832); x.stroke(); x.beginPath(); x.ellipse(39.5, 8, 3.4, 7.5, -0.5, 0, 6.2832); x.stroke(); }],
     ['coronaflor', 'Corona con flores', function (x) { x.beginPath(); x.arc(0, 0, 36, 0, 6.2832); x.stroke(); for (var i = 0; i < 6; i++) { var a = i * Math.PI / 3 + 0.26; x.save(); x.translate(36 * Math.cos(a), 36 * Math.sin(a)); for (var p = 0; p < 5; p++) { x.rotate(6.2832 / 5); x.beginPath(); x.ellipse(0, -5.5, 2.6, 5.2, 0, 0, 6.2832); x.stroke(); } x.beginPath(); x.arc(0, 0, 2.2, 0, 6.2832); x.stroke(); x.restore(); var b = a + Math.PI / 6; x.save(); x.translate(36 * Math.cos(b), 36 * Math.sin(b)); x.rotate(b + Math.PI / 2); x.beginPath(); x.ellipse(0, 0, 2.6, 5.8, 0.4, 0, 6.2832); x.stroke(); x.restore(); } }],
     ['filigrana', 'Filigrana', function (x) { [1, -1].forEach(function (s) { x.beginPath(); x.moveTo(0, 26); x.bezierCurveTo(s * 30, 28, s * 46, 8, s * 30, -10); x.bezierCurveTo(s * 20, -21, s * 5, -15, s * 10, -5); x.stroke(); x.beginPath(); x.arc(s * 17, -9, 5, s > 0 ? 0.8 : 2.4, s > 0 ? 5.5 : 7.1); x.stroke(); x.beginPath(); x.moveTo(s * 8, 20); x.quadraticCurveTo(s * 16, 14, s * 14, 6); x.stroke(); }); x.beginPath(); x.moveTo(0, 28); x.lineTo(0, -14); x.stroke(); x.beginPath(); x.arc(0, -20, 3.2, 0, 6.2832); x.stroke(); x.beginPath(); x.arc(0, -29, 1.8, 0, 6.2832); x.stroke(); }],
+    // ---- Piezas de composición profesional (esquinas, ramas laterales, festones) ----
+    ['esquinaflor', 'Esquina floral', function (x) {
+      // pensada para un vértice: flor en la esquina y tallos con hojas por los dos bordes
+      x.save(); x.translate(-30, -30);
+      for (var k = 0; k < 5; k++) { x.rotate(6.2832 / 5); x.beginPath(); x.ellipse(0, -8, 3.6, 7, 0, 0, 6.2832); x.stroke(); }
+      x.beginPath(); x.arc(0, 0, 3, 0, 6.2832); x.stroke();
+      x.restore();
+      x.beginPath(); x.moveTo(-20, -32); x.quadraticCurveTo(8, -36, 40, -30); x.stroke();
+      x.beginPath(); x.moveTo(-32, -20); x.quadraticCurveTo(-36, 8, -30, 40); x.stroke();
+      [[-2, -37], [16, -38], [30, -34]].forEach(function (p) { x.beginPath(); x.ellipse(p[0], p[1], 2.9, 6.2, 1.9, 0, 6.2832); x.stroke(); });
+      [[-37, -2], [-38, 16], [-34, 30]].forEach(function (p) { x.beginPath(); x.ellipse(p[0], p[1], 2.9, 6.2, -0.35, 0, 6.2832); x.stroke(); });
+    }],
+    ['ramalateral', 'Rama lateral', function (x) {
+      x.beginPath(); x.moveTo(-4, 46); x.quadraticCurveTo(8, 4, -2, -46); x.stroke();
+      for (var i = 0; i < 5; i++) {
+        var t = 34 - i * 17, bx = 2 + (i % 2 ? 2 : -1);
+        x.beginPath(); x.ellipse(bx - 9, t - 3, 3.4, 8, 0.85, 0, 6.2832); x.stroke();
+        x.beginPath(); x.ellipse(bx + 9, t - 8, 3.4, 8, -0.85, 0, 6.2832); x.stroke();
+      }
+    }],
+    ['festonarco', 'Festón de puntos', function (x) {
+      for (var i = 0; i <= 10; i++) {
+        var t = i / 10, u = 1 - t;
+        var px = u * u * -42 + 2 * u * t * 0 + t * t * 42;
+        var py = u * u * -8 + 2 * u * t * 14 + t * t * -8;   // arco sonrisa suave
+        var r = 2.6 + 1.6 * Math.sin(Math.PI * t);           // cuentas más grandes al centro
+        x.beginPath(); x.arc(px, py, r, 0, 6.2832); x.stroke();
+      }
+    }],
+    ['lavanda', 'Lavanda', function (x) {
+      x.beginPath(); x.moveTo(-1, 46); x.quadraticCurveTo(2, 18, 0, -8); x.stroke();
+      for (var i = 0; i < 4; i++) {
+        var y0 = -10 - i * 9;
+        x.beginPath(); x.ellipse(-5, y0, 3, 5.4, 0.5, 0, 6.2832); x.stroke();
+        x.beginPath(); x.ellipse(5, y0 - 4, 3, 5.4, -0.5, 0, 6.2832); x.stroke();
+      }
+      x.beginPath(); x.ellipse(0, -46, 3, 5.6, 0, 0, 6.2832); x.stroke();
+      x.beginPath(); x.ellipse(-8, 26, 3.2, 7.5, 0.9, 0, 6.2832); x.stroke();
+    }],
+    ['eucalipto', 'Eucalipto', function (x) {
+      x.beginPath(); x.moveTo(-2, 46); x.quadraticCurveTo(6, 0, 0, -44); x.stroke();
+      [[-8, 34, 5.2], [9, 22, 5.8], [-9, 10, 6.2], [10, -2, 6.2], [-9, -14, 5.8], [9, -26, 5.2], [-7, -36, 4.6]].forEach(function (p) {
+        x.beginPath(); x.arc(p[0], p[1], p[2], 0, 6.2832); x.stroke();
+      });
+    }],
+    ['rasgo', 'Rasgo caligráfico', function (x) {
+      x.beginPath(); x.moveTo(-46, 2); x.bezierCurveTo(-18, -8, 14, 10, 38, -2); x.stroke();
+      x.beginPath(); x.arc(41, -6, 4.6, 2.4, 8.2); x.stroke();
+      x.beginPath(); x.arc(-44, 4, 1.8, 0, 6.2832); x.stroke();
+    }],
     // ---- Familia, boda, bebé, marcos y adornos (para árboles genealógicos y plantillas) ----
     ['arbolcorazon', 'Árbol familiar', function (x) {
       x.save(); x.translate(0, -20); x.scale(0.66, 0.62);
@@ -2442,20 +2508,26 @@
     _telaPat = x.createPattern(c, 'repeat');
     return _telaPat;
   }
+  // Nitidez retina: el lienzo se pinta a devicePixelRatio (tope 2 para no cuadruplicar de más)
+  // y se muestra al tamaño lógico con CSS. En iPad (DPR 2) las líneas y letras quedan nítidas.
+  function dprLibre() { return Math.min(2, window.devicePixelRatio || 1); }
   function dibujarLibre() {
     tocarEstado();
     var cv = $('previaLibre'); if (!cv) return;
     var d = libreDim(), esc = libreEscala(), pad = librePad();
     var dW = Math.round(d.w * esc), dH = Math.round(d.h * esc);
-    var W = dW + pad * 2, H = dH + pad * 2;
+    var W = dW + pad * 2, H = dH + pad * 2, dpr = dprLibre();
+    var Wd = Math.round(W * dpr), Hd = Math.round(H * dpr);
     // Cambiar cv.width borra y REALOJA el lienzo aunque el valor sea el mismo: solo cuando cambia.
     // (Al arrastrar elementos el tamaño no varía y así cada cuadro se pinta sin ese costo.)
-    if (cv.width !== W) cv.width = W;
-    if (cv.height !== H) cv.height = H;
+    if (cv.width !== Wd) cv.width = Wd;
+    if (cv.height !== Hd) cv.height = Hd;
+    if (cv.style.width !== W + 'px') { cv.style.width = W + 'px'; cv.style.height = H + 'px'; }
+    cv.dataset.dpr = dpr;   // los gestos convierten sus coordenadas con esta medida
     var x = cv.getContext('2d');
     var circ = libreForma() === 'circulo';
     var fondo = ($('colorFondoLibre') && $('colorFondoLibre').value) || '#ffffff';
-    x.setTransform(1, 0, 0, 1, 0, 0);   // seguro: antes lo reseteaba la reasignación de cv.width
+    x.setTransform(dpr, 0, 0, dpr, 0, 0);   // todo el dibujo sigue en píxeles lógicos (CSS)
     // Mesa de trabajo (marco alrededor del bordado, estilo programa de diseño)
     x.fillStyle = '#eae3d5'; x.fillRect(0, 0, W, H);
     x.save();
@@ -2884,9 +2956,10 @@
       if (pinchElem) {
         // escala la selección alrededor de su centro; el punto medio del gesto también la arrastra
         var esc = libreEscala(), rc = cv.getBoundingClientRect(), d = libreDim();
+        var kd = parseFloat(cv.dataset.dpr) || 1;
         var f = Math.max(0.12, Math.min(12, dNow / pinchElem.d));
-        var dxCm = (mx - pinchElem.mx) * (cv.width / rc.width) / esc;
-        var dyCm = (my - pinchElem.my) * (cv.height / rc.height) / esc;
+        var dxCm = (mx - pinchElem.mx) * (cv.width / kd / rc.width) / esc;
+        var dyCm = (my - pinchElem.my) * (cv.height / kd / rc.height) / esc;
         pinchElem.objs.forEach(function (r0) {
           var q = libreObj(r0.id); if (!q) return;
           q.wCm = r0.w * f; q.hCm = r0.h * f;
@@ -4190,7 +4263,8 @@
     'Sabes mucho de bordado a mano y a máquina: puntadas (pespunte, punto atrás, cadeneta, festón, nudo francés, punto satín/relleno, margarita/lazy daisy, punto de cruz), hilos y colores (sugiere combinaciones y códigos DMC cuando ayude), telas y entretelas, bastidores, y métodos de transferencia (papel transfer, lápiz hidrosoluble, calco a contraluz, papel soluble). Evalúas diseños con criterio: equilibrio, tamaño real, legibilidad, contraste, nivel de dificultad y tiempo aproximado.',
     'Eres creativa e imaginativa: ofreces ideas frescas, pequeños detalles que enamoran (una ramita, una fecha escondida, iniciales entrelazadas, una paleta inesperada pero armónica) y das opciones cuando es útil. Eres concreta y resolutiva; usa viñetas cuando aclaren. Recuerdas lo que se ha conversado antes y construyes sobre ello con naturalidad.',
     'La app tiene un ESTUDIO DE DISEÑO único (un lienzo — rectangular o de bastidor circular — donde se combinan fotos y palabras que se mueven con el dedo, se giran, se duplican y se recortan en círculo; de ahí sale el PDF a tamaño real), una pestaña de PUNTO DE CRUZ (convierte imágenes en patrones con hilos DMC) y una de KITS (arma kits con manual profesional a partir de cualquier diseño).',
-    'Tienes TRES herramientas para CREAR. Elige según lo que pidan:\n• componer_estudio → LA PREFERIDA para diseñar: compone un diseño NATIVO y 100% editable en el Estudio con piezas de la biblioteca (textos con tipografía/arco/letras florales, motivos line-art y formas), cada una con posición, tamaño, giro y color. Úsala siempre que el pedido se pueda armar con la biblioteca (corazones, flores, guirnaldas, animalitos de la lista, marcos, monogramas, nombres con adornos…). La usuaria después mueve y edita cada pieza con el dedo. Compón con gusto: jerarquía, equilibrio y 2-4 colores armónicos.\n• crear_propuesta → SOLO palabras editables (un nombre, una fecha, "Te amo") sin composición nativa. Si combina una FOTO con palabras, usa tipo "foto_texto" e indica la posición.\n• crear_diseno → SVG line-art SOLO cuando la escena NO se pueda armar con la biblioteca (paisajes complejos, animales que no están en la lista, escenas muy detalladas). Ej: "un fondo del mar con ballenas y algas".\nSi dudas entre componer_estudio y crear_diseno, prefiere componer_estudio. Puedes conversar y aconsejar libremente sin herramienta cuando no toque crear un diseño.',
+    'Tienes TRES herramientas para CREAR. Elige según lo que pidan:\n• componer_estudio → LA PREFERIDA para diseñar. Y dentro de ella, USA UNA RECETA siempre que el pedido calce (nombre de familia, boda, bebé, monograma, frase, marco…): las recetas son layouts profesionales afinados a mano — tú solo aportas texto_principal, texto_secundario, paleta y tamaño, y la calidad queda garantizada. Solo compón LIBRE (con "elementos") cuando ninguna receta calce con la escena pedida.\n• crear_propuesta → SOLO palabras editables (un nombre, una fecha, "Te amo") sin composición nativa. Si combina una FOTO con palabras, usa tipo "foto_texto" e indica la posición.\n• crear_diseno → SVG line-art SOLO cuando la escena NO se pueda armar con la biblioteca (paisajes complejos, animales que no están en la lista, escenas muy detalladas). Ej: "un fondo del mar con ballenas y algas".\nSi dudas entre componer_estudio y crear_diseno, prefiere componer_estudio; si dudas entre receta y libre, prefiere la receta.',
+    'REGLAS DE OFICIO cuando compongas LIBRE (sin receta) — síguelas siempre:\n• Margen de respiración: nada útil a menos del 8% del borde del lienzo (en bastidor, los textos lejos del aro).\n• UN solo punto focal (lo más grande); jerarquía clara: el título ~3 veces el alto del texto de apoyo.\n• Máximo 2 tipografías por diseño: una protagonista y una de apoyo. Parejas que funcionan: Great Vibes + Cormorant Garamond, Alex Brush + EB Garamond, Parisienne + Lora, Imperial Script + Marcellus, Kaushan Script + Montserrat.\n• Máximo 3 colores de una paleta armónica (idealmente una del recetario); las decoraciones en número impar (1, 3, 5) y en simetría o triángulo visual.\n• Los motivos decorativos acompañan, no compiten: más chicos que el texto protagonista y equilibrados a ambos lados.',
     'Cómo construir el SVG de crear_diseno (es para BORDAR a mano, no para pantalla):\n• LINE ART: solo contornos. Usa fill="none" y stroke con un color de la paleta; stroke-width entre 6 y 12 sobre un viewBox de 1000; stroke-linecap="round" y stroke-linejoin="round". La única excepción es el texto, que puede llevar fill del color para que se lea.\n• viewBox = lienzo a tamaño real. Para forma=circulo usa un viewBox CUADRADO (ej "0 0 1000 1000") y mantén TODO dentro de un círculo centrado de radio ~440 (deja margen; nada toca el borde). Para rect usa un viewBox con la MISMA proporción que ancho_cm:alto_cm.\n• El texto va DENTRO del SVG como <text> centrado (text-anchor="middle"), grande y legible, con font-family genérica ("cursive", "serif" o "sans-serif").\n• Pocas formas limpias y reconocibles mejor que mucho detalle. Nada más pequeño que ~20 unidades (≈2 mm reales). Sin degradados densos, sombras ni texturas.\n• PROHIBIDO en el SVG: <script>, <foreignObject>, <image>, <a>, <use> externo, atributos on*, href/url externos, javascript:. Todo autónomo y vectorial.\n• Declara en "colores" cada color que usaste (hex), su uso y, si lo sabes, su código DMC, para la leyenda de hilos.',
     'Tras llamar a crear_diseno, en tu texto explica con cariño y brevedad qué creaste, el tamaño real, las puntadas e hilos sugeridos, y que puede pedir cambios ("hazlo más grande", "quita el fondo", "ponle un ancla", "cambia el azul por verde"). NUNCA pegues el código SVG en el chat: ya va dentro de la herramienta.',
     'Si te SUBEN una FOTO en el chat, mírala con detalle y cariño: puedes aconsejar sobre ese diseño/tela/puntadas, o —si lo piden— proponer un diseño que la combine con texto (crear_propuesta tipo "foto_texto") o un marco/orla con motivos alrededor (crear_diseno). Si te comparten una vista previa de la app, evalúala: qué está lindo, qué mejorarías, hilos y puntadas.',
@@ -4207,22 +4281,175 @@
   ].join('\n\n');
 
   // Familias permitidas (sincronizadas con el selector de fuentes)
+  // ---------- Recetario de diseñador: composiciones profesionales parametrizables ----------
+  // Cada receta es un layout afinado A MANO (posiciones, proporciones y parejas tipográficas
+  // probadas visualmente): la usuaria (o Alma) solo pone textos, paleta y tamaño, y el piso
+  // de calidad queda garantizado. Producen el mismo formato que las composiciones de Alma.
+  var PALETAS = [
+    { clave: 'salvia_rosa', nombre: 'Salvia y rosa viejo', ppal: '#6f6151', acento: '#c07b96', verde: '#7f9d77', suave: '#a5978a' },
+    { clave: 'lino_trigo', nombre: 'Lino y trigo', ppal: '#7c6b57', acento: '#b89a6a', verde: '#8a9a7b', suave: '#c9b17f' },
+    { clave: 'azul_lavanda', nombre: 'Azul y lavanda', ppal: '#5f6a7d', acento: '#9b8ebd', verde: '#7d92b8', suave: '#a8b2c4' },
+    { clave: 'terracota', nombre: 'Terracota', ppal: '#8f5f4b', acento: '#c07a5b', verde: '#97a97c', suave: '#d9a88f' },
+    { clave: 'bosque', nombre: 'Verde bosque', ppal: '#4b4a3f', acento: '#5f7d5f', verde: '#8fa98f', suave: '#a5a58f' },
+    { clave: 'clasico', nombre: 'Hilo clásico', ppal: '#6f6151', acento: '#a14f72', verde: '#7f9d77', suave: '#a5978a' }
+  ];
+  function paletaDe(clave) { for (var i = 0; i < PALETAS.length; i++) if (PALETAS[i].clave === clave) return PALETAS[i]; return PALETAS[0]; }
+  var RECETAS = [
+    { clave: 'laurel_clasico', nombre: 'Laurel clásico', icono: '🌿', demo1: 'Familia', demo2: 'desde 2026',
+      desc: 'Palabra pequeña arriba, nombre protagonista al centro y laurel sonriente debajo — el clásico que nunca falla.',
+      arma: function (c) { return [
+        c.txt(c.t2.toUpperCase(), 'Marcellus', 0.052, 0.5, 0.235, c.P.suave, { maxW: 0.55 }),
+        c.txt(c.t1, 'Great Vibes', 0.165, 0.5, 0.415, c.P.ppal, { curva: 12, maxW: 0.72 }),
+        c.mot('guirnalda', 0.5, 0.615, 0.52, c.P.verde, { grosor: 0.8 }),
+        c.frm('corazon', 0.5, 0.865, 0.06, 0.06, c.P.acento)
+      ]; } },
+    { clave: 'familia_corazones', nombre: 'Nombre y corazones', icono: '❤️', demo1: 'Familia', demo2: '2026',
+      desc: 'Arco de laurel coronando, nombre en caligrafía y tres corazones en arco cerrando abajo.',
+      arma: function (c) { return [
+        c.mot('festonarco', 0.5, 0.235, 0.52, c.P.verde, { flipY: true }),
+        c.txt(c.t1, 'Alex Brush', 0.16, 0.5, 0.45, c.P.ppal, { curva: 16, maxW: 0.72 }),
+        c.txt(c.t2, 'EB Garamond', 0.055, 0.5, 0.595, c.P.suave, { maxW: 0.5 }),
+        c.frm('corazon', 0.34, 0.74, 0.085, 0.085, c.P.acento, { rot: -14 }),
+        c.frm('corazon', 0.5, 0.775, 0.105, 0.105, c.P.acento),
+        c.frm('corazon', 0.66, 0.74, 0.085, 0.085, c.P.acento, { rot: 14 })
+      ]; } },
+    { clave: 'corona_monograma', nombre: 'Corona con monograma', icono: '💮', demo1: 'A', demo2: 'Alma',
+      desc: 'Una corona de flores enmarca la inicial grande; el nombre acompaña abajo en letra fina.',
+      arma: function (c) { return [
+        c.mot('coronaflor', 0.5, 0.5, 0.86, c.P.verde, { grosor: 0.7 }),
+        c.txt((c.t1 || 'A').charAt(0).toUpperCase(), 'Imperial Script', 0.30, 0.5, 0.47, c.P.ppal, { maxW: 0.40 }),
+        c.txt(c.t2, 'Cormorant Garamond', 0.055, 0.5, 0.63, c.P.suave, { maxW: 0.40 })
+      ]; } },
+    { clave: 'arco_doble', nombre: 'Arcos y motivo central', icono: '🌺', demo1: 'Hecho a mano', demo2: 'con amor',
+      desc: 'El texto abraza el aro por arriba, un motivo protagonista al centro y la frase de cierre por abajo.',
+      arma: function (c) { return [
+        c.txt(c.t1, 'Cormorant Garamond', 0.085, 0.5, 0.25, c.P.ppal, { curva: 62, maxW: 0.80 }),
+        c.mot(c.motivo || 'flor', 0.5, 0.50, 0.26, c.P.acento),
+        c.mot('ramalateral', 0.26, 0.50, 0.19, c.P.verde, { rot: -14 }),
+        c.mot('ramalateral', 0.74, 0.50, 0.19, c.P.verde, { rot: 14, flip: true }),
+        c.txt(c.t2, 'Cormorant Garamond', 0.06, 0.5, 0.76, c.P.suave, { curva: -55, maxW: 0.62 })
+      ]; } },
+    { clave: 'ramas_nombre', nombre: 'Entre ramas', icono: '🍃', demo1: 'Bienvenidos', demo2: 'a nuestro hogar',
+      desc: 'Dos ramas horizontales guardan el nombre al centro — sereno y elegante.',
+      arma: function (c) { return [
+        c.mot('ramahojas', 0.5, 0.265, 0.58, c.P.verde, { grosor: 0.6 }),
+        c.txt(c.t1, 'Playfair Display', 0.10, 0.5, 0.455, c.P.ppal, { maxW: 0.74 }),
+        c.txt(c.t2, 'Cormorant Garamond', 0.055, 0.5, 0.585, c.P.suave, { maxW: 0.6 }),
+        c.mot('ramahojas', 0.5, 0.745, 0.58, c.P.verde, { flipY: true, grosor: 0.6 })
+      ]; } },
+    { clave: 'boda_anillos', nombre: 'Boda · anillos', icono: '💍', demo1: 'Ana & Diego', demo2: '12 · 10 · 2026',
+      desc: 'Los anillos arriba, los nombres en caligrafía, la fecha y un festón de puntos que cierra.',
+      arma: function (c) { return [
+        c.mot('anillos', 0.5, 0.235, 0.20, c.P.suave),
+        c.txt(c.t1, 'Great Vibes', 0.135, 0.5, 0.45, c.P.ppal, { curva: 10, maxW: 0.76 }),
+        c.txt(c.t2, 'Marcellus', 0.05, 0.5, 0.60, c.P.suave, { maxW: 0.55 }),
+        c.mot('festonarco', 0.5, 0.755, 0.44, c.P.acento)
+      ]; } },
+    { clave: 'bebe_luna', nombre: 'Bebé · luna y estrellas', icono: '🌙', demo1: 'Emilia', demo2: 'abril 2026',
+      desc: 'Lunita y estrellitas velando el nombre — dulce para la pieza del bebé.',
+      arma: function (c) { return [
+        c.mot('luna', 0.40, 0.28, 0.24, c.P.acento),
+        c.mot('estrella', 0.64, 0.195, 0.07, c.P.suave),
+        c.mot('estrella', 0.73, 0.32, 0.05, c.P.suave),
+        c.mot('estrella', 0.27, 0.42, 0.05, c.P.suave),
+        c.txt(c.t1, 'Sacramento', 0.15, 0.5, 0.55, c.P.ppal, { maxW: 0.72 }),
+        c.txt(c.t2, 'Quicksand', 0.05, 0.5, 0.695, c.P.suave, { maxW: 0.5 }),
+        c.mot('festonarco', 0.5, 0.815, 0.36, c.P.verde)
+      ]; } },
+    { clave: 'marco_frase', nombre: 'Marco con esquinas', icono: '🖼️', forma: 'rect', w: 20, h: 15, demo1: 'Hogar dulce hogar', demo2: 'familia González',
+      desc: 'Marco punteado con esquinas florales y la frase al centro (rectangular, ideal para colgar).',
+      arma: function (c) { return [
+        { tipo: 'forma', x: 0.5, y: 0.5, rot: 0, color: c.P.suave, clave: 'rect', wCm: c.W * 0.86, hCm: c.H * 0.80, relleno: false, colorLinea: c.P.suave, punteado: true, grosor: 0.12 },
+        c.mot('esquinaflor', 0.155, 0.20, 0.26, c.P.verde, { grosor: 0.8 }),
+        c.mot('esquinaflor', 0.845, 0.20, 0.26, c.P.verde, { flip: true, grosor: 0.8 }),
+        c.mot('esquinaflor', 0.155, 0.80, 0.26, c.P.verde, { flipY: true, grosor: 0.8 }),
+        c.mot('esquinaflor', 0.845, 0.80, 0.26, c.P.verde, { flip: true, flipY: true, grosor: 0.8 }),
+        c.txt(c.t1, 'Kaushan Script', 0.15, 0.5, 0.45, c.P.ppal, { maxW: 0.60 }),
+        c.txt(c.t2, 'Cormorant Garamond', 0.062, 0.5, 0.615, c.P.suave, { maxW: 0.5 })
+      ]; } },
+    { clave: 'tres_lineas', nombre: 'Palabra con rasgo', icono: '✍️', demo1: 'bella', demo2: 'la vida es',
+      desc: 'Jerarquía clásica: línea pequeña arriba, palabra protagonista en caligrafía y rasgo final con lavandas.',
+      arma: function (c) { return [
+        c.txt(c.t2.toUpperCase(), 'Montserrat', 0.045, 0.5, 0.335, c.P.suave, { maxW: 0.55 }),
+        c.txt(c.t1, 'Herr Von Muellerhoff', 0.21, 0.5, 0.515, c.P.ppal, { maxW: 0.62 }),
+        c.mot('rasgo', 0.5, 0.665, 0.30, c.P.acento),
+        c.mot('lavanda', 0.15, 0.505, 0.15, c.P.verde, { rot: -22 }),
+        c.mot('lavanda', 0.85, 0.505, 0.15, c.P.verde, { rot: 22, flip: true })
+      ]; } },
+    { clave: 'eucalipto_nombre', nombre: 'Eucalipto sereno', icono: '🌱', demo1: 'Martina', demo2: 'est. 2026',
+      desc: 'Dos ramas de eucalipto enmarcan por arriba; nombre al centro y un corazón pequeño de cierre.',
+      arma: function (c) { return [
+        c.mot('eucalipto', 0.335, 0.26, 0.30, c.P.verde, { rot: -125, grosor: 0.85 }),
+        c.mot('eucalipto', 0.665, 0.26, 0.30, c.P.verde, { rot: 125, flip: true, grosor: 0.85 }),
+        c.txt(c.t1, 'Parisienne', 0.155, 0.5, 0.52, c.P.ppal, { curva: 8, maxW: 0.74 }),
+        c.txt(c.t2.toUpperCase(), 'Montserrat', 0.042, 0.5, 0.665, c.P.suave, { maxW: 0.4 }),
+        c.frm('corazon', 0.5, 0.775, 0.05, 0.05, c.P.acento)
+      ]; } }
+  ];
+  var RECETA_CLAVES = RECETAS.map(function (r) { return r.clave; });
+  function recetaDef(clave) { for (var i = 0; i < RECETAS.length; i++) if (RECETAS[i].clave === clave) return RECETAS[i]; return null; }
+  function recetaComposicion(clave, o) {
+    o = o || {};
+    var R = recetaDef(clave); if (!R) throw new Error('receta desconocida');
+    var P = paletaDe(o.paleta);
+    var circ = R.forma !== 'rect';
+    var W, H;
+    if (circ) { W = H = Math.max(10, Math.min(40, parseFloat(o.diametro) || 18)); }
+    else { W = Math.max(10, Math.min(50, parseFloat(o.diametro) || R.w)); H = Math.round(R.h * W / R.w * 10) / 10; }
+    var t1 = String(o.principal == null ? '' : o.principal).trim() || R.demo1;
+    var t2 = String(o.secundario == null ? '' : o.secundario).trim() || R.demo2;
+    var motivo = CLAVES_MOTIVO.indexOf(o.motivo) >= 0 ? o.motivo : null;
+    // helpers: posiciones en fracción 0..1; tamaños como fracción del lado menor; los textos
+    // se achican solos (altoQueEncaja) para no salirse jamás del lienzo
+    function txt(tx, fam, altoFrac, x, y, color, ex) {
+      ex = ex || {}; tx = String(tx == null ? '' : tx); if (!tx.trim()) return null;
+      var maxWcm = (ex.maxW || 0.72) * W;
+      var alto = altoQueEncaja(tx, cssDeNombre(fam), maxWcm, altoFrac * Math.min(W, H), 0.5);
+      return { tipo: 'texto', x: x, y: y, rot: 0, color: color, texto: tx, fuente: fam, altoCm: Math.round(alto * 100) / 100, estilo: 'relleno', curva: ex.curva || 0, decor: 'no' };
+    }
+    function mot(cl, x, y, wFrac, color, ex) {
+      ex = ex || {};
+      var e = { tipo: 'motivo', x: x, y: y, rot: (ex.rot || 0) * Math.PI / 180, color: color, clave: cl, wCm: Math.round(wFrac * Math.min(W, H) * 100) / 100 };
+      if (ex.flip) e.flip = true; if (ex.flipY) e.flipY = true;
+      if (ex.grosor) e.grosorT = ex.grosor;   // motivos grandes se afinan para verse elegantes
+      return e;
+    }
+    function frm(cl, x, y, wFrac, hFrac, color, ex) {
+      ex = ex || {};
+      var mn = Math.min(W, H);
+      var e = { tipo: 'forma', x: x, y: y, rot: (ex.rot || 0) * Math.PI / 180, color: color, clave: cl, wCm: Math.round(wFrac * mn * 100) / 100, hCm: Math.round(hFrac * mn * 100) / 100, relleno: ex.relleno !== false, colorLinea: ex.colorLinea || color };
+      if (ex.punteado) e.punteado = true;
+      return e;
+    }
+    var els = R.arma({ t1: t1, t2: t2, P: P, W: W, H: H, motivo: motivo, txt: txt, mot: mot, frm: frm }).filter(Boolean);
+    return {
+      titulo: String(o.titulo || (R.nombre + ' · ' + t1)).slice(0, 80),
+      descripcion: String(o.descripcion || R.desc).slice(0, 600),
+      forma: circ ? 'circulo' : 'rect', wCm: W, hCm: H, fondo: null, receta: clave,
+      elementos: els
+    };
+  }
   var NOMBRES_FUENTE = FUENTES.map(function (f) { return f.fam; });
   // Claves reales de la biblioteca (para que Alma componga con piezas que existen)
   var CLAVES_MOTIVO = MOTIVOS.map(function (m) { return m[0]; });
   var CLAVES_FORMA = FORMAS.map(function (f) { return f[0]; });
   var HERRAMIENTAS = [{
     name: 'componer_estudio',
-    description: 'Compone un DISEÑO NATIVO y 100% EDITABLE en el Estudio: defines el lienzo (bastidor circular o rectángulo, en cm) y colocas ELEMENTOS de la biblioteca — textos (tipografía, color, arco, letras florales), motivos line-art y formas — cada uno con posición, tamaño, giro y color. La usuaria después mueve y edita CADA pieza con el dedo. PREFIÉRELA sobre crear_diseno siempre que el pedido se pueda armar con la biblioteca. Motivos disponibles: ' + CLAVES_MOTIVO.join(', ') + '. Formas: ' + CLAVES_FORMA.join(', ') + '. Posiciones x/y como FRACCIÓN 0..1 del lienzo (0.5, 0.5 = centro). Compón con gusto: jerarquía (lo importante más grande), simetría o equilibrio, y 2-4 colores armónicos.',
+    description: 'Compone un DISEÑO NATIVO y 100% EDITABLE en el Estudio. VÍA PREFERIDA: usa una RECETA del recetario (layouts profesionales afinados a mano) y solo aporta textos + paleta — calidad garantizada. Recetas: ' + RECETAS.map(function (r) { return r.clave + ' (' + r.desc.split('—')[0].trim().toLowerCase().slice(0, 60) + ')'; }).join('; ') + '. Si el pedido NO calza con ninguna receta, compón libre con "elementos". Motivos disponibles: ' + CLAVES_MOTIVO.join(', ') + '. Formas: ' + CLAVES_FORMA.join(', ') + '. Posiciones x/y como FRACCIÓN 0..1 del lienzo (0.5, 0.5 = centro).',
     input_schema: {
       type: 'object',
       properties: {
         titulo: { type: 'string', description: 'Nombre corto y bonito del diseño' },
         descripcion: { type: 'string', description: 'Explicación cálida y breve: idea, colores y puntadas sugeridas.' },
-        forma: { type: 'string', enum: ['circulo', 'rect'], description: 'circulo = bastidor redondo; rect = rectangular' },
-        diametro_cm: { type: 'number', description: 'Solo si forma=circulo: diámetro en cm (ej 15)' },
-        ancho_cm: { type: 'number', description: 'Solo si forma=rect: ancho en cm' },
-        alto_cm: { type: 'number', description: 'Solo si forma=rect: alto en cm' },
+        receta: { type: 'string', enum: RECETA_CLAVES, description: 'VÍA PREFERIDA: layout profesional del recetario. Con receta solo necesitas texto_principal, texto_secundario, paleta y diametro_cm (elementos es opcional para 1-3 retoques extra encima).' },
+        texto_principal: { type: 'string', description: 'Con receta: el texto protagonista (nombre, frase). Para corona_monograma: la inicial o el nombre (se toma la primera letra).' },
+        texto_secundario: { type: 'string', description: 'Con receta: el texto de apoyo (fecha, apellido, frase corta)' },
+        paleta: { type: 'string', enum: PALETAS.map(function (p) { return p.clave; }), description: 'Con receta: paleta de hilos. ' + PALETAS.map(function (p) { return p.clave + ' = ' + p.nombre; }).join(', ') },
+        motivo_centro: { type: 'string', enum: CLAVES_MOTIVO, description: 'Solo para la receta arco_doble: el motivo protagonista del centro' },
+        forma: { type: 'string', enum: ['circulo', 'rect'], description: 'circulo = bastidor redondo; rect = rectangular (con receta se ignora: la receta lo define)' },
+        diametro_cm: { type: 'number', description: 'Diámetro del bastidor en cm (ej 15); con receta rectangular actúa como ancho' },
+        ancho_cm: { type: 'number', description: 'Solo si forma=rect sin receta: ancho en cm' },
+        alto_cm: { type: 'number', description: 'Solo si forma=rect sin receta: alto en cm' },
         fondo: { type: 'string', description: 'Color de la tela en hex (opcional, ej "#fdf8ef")' },
         elementos: {
           type: 'array',
@@ -4251,7 +4478,7 @@
           }
         }
       },
-      required: ['titulo', 'descripcion', 'forma', 'elementos']
+      required: ['titulo', 'descripcion']
     }
   }, {
     name: 'crear_propuesta',
@@ -4431,21 +4658,110 @@
     var f = todas.filter(function (x) { return x.fam === nombre; })[0];
     return f ? cssDe(f) : cssDe(FUENTES[0]);
   }
+  // ---------- UI del recetario (panel Plantillas) ----------
+  var paletaElegida = PALETAS[0].clave;
+  function pintarChipsPaleta() {
+    var cont = $('chipsPaleta'); if (!cont) return;
+    cont.innerHTML = '';
+    PALETAS.forEach(function (P) {
+      var b = document.createElement('button'); b.type = 'button';
+      b.className = 'paleta-chip' + (P.clave === paletaElegida ? ' activa' : '');
+      b.innerHTML = '<span class="pd" style="background:' + P.ppal + '"></span><span class="pd" style="background:' + P.acento + '"></span><span class="pd" style="background:' + P.verde + '"></span>' + escaparHtml(P.nombre);
+      b.addEventListener('click', function () { paletaElegida = P.clave; pintarChipsPaleta(); pintarRecetas(); });
+      cont.appendChild(b);
+    });
+  }
+  // Vista previa esquemática de una receta (texto recto aproximado: para el tamaño de una miniatura basta)
+  function pintarMiniReceta(cv, c) {
+    var x = cv.getContext('2d'), S = cv.width;
+    x.clearRect(0, 0, S, S);
+    var esCirc = c.forma === 'circulo';
+    var escMin = S * 0.92 / Math.max(c.wCm, c.hCm);
+    var w = c.wCm * escMin, h = c.hCm * escMin;
+    x.save(); x.translate((S - w) / 2, (S - h) / 2);
+    x.fillStyle = '#fffdf8'; x.strokeStyle = '#d8c9a8'; x.lineWidth = 1.4;
+    if (esCirc) { x.beginPath(); x.arc(w / 2, h / 2, Math.min(w, h) / 2, 0, 6.2832); x.fill(); x.setLineDash([4, 3]); x.stroke(); x.setLineDash([]); }
+    else { x.fillRect(0, 0, w, h); x.strokeRect(0.5, 0.5, w - 1, h - 1); }
+    c.elementos.forEach(function (e) {
+      x.save(); x.translate(e.x * w, e.y * h); if (e.rot) x.rotate(e.rot);
+      if (e.tipo === 'texto') {
+        x.fillStyle = e.color; x.textAlign = 'center'; x.textBaseline = 'middle';
+        x.font = '600 ' + Math.max(4, e.altoCm * escMin).toFixed(1) + 'px ' + cssDeNombre(e.fuente);
+        x.fillText(e.texto.split('\n')[0], 0, 0);
+      } else if (e.tipo === 'motivo') {
+        var s2 = e.wCm * escMin / 100;
+        if (e.flip || e.flipY) x.scale(e.flip ? -1 : 1, e.flipY ? -1 : 1);
+        x.scale(s2, s2);
+        x.strokeStyle = e.color; x.fillStyle = e.color; x.lineWidth = 3.4 * (e.grosorT || 1); x.lineCap = 'round'; x.lineJoin = 'round';
+        try { motivoDef(e.clave)[2](x); } catch (er) {}
+      } else {
+        var fw = e.wCm * escMin, fh = (e.hCm || e.wCm) * escMin;
+        formaPath(x, e.clave, fw, fh, e.radio);
+        if (e.relleno !== false && e.clave !== 'linea') { x.fillStyle = e.color; x.fill(); }
+        x.strokeStyle = e.colorLinea || e.color; x.lineWidth = 1;
+        if (e.punteado) x.setLineDash([3, 2.4]);
+        x.stroke(); x.setLineDash([]);
+      }
+      x.restore();
+    });
+    x.restore();
+  }
+  function pintarRecetas() {
+    var grid = $('recetasGrid'); if (!grid) return;
+    var t1 = ($('recTexto1') && $('recTexto1').value) || '';
+    var t2 = ($('recTexto2') && $('recTexto2').value) || '';
+    grid.innerHTML = '';
+    RECETAS.forEach(function (R) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'motivo-btn receta-btn'; b.title = R.desc;
+      var cv = document.createElement('canvas'); cv.width = 130; cv.height = 130;
+      var sp = document.createElement('span'); sp.textContent = R.icono + ' ' + R.nombre;
+      b.appendChild(cv); b.appendChild(sp);
+      try { pintarMiniReceta(cv, recetaComposicion(R.clave, { principal: t1, secundario: t2, paleta: paletaElegida })); } catch (e) {}
+      b.addEventListener('click', function () {
+        var d = libreDim();
+        var c = recetaComposicion(R.clave, { principal: ($('recTexto1').value || ''), secundario: ($('recTexto2').value || ''), paleta: paletaElegida, diametro: Math.min(d.w, d.h) });
+        aplicarComposicion(c);
+      });
+      grid.appendChild(b);
+    });
+  }
+  pintarChipsPaleta(); pintarRecetas();
+  ['recTexto1', 'recTexto2'].forEach(function (id) {
+    var el = $(id); if (el) el.addEventListener('input', function () { programarRetardo('recetas', pintarRecetas, 300); });
+  });
+  // al abrir Plantillas se repintan las miniaturas (las tipografías ya suelen estar cargadas)
+  (function () { var rp = $('railPlantillas'); if (rp) rp.addEventListener('click', function () { programarRetardo('recetas', pintarRecetas, 80); }); })();
   // ---------- componer_estudio: Alma arma diseños NATIVOS y editables ----------
   function normalizarComposicion(inp) {
-    if (!inp || !Array.isArray(inp.elementos) || !inp.elementos.length) throw new Error('sin elementos');
+    if (!inp) throw new Error('sin datos');
     function nClamp(v, mn, mx, def) { var n = parseFloat(v); if (!isFinite(n)) n = def; return Math.max(mn, Math.min(mx, n)); }
-    var circ = inp.forma !== 'rect';
-    var c = {
-      titulo: String(inp.titulo || 'Diseño de Alma').slice(0, 80),
-      descripcion: String(inp.descripcion || '').slice(0, 600),
-      forma: circ ? 'circulo' : 'rect',
-      wCm: circ ? nClamp(inp.diametro_cm, 4, 60, 18) : nClamp(inp.ancho_cm, 3, 60, 18),
-      hCm: circ ? nClamp(inp.diametro_cm, 4, 60, 18) : nClamp(inp.alto_cm, 3, 60, 18),
-      fondo: inp.fondo ? colorSeguro(inp.fondo) : null,
-      elementos: []
-    };
-    inp.elementos.slice(0, 22).forEach(function (e) {
+    var extras = Array.isArray(inp.elementos) ? inp.elementos : [];
+    var c = null;
+    if (inp.receta && recetaDef(inp.receta)) {
+      // vía preferida: layout profesional del recetario, con textos/paleta del pedido
+      c = recetaComposicion(inp.receta, {
+        principal: inp.texto_principal, secundario: inp.texto_secundario,
+        paleta: inp.paleta, diametro: inp.diametro_cm, motivo: inp.motivo_centro,
+        titulo: inp.titulo, descripcion: inp.descripcion
+      });
+      if (inp.fondo) c.fondo = colorSeguro(inp.fondo);
+      if (!extras.length) return c;
+      extras = extras.slice(0, 5);   // sobre una receta solo se admiten retoques puntuales
+    }
+    if (!c) {
+      if (!extras.length) throw new Error('sin elementos');
+      var circ = inp.forma !== 'rect';
+      c = {
+        titulo: String(inp.titulo || 'Diseño de Alma').slice(0, 80),
+        descripcion: String(inp.descripcion || '').slice(0, 600),
+        forma: circ ? 'circulo' : 'rect',
+        wCm: circ ? nClamp(inp.diametro_cm, 4, 60, 18) : nClamp(inp.ancho_cm, 3, 60, 18),
+        hCm: circ ? nClamp(inp.diametro_cm, 4, 60, 18) : nClamp(inp.alto_cm, 3, 60, 18),
+        fondo: inp.fondo ? colorSeguro(inp.fondo) : null,
+        elementos: []
+      };
+    }
+    extras.slice(0, 22).forEach(function (e) {
       if (!e || ['texto', 'motivo', 'forma'].indexOf(e.tipo) < 0) return;
       var el = {
         tipo: e.tipo,
@@ -4475,6 +4791,7 @@
       c.elementos.push(el);
     });
     if (!c.elementos.length) throw new Error('elementos inválidos');
+    if (c.elementos.length > 24) c.elementos = c.elementos.slice(0, 24);
     return c;
   }
   function pintarComposicion(burbuja, textos, c) {
@@ -4506,9 +4823,12 @@
       if (e.tipo === 'texto') {
         plantillaTexto(e.texto, cssDeNombre(e.fuente), e.color, e.estilo, e.altoCm, xCm, yCm, { rot: e.rot, curva: e.curva || 0, decor: e.decor || 'no', decorColor: '#d98fa6' });
       } else if (e.tipo === 'motivo') {
-        plantillaMotivo(e.clave, e.color, xCm, yCm, e.wCm, e.wCm, e.rot);
+        var m = plantillaMotivo(e.clave, e.color, xCm, yCm, e.wCm, e.wCm, e.rot);
+        if (e.flip) m.flip = true; if (e.flipY) m.flipY = true;
+        if (e.grosorT) m.grosorT = e.grosorT;
       } else {
-        plantillaForma(e.clave, xCm, yCm, e.wCm, e.hCm, { rot: e.rot, relleno: e.relleno, color: e.color, colorLinea: e.colorLinea, grosor: 0.2 });
+        var f = plantillaForma(e.clave, xCm, yCm, e.wCm, e.hCm, { rot: e.rot, relleno: e.relleno, color: e.color, colorLinea: e.colorLinea, grosor: e.grosor == null ? 0.2 : e.grosor });
+        if (e.punteado) f.punteado = true;
       }
     });
     plantillaCierre('Diseño de Alma creado ✨ · cada pieza es tuya: muévela, escálala, cámbiale el color');
@@ -5186,7 +5506,7 @@
   $('irAjustesIA').addEventListener('click', abrirAjustes);
   function chipsAsistente() {
     var cont = $('chipsAsist'); if (!cont) return; cont.innerHTML = '';
-    var base = ['🎨 Compón un bastidor de 18 cm: "Familia" con guirnalda y corazones', '🧵 Hazme un patrón de punto de cruz de un corazón', '🎨 Una paleta de hilos para un fondo de mar', '🪡 ¿Cuántas hebras uso en Aida ' + (CONFIG.aidaDef || 14) + '?', 'Evalúa mi diseño actual'];
+    var base = ['📖 Diseña "Familia" con la receta del laurel clásico en salvia y rosa', '🎨 Compón un bastidor de boda para "Ana & Diego" con su fecha', '🧵 Hazme un patrón de punto de cruz de un corazón', '🪡 ¿Cuántas hebras uso en Aida ' + (CONFIG.aidaDef || 14) + '?', 'Evalúa mi diseño actual'];
     var perso = [];
     if (CONFIG.gustos) { var g = CONFIG.gustos.split(/[,;]/)[0].trim(); if (g) perso.push('🎨 Una paleta de hilos para ' + g); }
     if (CONFIG.pareja) perso.push('❤️ Un diseño que diga “' + CONFIG.pareja + '”');
@@ -6921,14 +7241,14 @@
       $('modalBienvenida').hidden = false;
       $('empezarBienvenida').addEventListener('click', function () {
         CONFIG.tema = temaSel; guardarConfig(); aplicarTema();
-        try { localStorage.setItem('alma_visto', '1'); localStorage.setItem('alma_v53', '1'); } catch (e) {}
+        try { localStorage.setItem('alma_visto', '1'); localStorage.setItem('alma_v60', '1'); } catch (e) {}
         $('modalBienvenida').hidden = true;
       });
       return;
     }
-    if (!localStorage.getItem('alma_v53')) {
+    if (!localStorage.getItem('alma_v60')) {
       $('modalNovedades').hidden = false;
-      var cerrarNov = function () { try { localStorage.setItem('alma_v53', '1'); } catch (e) {} $('modalNovedades').hidden = true; };
+      var cerrarNov = function () { try { localStorage.setItem('alma_v60', '1'); } catch (e) {} $('modalNovedades').hidden = true; };
       $('cerrarNovedades').addEventListener('click', cerrarNov);
       $('modalNovedades').addEventListener('click', function (e) { if (e.target === this) cerrarNov(); });
     }

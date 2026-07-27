@@ -1,7 +1,7 @@
 // Service worker del Taller de Bordado: deja la app disponible sin internet.
 // Estrategia "cache primero, actualizar por detrás": abre al tiro desde el
 // caché y descarga la versión nueva en segundo plano para la próxima vez.
-var CACHE = 'bordados-v42';   // AlmaApp 5.3 · tablet cómoda: pellizco por elemento, panel completo, efectos a mano y más fluidez
+var CACHE = 'bordados-v43';   // AlmaApp 6.0 · recetario de diseñador, paletas de hilos, Alma con oficio y lienzo retina
 var ARCHIVOS = [
   './',
   './index.html',
